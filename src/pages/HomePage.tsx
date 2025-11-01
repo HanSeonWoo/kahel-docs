@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useConfig } from '../hooks/use-config';
 import { Card, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { FileText, Home as HomeIcon, BookOpen, Code, Layers, Package, Smartphone, Database, Video } from 'lucide-react';
+import type { JSX } from 'react';
 
 export function HomePage() {
   const { config, loading, error } = useConfig();
