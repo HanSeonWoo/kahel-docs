@@ -32,15 +32,15 @@
 
 **실행**:
 ```bash
-npm create vite@latest kahel-docs -- --template react-ts
+pnpm create vite@latest kahel-docs -- --template react-ts
 cd kahel-docs
-npm install
+pnpm install
 ```
 
 **검증**:
 ```bash
 # 다음 명령어가 에러 없이 실행되어야 함
-npm run dev
+pnpm run dev
 # 브라우저에서 http://localhost:5173 접속하여 Vite 초기 화면 확인
 ```
 
@@ -52,15 +52,15 @@ npm run dev
 ---
 
 ### Task 1.2: Tailwind CSS 설치 및 설정
-- [ ] **상태**: 미완료
-- **완료 시각**:
+- [x] **상태**: 완료
+- **완료 시각**: 2025-11-01 16:20
 - **소요 시간**: 약 3-5분
 - **선행 작업**: Task 1.1 완료 필수
 
 **실행**:
 ```bash
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
+pnpm add -D tailwindcss postcss autoprefixer
+pnpm dlx tailwindcss init -p
 ```
 
 **파일 수정 - `tailwind.config.js`**:
@@ -89,7 +89,7 @@ export default {
 ```bash
 # src/App.tsx에 다음 추가하여 테스트
 # <h1 className="text-3xl font-bold underline">Hello Tailwind</h1>
-npm run dev
+pnpm run dev
 # 브라우저에서 스타일이 적용된 텍스트 확인
 ```
 
@@ -100,14 +100,14 @@ npm run dev
 ---
 
 ### Task 1.3: shadcn/ui 초기화
-- [ ] **상태**: 미완료
-- **완료 시각**:
+- [x] **상태**: 완료
+- **완료 시각**: 2025-11-01 16:25
 - **소요 시간**: 약 5분
 - **선행 작업**: Task 1.2 완료 필수
 
 **실행**:
 ```bash
-npx shadcn@latest init
+pnpm dlx shadcn@latest init
 ```
 
 **대화형 설정**:
@@ -129,15 +129,15 @@ ls src/components/ui/
 ---
 
 ### Task 1.4: shadcn/ui Card 컴포넌트 추가
-- [ ] **상태**: 미완료
-- **완료 시각**:
+- [x] **상태**: 완료
+- **완료 시각**: 2025-11-01 16:26
 - **소요 시간**: 약 2분
 - **선행 작업**: Task 1.3 완료 필수
 
 **실행**:
 ```bash
-npx shadcn@latest add card
-npx shadcn@latest add separator
+pnpm dlx shadcn@latest add card
+pnpm dlx shadcn@latest add separator
 ```
 
 **검증**:
@@ -154,14 +154,14 @@ ls src/components/ui/separator.tsx
 ---
 
 ### Task 1.5: React Router 설치
-- [ ] **상태**: 미완료
-- **완료 시각**:
+- [x] **상태**: 완료
+- **완료 시각**: 2025-11-01 16:27
 - **소요 시간**: 약 2분
 - **선행 작업**: Task 1.1 완료 필수
 
 **실행**:
 ```bash
-npm install react-router-dom
+pnpm add react-router-dom
 ```
 
 **검증**:
@@ -177,14 +177,14 @@ cat package.json | grep react-router-dom
 ---
 
 ### Task 1.6: Zustand 설치
-- [ ] **상태**: 미완료
-- **완료 시각**:
+- [x] **상태**: 완료
+- **완료 시각**: 2025-11-01 16:28
 - **소요 시간**: 약 2분
 - **선행 작업**: Task 1.1 완료 필수
 
 **실행**:
 ```bash
-npm install zustand
+pnpm add zustand
 ```
 
 **검증**:
@@ -199,14 +199,14 @@ cat package.json | grep zustand
 ---
 
 ### Task 1.7: Lucide React 아이콘 설치
-- [ ] **상태**: 미완료
-- **완료 시각**:
+- [x] **상태**: 완료
+- **완료 시각**: 2025-11-01 16:29
 - **소요 시간**: 약 2분
 - **선행 작업**: Task 1.1 완료 필수
 
 **실행**:
 ```bash
-npm install lucide-react
+pnpm add lucide-react
 ```
 
 **검증**:
@@ -221,14 +221,14 @@ cat package.json | grep lucide-react
 ---
 
 ### Task 1.8: Phase 1 완료 확인
-- [ ] **상태**: 미완료
-- **완료 시각**:
+- [x] **상태**: 완료
+- **완료 시각**: 2025-11-01 16:30
 - **선행 작업**: Task 1.1-1.7 모두 완료 필수
 
 **검증**:
 ```bash
 # 모든 패키지가 설치되었는지 확인
-npm list react react-dom vite tailwindcss zustand react-router-dom lucide-react
+pnpm list react react-dom vite tailwindcss zustand react-router-dom lucide-react
 ```
 
 **완료 후**:
@@ -236,7 +236,7 @@ npm list react react-dom vite tailwindcss zustand react-router-dom lucide-react
 2. **Phase 1 완료 시각 기록**: (아래에 기록)
 3. 다음: Phase 2 시작
 
-**Phase 1 완료**: ____________ (YYYY-MM-DD HH:MM)
+**Phase 1 완료**: 2025-11-01 16:30
 
 ---
 
@@ -362,8 +362,8 @@ test -d src/types && test -d src/pages && test -d src/store && echo "OK"
 
 **실행**:
 ```bash
-npm install cheerio
-npm install -D @types/node
+pnpm add cheerio
+pnpm add -D @types/node
 ```
 
 **검증**:
@@ -505,7 +505,7 @@ cat scripts/build-config.js | head -10
   "scripts": {
     "dev": "vite",
     "build:config": "node scripts/build-config.js",
-    "build": "npm run build:config && tsc && vite build",
+    "build": "pnpm run build:config && tsc && vite build",
     "preview": "vite preview"
   }
 }
@@ -565,7 +565,7 @@ cat public/docs/react/hooks.html | grep "React Hooks"
 
 **실행**:
 ```bash
-npm run build:config
+pnpm run build:config
 ```
 
 **검증**:
@@ -1050,8 +1050,8 @@ npx tsc --noEmit
 
 **실행**:
 ```bash
-npm run build:config
-npm run dev
+pnpm run build:config
+pnpm run dev
 ```
 
 **검증 체크리스트**:
@@ -1077,8 +1077,8 @@ npm run dev
 
 **실행**:
 ```bash
-npm run build
-npm run preview
+pnpm run build
+pnpm run preview
 ```
 
 **검증**:
@@ -1107,12 +1107,12 @@ npm run preview
 3. GitHub 저장소 연결 (또는 로컬에서 vercel CLI 사용)
 4. 빌드 설정 확인:
    - Framework Preset: Vite
-   - Build Command: `npm run build`
+   - Build Command: `pnpm run build`
    - Output Directory: `dist`
 
 **Vercel CLI 사용 시**:
 ```bash
-npm install -g vercel
+pnpm add -g vercel
 vercel login
 vercel
 ```
