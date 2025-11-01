@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TanStack Query 가이드 모음 - 한글 번역</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', 'Malgun Gothic', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #f5f5f5; 
+            padding: 20px; 
+            line-height: 1.8;
+        }
+        .container { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            background: white; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+            border-radius: 8px; 
+            overflow: hidden; 
+        }
+        .header { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            padding: 50px 40px; 
+            text-align: center; 
+        }
+        .header h1 { font-size: 2.8em; margin-bottom: 15px; font-weight: 700; }
+        .header p { font-size: 1.2em; opacity: 0.95; }
+        .content { padding: 50px 40px; color: #333; }
+        
+        .nav-section {
+            background: #f8f9fa;
+            padding: 30px;
+            margin-bottom: 40px;
+            border-radius: 8px;
+            border-left: 5px solid #667eea;
+        }
+        .nav-section h3 {
+            font-size: 1.4em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .nav-list {
+            list-style: none;
+            padding: 0;
+        }
+        .nav-list li {
+            margin: 10px 0;
+        }
+        .nav-list a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 1.1em;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .nav-list a:hover {
+            color: #764ba2;
+            padding-left: 10px;
+        }
+        
+        .section { 
+            margin-bottom: 60px; 
+            padding-bottom: 60px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .section:last-child {
+            border-bottom: none;
+        }
+        h2 { 
+            font-size: 2.2em; 
+            color: #2c3e50; 
+            margin-bottom: 25px; 
+            padding-bottom: 15px;
+            border-bottom: 4px solid #667eea;
+        }
+        h3 { 
+            font-size: 1.6em; 
+            color: #34495e; 
+            margin: 30px 0 20px 0; 
+        }
+        h4 {
+            font-size: 1.3em;
+            color: #495057;
+            margin: 25px 0 15px 0;
+        }
+        p { 
+            margin-bottom: 18px; 
+            font-size: 1.05em; 
+            text-align: justify;
+            color: #444;
+        }
+        .code-block { 
+            background: #f8f9fa; 
+            border-left: 5px solid #667eea; 
+            padding: 20px; 
+            margin: 20px 0; 
+            border-radius: 6px; 
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace; 
+            font-size: 0.9em; 
+            overflow-x: auto;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .code-block pre { 
+            margin: 0; 
+            white-space: pre; 
+            color: #212529;
+        }
+        .highlight { 
+            background: #fff3cd; 
+            padding: 20px; 
+            border-radius: 6px; 
+            border-left: 5px solid #ffc107; 
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .highlight strong {
+            color: #856404;
+        }
+        .info-box {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+        .info-box strong {
+            color: #0c5460;
+        }
+        .warning-box {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+        .warning-box strong {
+            color: #721c24;
+        }
+        .feature-list { 
+            list-style: none; 
+            padding-left: 0; 
+            margin: 20px 0; 
+        }
+        .feature-list li { 
+            padding: 12px 0 12px 35px; 
+            position: relative;
+            font-size: 1.05em;
+        }
+        .feature-list li:before { 
+            content: "✓"; 
+            position: absolute; 
+            left: 0; 
+            color: #667eea; 
+            font-weight: bold; 
+            font-size: 1.3em; 
+        }
+        .footer { 
+            background: #f8f9fa; 
+            padding: 40px; 
+            border-top: 2px solid #dee2e6; 
+            text-align: center; 
+            color: #666; 
+            font-size: 0.95em; 
+        }
+        .footer p {
+            margin: 8px 0;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) { 
+            .header h1 { font-size: 2em; } 
+            .content { padding: 30px 20px; }
+            h2 { font-size: 1.8em; }
+            h3 { font-size: 1.4em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TanStack Query 가이드 모음</h1>
+            <p>React Query 핵심 기능 완벽 가이드</p>
+        </div>
+        
+        <div class="content">
+            <div class="nav-section">
+                <h3>📚 목차</h3>
+                <ul class="nav-list">
+                    <li><a href="#parallel-queries">1. 병렬 쿼리 (Parallel Queries)</a></li>
+                    <li><a href="#dependent-queries">2. 종속 쿼리 (Dependent Queries)</a></li>
+                    <li><a href="#background-fetching">3. 백그라운드 페칭 인디케이터</a></li>
+                    <li><a href="#window-focus">4. 윈도우 포커스 리페칭</a></li>
+                    <li><a href="#disabling-queries">5. 쿼리 비활성화/일시정지</a></li>
+                    <li><a href="#query-retries">6. 쿼리 재시도</a></li>
+                </ul>
+            </div>
+
+            <!-- Section 1: Parallel Queries -->
+            <div class="section" id="parallel-queries">
+                <h2>1. 병렬 쿼리 (Parallel Queries)</h2>
+                
+                <p>"병렬" 쿼리는 페칭 동시성을 최대화하기 위해 동시에 실행되는 쿼리를 말합니다.</p>
+
+                <h3>동적이지 않은 병렬 쿼리</h3>
+                
+                <p>병렬 쿼리의 개수가 변하지 않는 경우, 병렬 쿼리를 사용하기 위한 특별한 노력이 필요하지 않습니다. TanStack Query의 useQuery와 useInfiniteQuery 훅을 원하는 만큼 나란히 사용하기만 하면 됩니다!</p>
+
+                <div class="code-block">
+                    <pre>function App () {
+  // 다음 쿼리들은 병렬로 실행됩니다
+  const usersQuery = useQuery({ queryKey: ['users'], queryFn: fetchUsers })
+  const teamsQuery = useQuery({ queryKey: ['teams'], queryFn: fetchTeams })
+  const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: fetchProjects })
+  ...
+}</pre>
+                </div>
+
+                <div class="info-box">
+                    <strong>💡 Suspense 모드 사용 시:</strong>
+                    <p>React Query를 suspense 모드에서 사용할 때는 이런 병렬 처리 패턴이 작동하지 않습니다. 첫 번째 쿼리가 내부적으로 promise를 던지고 다른 쿼리들이 실행되기 전에 컴포넌트를 일시 중단시키기 때문입니다. 이를 해결하려면 useSuspenseQueries 훅을 사용하거나(권장), 각 useSuspenseQuery 인스턴스마다 별도의 컴포넌트를 사용하여 병렬 처리를 직접 조율해야 합니다.</p>
+                </div>
+
+                <h3>동적 병렬 쿼리 (useQueries)</h3>
+
+                <p>렌더링마다 실행해야 하는 쿼리의 개수가 변경되는 경우, 훅의 규칙을 위반하게 되므로 수동 쿼리를 사용할 수 없습니다. 대신 TanStack Query는 useQueries 훅을 제공하여, 원하는 만큼의 쿼리를 동적으로 병렬 실행할 수 있게 해줍니다.</p>
+
+                <p>useQueries는 queries 키를 가진 옵션 객체를 받으며, 이 키의 값은 쿼리 객체의 배열입니다. 쿼리 결과의 배열을 반환합니다:</p>
+
+                <div class="code-block">
+                    <pre>function App({ users }) {
+  const userQueries = useQueries({
+    queries: users.map((user) =&gt; {
+      return {
+        queryKey: ['user', user.id],
+        queryFn: () =&gt; fetchUserById(user.id),
+      }
+    }),
+  })
+}</pre>
+                </div>
+            </div>
+
+            <!-- Section 2: Dependent Queries -->
+            <div class="section" id="dependent-queries">
+                <h2>2. 종속 쿼리 (Dependent Queries)</h2>
+                
+                <p>종속(또는 직렬) 쿼리는 이전 쿼리가 완료된 후에 실행되는 쿼리입니다. 이를 구현하려면 enabled 옵션을 사용하여 쿼리가 언제 실행될 준비가 되었는지 알려주기만 하면 됩니다:</p>
+
+                <div class="code-block">
+                    <pre>// 사용자 정보 가져오기
+const { data: user } = useQuery({
+  queryKey: ['user', email],
+  queryFn: getUserByEmail,
+})
+
+const userId = user?.id
+
+// 그 다음 사용자의 프로젝트 가져오기
+const {
+  status,
+  fetchStatus,
+  data: projects,
+} = useQuery({
+  queryKey: ['projects', userId],
+  queryFn: getProjectsByUser,
+  // userId가 존재할 때까지 쿼리가 실행되지 않습니다
+  enabled: !!userId,
+})</pre>
+                </div>
+
+                <h3>쿼리 상태 변화</h3>
+
+                <p>projects 쿼리는 다음 상태로 시작됩니다:</p>
+
+                <div class="code-block">
+                    <pre>status: 'pending'
+isPending: true
+fetchStatus: 'idle'</pre>
+                </div>
+
+                <p>user를 가져오는 즉시 projects 쿼리가 활성화되고 다음 상태로 전환됩니다:</p>
+
+                <div class="code-block">
+                    <pre>status: 'pending'
+isPending: true
+fetchStatus: 'fetching'</pre>
+                </div>
+
+                <p>projects를 가져오면 다음 상태가 됩니다:</p>
+
+                <div class="code-block">
+                    <pre>status: 'success'
+isPending: false
+fetchStatus: 'idle'</pre>
+                </div>
+
+                <h3>동적 병렬 쿼리와의 조합</h3>
+
+                <p>useQueries도 이전 쿼리에 종속될 수 있습니다. 다음은 이를 구현하는 방법입니다:</p>
+
+                <div class="code-block">
+                    <pre>// 사용자 ID 목록 가져오기
+const { data: userIds } = useQuery({
+  queryKey: ['users'],
+  queryFn: getUsersData,
+  select: (users) =&gt; users.map((user) =&gt; user.id),
+})
+
+// 그 다음 사용자들의 메시지 가져오기
+const usersMessages = useQueries({
+  queries: userIds
+    ? userIds.map((id) =&gt; {
+        return {
+          queryKey: ['messages', id],
+          queryFn: () =&gt; getMessagesByUsers(id),
+        }
+      })
+    : [], // userIds가 undefined면 빈 배열이 반환됩니다
+})</pre>
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ 성능 고려사항:</strong>
+                    <p>종속 쿼리는 정의상 요청 워터폴(request waterfall)의 한 형태를 구성하며, 이는 성능에 해로울 수 있습니다. 두 쿼리가 동일한 시간이 걸린다고 가정하면, 병렬로 실행하는 대신 직렬로 실행하면 항상 두 배의 시간이 걸립니다. 특히 지연 시간이 긴 클라이언트에서 발생할 때 더욱 해롭습니다. 가능하다면, 두 쿼리를 병렬로 가져올 수 있도록 백엔드 API를 재구성하는 것이 항상 더 좋지만, 항상 실용적으로 가능한 것은 아닙니다.</p>
+                    <p>위의 예에서 getUserByEmail을 먼저 가져온 다음 getProjectsByUser를 가져오는 대신, getProjectsByUserEmail이라는 새로운 쿼리를 도입하면 워터폴을 평평하게 만들 수 있습니다.</p>
+                </div>
+            </div>
+
+            <!-- Section 3: Background Fetching Indicators -->
+            <div class="section" id="background-fetching">
+                <h2>3. 백그라운드 페칭 인디케이터</h2>
+                
+                <p>쿼리의 status === 'pending' 상태는 초기 하드 로딩 상태를 표시하기에 충분하지만, 때때로 쿼리가 백그라운드에서 리페칭되고 있다는 추가 인디케이터를 표시하고 싶을 수 있습니다. 이를 위해 쿼리는 status 변수의 상태와 관계없이 페칭 상태임을 나타내는 isFetching 불리언 값도 제공합니다:</p>
+
+                <div class="code-block">
+                    <pre>function Todos() {
+  const {
+    status,
+    data: todos,
+    error,
+    isFetching,
+  } = useQuery({
+    queryKey: ['todos'],
+    queryFn: fetchTodos,
+  })
+
+  return status === 'pending' ? (
+    &lt;span&gt;Loading...&lt;/span&gt;
+  ) : status === 'error' ? (
+    &lt;span&gt;Error: {error.message}&lt;/span&gt;
+  ) : (
+    &lt;&gt;
+      {isFetching ? &lt;div&gt;Refreshing...&lt;/div&gt; : null}
+
+      &lt;div&gt;
+        {todos.map((todo) =&gt; (
+          &lt;Todo todo={todo} /&gt;
+        ))}
+      &lt;/div&gt;
+    &lt;/&gt;
+  )
+}</pre>
+                </div>
+
+                <h3>전역 백그라운드 페칭 인디케이터</h3>
+
+                <p>개별 쿼리 로딩 상태 외에도, 백그라운드에서 어떤 쿼리라도 페칭 중일 때 전역 로딩 인디케이터를 표시하고 싶다면 useIsFetching 훅을 사용할 수 있습니다:</p>
+
+                <div class="code-block">
+                    <pre>import { useIsFetching } from '@tanstack/react-query'
+
+function GlobalLoadingIndicator() {
+  const isFetching = useIsFetching()
+
+  return isFetching ? (
+    &lt;div&gt;Queries are fetching in the background...&lt;/div&gt;
+  ) : null
+}</pre>
+                </div>
+            </div>
+
+            <!-- Section 4: Window Focus Refetching -->
+            <div class="section" id="window-focus">
+                <h2>4. 윈도우 포커스 리페칭</h2>
+                
+                <p>사용자가 애플리케이션을 떠났다가 돌아왔을 때 쿼리 데이터가 오래된 경우, TanStack Query는 백그라운드에서 자동으로 새로운 데이터를 요청합니다. refetchOnWindowFocus 옵션을 사용하여 전역적으로 또는 쿼리별로 이 기능을 비활성화할 수 있습니다:</p>
+
+                <h3>전역 설정</h3>
+
+                <div class="code-block">
+                    <pre>const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false, // 기본값: true
+    },
+  },
+})
+
+function App() {
+  return &lt;QueryClientProvider client={queryClient}&gt;...&lt;/QueryClientProvider&gt;
+}</pre>
+                </div>
+
+                <h3>쿼리별 설정</h3>
+
+                <div class="code-block">
+                    <pre>useQuery({
+  queryKey: ['todos'],
+  queryFn: fetchTodos,
+  refetchOnWindowFocus: false,
+})</pre>
+                </div>
+
+                <h3>커스텀 윈도우 포커스 이벤트</h3>
+
+                <p>드문 경우지만, TanStack Query가 재검증을 트리거하는 자체 윈도우 포커스 이벤트를 관리하고 싶을 수 있습니다. 이를 위해 TanStack Query는 focusManager.setEventListener 함수를 제공하며, 이 함수는 윈도우가 포커스될 때 실행되어야 하는 콜백을 제공하고 자체 이벤트를 설정할 수 있게 해줍니다. 다음은 기본 핸들러의 예입니다:</p>
+
+                <div class="code-block">
+                    <pre>focusManager.setEventListener((handleFocus) =&gt; {
+  // visibilitychange 이벤트 리스닝
+  if (typeof window !== 'undefined' &amp;&amp; window.addEventListener) {
+    const visibilitychangeHandler = () =&gt; {
+      handleFocus(document.visibilityState === 'visible')
+    }
+    
+    window.addEventListener('visibilitychange', visibilitychangeHandler, false)
+    
+    return () =&gt; {
+      // 새 핸들러가 설정되면 반드시 구독 취소
+      window.removeEventListener('visibilitychange', visibilitychangeHandler)
+    }
+  }
+})</pre>
+                </div>
+
+                <h3>React Native에서의 포커스 관리</h3>
+
+                <p>React Native는 window의 이벤트 리스너 대신 AppState 모듈을 통해 포커스 정보를 제공합니다. AppState의 "change" 이벤트를 사용하여 앱 상태가 "active"로 변경될 때 업데이트를 트리거할 수 있습니다:</p>
+
+                <div class="code-block">
+                    <pre>import { AppState } from 'react-native'
+import { focusManager } from '@tanstack/react-query'
+
+function onAppStateChange(status: AppStateStatus) {
+  if (Platform.OS !== 'web') {
+    focusManager.setFocused(status === 'active')
+  }
+}
+
+useEffect(() =&gt; {
+  const subscription = AppState.addEventListener('change', onAppStateChange)
+  
+  return () =&gt; subscription.remove()
+}, [])</pre>
+                </div>
+
+                <h3>포커스 상태 수동 관리</h3>
+
+                <div class="code-block">
+                    <pre>import { focusManager } from '@tanstack/react-query'
+
+// 기본 포커스 상태 재정의
+focusManager.setFocused(true)
+
+// 기본 포커스 체크로 폴백
+focusManager.setFocused(undefined)</pre>
+                </div>
+            </div>
+
+            <!-- Section 5: Disabling/Pausing Queries -->
+            <div class="section" id="disabling-queries">
+                <h2>5. 쿼리 비활성화/일시정지</h2>
+                
+                <p>쿼리가 자동으로 실행되지 않도록 비활성화하고 싶다면 enabled = false 옵션을 사용할 수 있습니다. enabled 옵션은 불리언 값을 반환하는 콜백도 받을 수 있습니다.</p>
+
+                <h3>enabled가 false일 때의 동작:</h3>
+
+                <ul class="feature-list">
+                    <li>쿼리에 캐시된 데이터가 있으면 status === 'success' 또는 isSuccess 상태로 초기화됩니다</li>
+                    <li>쿼리에 캐시된 데이터가 없으면 status === 'pending' 및 fetchStatus === 'idle' 상태로 시작됩니다</li>
+                    <li>쿼리가 마운트 시 자동으로 가져오지 않습니다</li>
+                    <li>백그라운드에서 쿼리가 자동으로 다시 가져오지 않습니다</li>
+                    <li>쿼리가 일반적으로 자동 리페칭을 트리거하는 쿼리 인스턴스의 새 인스턴스가 마운트될 때 무시됩니다</li>
+                    <li>refetch 함수를 사용하여 수동으로 쿼리를 트리거할 수 있습니다</li>
+                </ul>
+
+                <div class="info-box">
+                    <strong>💡 TypeScript 사용자:</strong>
+                    <p>enabled = false 대신 skipToken을 사용하는 것을 선호할 수 있습니다.</p>
+                </div>
+
+                <div class="code-block">
+                    <pre>function Todos() {
+  const { isLoading, isError, data, error, refetch, isFetching } = useQuery({
+    queryKey: ['todos'],
+    queryFn: fetchTodoList,
+    enabled: false,
+  })
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick={() =&gt; refetch()}&gt;Fetch Todos&lt;/button&gt;
+
+      {data ? (
+        &lt;ul&gt;
+          {data.map((todo) =&gt; (
+            &lt;li key={todo.id}&gt;{todo.title}&lt;/li&gt;
+          ))}
+        &lt;/ul&gt;
+      ) : isError ? (
+        &lt;span&gt;Error: {error.message}&lt;/span&gt;
+      ) : isLoading ? (
+        &lt;span&gt;Loading...&lt;/span&gt;
+      ) : (
+        &lt;span&gt;Not ready ...&lt;/span&gt;
+      )}
+
+      &lt;div&gt;{isFetching ? 'Fetching...' : null}&lt;/div&gt;
+    &lt;/div&gt;
+  )
+}</pre>
+                </div>
+
+                <h3>Lazy 쿼리</h3>
+
+                <p>enabled 옵션은 쿼리를 영구적으로 비활성화하는 것뿐만 아니라 나중에 활성화/비활성화하는 데에도 사용할 수 있습니다. 좋은 예는 사용자가 필터 값을 입력한 후에만 첫 번째 요청을 실행하고 싶은 필터 폼입니다:</p>
+
+                <div class="code-block">
+                    <pre>function Todos() {
+  const [filter, setFilter] = React.useState('')
+
+  const { data } = useQuery({
+    queryKey: ['todos', filter],
+    queryFn: () =&gt; fetchTodos(filter),
+    // 필터가 비어있는 동안 비활성화
+    enabled: !!filter,
+  })
+
+  return (
+    &lt;div&gt;
+      {/* 필터를 적용하면 쿼리가 활성화되고 실행됩니다 */}
+      &lt;FiltersForm onApply={setFilter} /&gt;
+      {data &amp;&amp; &lt;TodosTable data={data} /&gt;}
+    &lt;/div&gt;
+  )
+}</pre>
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ 주의사항:</strong>
+                    <p>Lazy 쿼리는 시작부터 status: 'pending' 상태가 됩니다. pending은 아직 데이터가 없다는 것을 의미하기 때문입니다. 기술적으로 사실이지만, 현재 데이터를 가져오고 있지 않으므로(쿼리가 활성화되지 않았으므로) 이 플래그를 사용하여 로딩 스피너를 표시할 수 없을 것입니다.</p>
+                    <p>비활성화된 쿼리나 lazy 쿼리를 사용하는 경우 대신 isLoading 플래그를 사용할 수 있습니다. 이는 다음과 같이 계산되는 파생 플래그입니다: isPending &amp;&amp; isFetching</p>
+                </div>
+
+                <h3>TypeScript에서 skipToken 사용</h3>
+
+                <p>TypeScript를 사용하는 경우 skipToken을 사용하여 쿼리를 비활성화할 수 있습니다. 이는 조건에 따라 쿼리를 비활성화하고 싶지만 쿼리가 타입 안전하도록 유지하고 싶을 때 유용합니다.</p>
+
+                <div class="highlight">
+                    <strong>중요:</strong> useQuery의 refetch는 skipToken과 함께 작동하지 않습니다. 그 외에는 skipToken이 enabled: false와 동일하게 작동합니다.
+                </div>
+
+                <div class="code-block">
+                    <pre>import { skipToken, useQuery } from '@tanstack/react-query'
+
+function Todos() {
+  const [filter, setFilter] = React.useState&lt;string | undefined&gt;()
+
+  const { data } = useQuery({
+    queryKey: ['todos', filter],
+    // 필터가 undefined이거나 비어있는 동안 비활성화
+    queryFn: filter ? () =&gt; fetchTodos(filter) : skipToken,
+  })
+
+  return (
+    &lt;div&gt;
+      {/* 필터를 적용하면 쿼리가 활성화되고 실행됩니다 */}
+      &lt;FiltersForm onApply={setFilter} /&gt;
+      {data &amp;&amp; &lt;TodosTable data={data} /&gt;}
+    &lt;/div&gt;
+  )
+}</pre>
+                </div>
+            </div>
+
+            <!-- Section 6: Query Retries -->
+            <div class="section" id="query-retries">
+                <h2>6. 쿼리 재시도 (Query Retries)</h2>
+                
+                <p>useQuery 쿼리가 실패하면(쿼리 함수가 에러를 던지면), TanStack Query는 해당 쿼리의 요청이 최대 연속 재시도 횟수(기본값 3회)에 도달하지 않았거나 재시도 허용 여부를 결정하는 함수가 제공된 경우 자동으로 쿼리를 재시도합니다.</p>
+
+                <p>재시도는 전역 수준과 개별 쿼리 수준 모두에서 구성할 수 있습니다.</p>
+
+                <div class="info-box">
+                    <strong>💡 서버에서의 기본값:</strong>
+                    <p>서버에서는 서버 렌더링을 가능한 한 빠르게 만들기 위해 재시도가 기본값 0으로 설정됩니다.</p>
+                </div>
+
+                <div class="code-block">
+                    <pre>import { useQuery } from '@tanstack/react-query'
+
+// 특정 쿼리가 특정 횟수만큼 재시도하도록 설정
+const result = useQuery({
+  queryKey: ['todos', 1],
+  queryFn: fetchTodoListPage,
+  retry: 10, // 에러를 표시하기 전에 실패한 요청을 10번 재시도합니다
+})</pre>
+                </div>
+
+                <div class="highlight">
+                    <strong>정보:</strong> error 속성의 내용은 마지막 재시도 시도까지 useQuery의 failureReason 응답 속성의 일부가 됩니다. 따라서 위 예제에서 에러 내용은 처음 9번의 재시도 시도 동안(총 10번 시도) failureReason 속성의 일부가 되며, 모든 재시도 시도 후에도 에러가 지속되면 마지막 시도 후에 error 속성의 일부가 됩니다.
+                </div>
+
+                <h3>재시도 지연</h3>
+
+                <p>기본적으로 TanStack Query의 재시도는 요청이 실패한 직후에 즉시 발생하지 않습니다. 표준적으로 백오프 지연이 각 재시도 시도에 점진적으로 적용됩니다.</p>
+
+                <p>기본 retryDelay는 각 시도마다 두 배로 증가하도록 설정되어 있지만(1000ms부터 시작), 30초를 초과하지 않습니다:</p>
+
+                <div class="code-block">
+                    <pre>// 모든 쿼리에 대한 구성
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retryDelay: (attemptIndex) =&gt; Math.min(1000 * 2 ** attemptIndex, 30000),
+    },
+  },
+})
+
+function App() {
+  return &lt;QueryClientProvider client={queryClient}&gt;...&lt;/QueryClientProvider&gt;
+}</pre>
+                </div>
+
+                <p>권장되지는 않지만, Provider와 개별 쿼리 옵션 모두에서 retryDelay 함수/정수를 재정의할 수 있습니다. 정수로 설정하면 재시도 횟수에 관계없이 지연 시간이 항상 동일합니다:</p>
+
+                <div class="code-block">
+                    <pre>const result = useQuery({
+  queryKey: ['todos'],
+  queryFn: fetchTodoList,
+  retryDelay: 1000, // 재시도 횟수에 관계없이 항상 1000ms를 대기합니다
+})</pre>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>TanStack Query 가이드 모음</strong> - 한글 번역</p>
+            <p>원문 출처:</p>
+            <p>
+                <a href="https://tanstack.com/query/latest/docs/framework/react/guides/parallel-queries" target="_blank">Parallel Queries</a> | 
+                <a href="https://tanstack.com/query/latest/docs/framework/react/guides/dependent-queries" target="_blank">Dependent Queries</a> | 
+                <a href="https://tanstack.com/query/latest/docs/framework/react/guides/background-fetching-indicators" target="_blank">Background Fetching</a>
+            </p>
+            <p>
+                <a href="https://tanstack.com/query/latest/docs/framework/react/guides/window-focus-refetching" target="_blank">Window Focus Refetching</a> | 
+                <a href="https://tanstack.com/query/latest/docs/framework/react/guides/disabling-queries" target="_blank">Disabling Queries</a> | 
+                <a href="https://tanstack.com/query/latest/docs/framework/react/guides/query-retries" target="_blank">Query Retries</a>
+            </p>
+            <p style="margin-top: 20px; color: #999;">번역 및 제작: Claude AI</p>
+        </div>
+    </div>
+</body>
+</html>

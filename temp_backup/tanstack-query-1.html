@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TanStack Query 가이드 - 한글 번역</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', 'Malgun Gothic', Tahoma, sans-serif; 
+            background: #f5f5f5; 
+            padding: 20px; 
+            line-height: 1.8;
+        }
+        .container { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            background: white; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+            border-radius: 8px; 
+            overflow: hidden; 
+        }
+        .header { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            padding: 50px 40px; 
+            text-align: center; 
+        }
+        .header h1 { font-size: 2.8em; margin-bottom: 15px; font-weight: 700; }
+        .header p { font-size: 1.2em; opacity: 0.95; }
+        
+        .toc {
+            background: #f8f9fa;
+            padding: 30px 40px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .toc h2 {
+            font-size: 1.5em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .toc li {
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 1.05em;
+            transition: color 0.2s;
+        }
+        .toc a:hover {
+            color: #764ba2;
+        }
+        
+        .content { padding: 50px 40px; color: #333; }
+        .section { 
+            margin-bottom: 60px; 
+            padding-bottom: 40px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .section:last-child {
+            border-bottom: none;
+        }
+        
+        h2 { 
+            font-size: 2em; 
+            color: #2c3e50; 
+            margin-bottom: 25px; 
+            border-bottom: 3px solid #667eea; 
+            padding-bottom: 12px; 
+            margin-top: 20px;
+        }
+        h3 { 
+            font-size: 1.5em; 
+            color: #34495e; 
+            margin: 30px 0 20px 0; 
+            font-weight: 600;
+        }
+        h4 {
+            font-size: 1.2em;
+            color: #495057;
+            margin: 25px 0 15px 0;
+            font-weight: 600;
+        }
+        
+        p { 
+            margin-bottom: 18px; 
+            font-size: 1.05em; 
+            color: #495057;
+        }
+        
+        .code-block { 
+            background: #282c34; 
+            border-left: 4px solid #667eea; 
+            padding: 20px; 
+            margin: 20px 0; 
+            border-radius: 6px; 
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace; 
+            font-size: 0.9em; 
+            overflow-x: auto;
+            color: #abb2bf;
+        }
+        .code-block pre { 
+            margin: 0; 
+            white-space: pre; 
+            color: #abb2bf;
+        }
+        
+        .highlight { 
+            background: #fff3cd; 
+            padding: 20px; 
+            border-radius: 6px; 
+            border-left: 4px solid #ffc107; 
+            margin: 20px 0; 
+        }
+        .highlight strong {
+            color: #856404;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+        
+        .feature-list { 
+            list-style: none; 
+            padding-left: 0; 
+            margin: 20px 0; 
+        }
+        .feature-list li { 
+            padding: 12px 0 12px 35px; 
+            position: relative;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        .feature-list li:before { 
+            content: "✓"; 
+            position: absolute; 
+            left: 0; 
+            color: #667eea; 
+            font-weight: bold; 
+            font-size: 1.3em; 
+        }
+        
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        li {
+            margin: 8px 0;
+            color: #495057;
+        }
+        
+        .footer { 
+            background: #2c3e50; 
+            color: white;
+            padding: 40px; 
+            text-align: center; 
+        }
+        .footer p {
+            color: #ecf0f1;
+            margin: 8px 0;
+        }
+        .footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) { 
+            .header h1 { font-size: 2em; } 
+            .content { padding: 30px 20px; }
+            .toc { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TanStack Query 완벽 가이드</h1>
+            <p>React Query 핵심 개념 마스터하기</p>
+        </div>
+        
+        <div class="toc">
+            <h2>📑 목차</h2>
+            <ul>
+                <li><a href="#important-defaults">1. 중요한 기본 설정</a></li>
+                <li><a href="#queries">2. 쿼리(Queries)</a></li>
+                <li><a href="#query-keys">3. 쿼리 키(Query Keys)</a></li>
+                <li><a href="#query-functions">4. 쿼리 함수(Query Functions)</a></li>
+                <li><a href="#query-options">5. 쿼리 옵션(Query Options)</a></li>
+                <li><a href="#network-mode">6. 네트워크 모드(Network Mode)</a></li>
+            </ul>
+        </div>
+        
+        <div class="content">
+            <div class="section" id="important-defaults">
+                <h2>1. 중요한 기본 설정 (Important Defaults)</h2>
+                
+                <p>TanStack Query는 처음부터 공격적이지만 합리적인 기본값으로 설정되어 있습니다. 때로는 이러한 기본값이 새로운 사용자를 당황하게 하거나, 모르는 경우 학습/디버깅을 어렵게 만들 수 있습니다. TanStack Query를 계속 배우고 사용하면서 이러한 기본값들을 기억하세요:</p>
+                
+                <h3>staleTime 설정으로 리페치 제어</h3>
+                <p>이러한 동작을 변경하려면 <code>staleTime</code> 옵션을 사용하여 쿼리를 전역적으로 그리고 쿼리별로 설정할 수 있습니다. 더 긴 <code>staleTime</code>을 지정하면 쿼리가 데이터를 자주 다시 가져오지 않습니다.</p>
+                
+                <p><code>staleTime</code>이 설정된 쿼리는 해당 <code>staleTime</code>이 경과하기 전까지 fresh(신선)한 것으로 간주됩니다.</p>
+                
+                <h3>Stale 쿼리가 자동으로 리페치되는 경우</h3>
+                <p>Stale 쿼리는 다음과 같은 경우 백그라운드에서 자동으로 다시 가져옵니다:</p>
+                <ul>
+                    <li>새로운 쿼리 인스턴스가 마운트될 때</li>
+                    <li>윈도우가 다시 포커스될 때</li>
+                    <li>네트워크가 다시 연결될 때</li>
+                    <li>쿼리에 refetch interval이 설정된 경우</li>
+                </ul>
+                
+                <p><code>staleTime</code>을 설정하는 것이 과도한 리페치를 피하는 권장 방법이지만, <code>refetchOnMount</code>, <code>refetchOnWindowFocus</code>, <code>refetchOnReconnect</code>와 같은 옵션을 설정하여 리페치 시점을 커스터마이징할 수도 있습니다.</p>
+                
+                <h3>주기적 리페치</h3>
+                <p>쿼리는 선택적으로 <code>refetchInterval</code>을 사용하여 주기적으로 리페치를 트리거하도록 구성할 수 있으며, 이는 <code>staleTime</code> 설정과는 독립적입니다.</p>
+                
+                <h3>가비지 컬렉션 (Garbage Collection)</h3>
+                <p><code>useQuery</code>, <code>useInfiniteQuery</code> 또는 query observer의 활성 인스턴스가 더 이상 없는 쿼리 결과는 "비활성(inactive)"으로 레이블이 지정되며, 나중에 다시 사용될 경우를 대비하여 캐시에 남아 있습니다.</p>
+                
+                <p>기본적으로 "비활성" 쿼리는 5분 후에 가비지 컬렉션됩니다.</p>
+                
+                <p>이를 변경하려면 쿼리의 기본 <code>gcTime</code>을 <code>1000 * 60 * 5</code> 밀리초가 아닌 다른 값으로 변경할 수 있습니다.</p>
+                
+                <h3>재시도 (Retry)</h3>
+                <p>실패한 쿼리는 UI에 오류를 캡처하고 표시하기 전에 지수 백오프 지연과 함께 자동으로 3번 재시도됩니다.</p>
+                
+                <p>이를 변경하려면 쿼리의 기본 <code>retry</code> 및 <code>retryDelay</code> 옵션을 3과 기본 지수 백오프 함수가 아닌 다른 값으로 변경할 수 있습니다.</p>
+                
+                <h3>구조적 공유 (Structural Sharing)</h3>
+                <p>쿼리 결과는 기본적으로 구조적으로 공유되어 데이터가 실제로 변경되었는지 감지하고, 변경되지 않았다면 데이터 참조가 변경되지 않은 상태로 유지되어 <code>useMemo</code> 및 <code>useCallback</code>과 관련된 값 안정화에 도움이 됩니다. 이 개념이 생소하게 들린다면 걱정하지 마세요! 99.9%의 경우 이를 비활성화할 필요가 없으며, 추가 비용 없이 앱의 성능을 향상시킵니다.</p>
+                
+                <div class="info-box">
+                    <p><strong>참고:</strong> 구조적 공유는 JSON 호환 값에서만 작동하며, 다른 값 타입은 항상 변경된 것으로 간주됩니다. 예를 들어 큰 응답으로 인한 성능 문제가 발생하는 경우 <code>config.structuralSharing</code> 플래그를 사용하여 이 기능을 비활성화할 수 있습니다. JSON 호환되지 않는 값을 쿼리 응답에서 다루고 있으면서 데이터가 변경되었는지 여부를 감지하고 싶다면, <code>config.structuralSharing</code>에 사용자 정의 함수를 제공하여 이전 및 새 응답에서 값을 계산하고 필요에 따라 참조를 유지할 수 있습니다.</p>
+                </div>
+                
+                <p>기본값에 대한 추가 설명은 Community Resources의 다음 문서를 참조하세요.</p>
+            </div>
+            
+            <div class="section" id="queries">
+                <h2>2. 쿼리 (Queries)</h2>
+                
+                <p>쿼리는 고유한 키에 연결된 비동기 데이터 소스에 대한 선언적 종속성입니다. 쿼리는 서버에서 데이터를 가져오기 위해 Promise 기반 메서드(GET 및 POST 메서드 포함)와 함께 사용할 수 있습니다. 메서드가 서버의 데이터를 수정하는 경우 대신 Mutations를 사용하는 것이 좋습니다.</p>
+                
+                <h3>컴포넌트나 커스텀 훅에서 쿼리 구독하기</h3>
+                <p>컴포넌트나 커스텀 훅에서 쿼리를 구독하려면 최소한 다음과 함께 <code>useQuery</code> 훅을 호출하세요:</p>
+                
+                <ul>
+                    <li>쿼리의 고유 키</li>
+                    <li>Promise를 반환하는 함수</li>
+                </ul>
+                
+                <div class="code-block">
+                    <pre>import { useQuery } from '@tanstack/react-query'
+
+function App() {
+  const info = useQuery({ queryKey: ['todos'], queryFn: fetchTodoList })
+}</pre>
+                </div>
+                
+                <p>제공하는 고유 키는 애플리케이션 전체에서 쿼리를 다시 가져오고, 캐싱하고, 공유하는 데 내부적으로 사용됩니다.</p>
+                
+                <h3>쿼리 결과</h3>
+                <p><code>useQuery</code>가 반환하는 쿼리 결과에는 템플릿 작성 및 데이터의 다른 사용에 필요한 쿼리에 대한 모든 정보가 포함되어 있습니다:</p>
+                
+                <div class="code-block">
+                    <pre>const result = useQuery({ queryKey: ['todos'], queryFn: fetchTodoList })</pre>
+                </div>
+                
+                <h3>쿼리 상태</h3>
+                <p>result 객체에는 생산적으로 작업하기 위해 알아야 할 몇 가지 매우 중요한 상태가 포함되어 있습니다. 쿼리는 주어진 순간에 다음 상태 중 하나에만 있을 수 있습니다:</p>
+                
+                <ul class="feature-list">
+                    <li><strong>pending:</strong> 쿼리에 아직 데이터가 없습니다</li>
+                    <li><strong>error:</strong> 쿼리에 오류가 발생했습니다</li>
+                    <li><strong>success:</strong> 쿼리가 성공했고 데이터를 사용할 수 있습니다</li>
+                </ul>
+                
+                <h3>추가 정보</h3>
+                <p>이러한 기본 상태 외에도 쿼리 상태에 따라 더 많은 정보를 사용할 수 있습니다:</p>
+                
+                <ul>
+                    <li><code>error</code> - 쿼리가 error 상태인 경우, error 속성을 통해 오류를 사용할 수 있습니다</li>
+                    <li><code>data</code> - 쿼리가 success 상태인 경우, data 속성을 통해 데이터를 사용할 수 있습니다</li>
+                </ul>
+                
+                <h3>기본 예제</h3>
+                <p>대부분의 쿼리의 경우 일반적으로 <code>isPending</code> 상태를 확인한 다음 <code>isError</code> 상태를 확인하고 마지막으로 데이터를 사용할 수 있다고 가정하고 성공 상태를 렌더링하는 것으로 충분합니다:</p>
+                
+                <div class="code-block">
+                    <pre>function Todos() {
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ['todos'],
+    queryFn: fetchTodoList,
+  })
+
+  if (isPending) {
+    return &lt;span&gt;Loading...&lt;/span&gt;
+  }
+
+  if (isError) {
+    return &lt;span&gt;Error: {error.message}&lt;/span&gt;
+  }
+
+  // 이 시점에서 `isSuccess === true`라고 가정할 수 있습니다
+  return (
+    &lt;ul&gt;
+      {data.map((todo) =&gt; (
+        &lt;li key={todo.id}&gt;{todo.title}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  )
+}</pre>
+                </div>
+                
+                <h3>status 사용하기</h3>
+                <p>불리언이 마음에 들지 않는다면 언제든지 <code>status</code> 상태를 사용할 수도 있습니다:</p>
+                
+                <div class="code-block">
+                    <pre>function Todos() {
+  const { status, data, error } = useQuery({
+    queryKey: ['todos'],
+    queryFn: fetchTodoList,
+  })
+
+  if (status === 'pending') {
+    return &lt;span&gt;Loading...&lt;/span&gt;
+  }
+
+  if (status === 'error') {
+    return &lt;span&gt;Error: {error.message}&lt;/span&gt;
+  }
+
+  // 또한 status === 'success', 하지만 "else" 로직도 작동합니다
+  return (
+    &lt;ul&gt;
+      {data.map((todo) =&gt; (
+        &lt;li key={todo.id}&gt;{todo.title}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  )
+}</pre>
+                </div>
+                
+                <p>TypeScript는 pending 및 error를 확인한 후 데이터에 액세스하는 경우 데이터 타입을 올바르게 좁힙니다.</p>
+                
+                <h3>FetchStatus</h3>
+                <p><code>status</code> 필드 외에도 다음 옵션과 함께 추가 <code>fetchStatus</code> 속성을 얻게 됩니다:</p>
+                
+                <ul class="feature-list">
+                    <li><strong>fetching:</strong> 쿼리가 현재 실행 중입니다</li>
+                    <li><strong>paused:</strong> 쿼리가 실행되려고 했지만 일시 중지되었습니다</li>
+                    <li><strong>idle:</strong> 쿼리가 현재 아무것도 하고 있지 않습니다</li>
+                </ul>
+                
+                <div class="highlight">
+                    <p><strong>중요:</strong> 백그라운드 리페치 및 stale-while-revalidate 로직은 status와 fetchStatus의 모든 조합을 가능하게 합니다. 예를 들어:</p>
+                    <ul>
+                        <li>success 상태의 쿼리는 일반적으로 idle fetchStatus에 있지만 백그라운드 리페치가 발생하면 fetching일 수도 있습니다</li>
+                        <li>데이터가 없는 쿼리는 일반적으로 pending 상태와 fetching fetchStatus에 있지만, 네트워크 연결이 없는 경우 paused일 수도 있습니다</li>
+                    </ul>
+                </div>
+                
+                <p>따라서 쿼리가 데이터를 가져오지 않고도 pending 상태에 있을 수 있다는 점을 기억하세요. 경험상:</p>
+                <ul>
+                    <li><code>status</code>는 data에 대한 정보를 제공합니다: 데이터가 있습니까, 없습니까?</li>
+                    <li><code>fetchStatus</code>는 queryFn에 대한 정보를 제공합니다: 실행 중입니까, 아닙니까?</li>
+                </ul>
+                
+                <p>상태 확인을 수행하는 대안적인 방법은 Community Resources를 참조하세요.</p>
+            </div>
+            
+            <div class="section" id="query-keys">
+                <h2>3. 쿼리 키 (Query Keys)</h2>
+                
+                <p>핵심적으로 TanStack Query는 쿼리 키를 기반으로 쿼리 캐싱을 관리합니다. 쿼리 키는 최상위 레벨에서 배열이어야 하며, 단일 문자열이 있는 배열처럼 간단하거나 많은 문자열과 중첩된 객체가 있는 배열처럼 복잡할 수 있습니다. 쿼리 키가 <code>JSON.stringify</code>를 사용하여 직렬화 가능하고 쿼리의 데이터에 고유한 한 사용할 수 있습니다!</p>
+                
+                <h3>간단한 쿼리 키</h3>
+                <p>가장 간단한 형태의 키는 상수 값이 있는 배열입니다. 이 형식은 다음에 유용합니다:</p>
+                <ul>
+                    <li>일반적인 리스트/인덱스 리소스</li>
+                    <li>계층적이지 않은 리소스</li>
+                </ul>
+                
+                <div class="code-block">
+                    <pre>// 할 일 목록
+useQuery({ queryKey: ['todos'], ... })
+
+// 기타, 무엇이든!
+useQuery({ queryKey: ['something', 'special'], ... })</pre>
+                </div>
+                
+                <h3>변수가 있는 쿼리 키</h3>
+                <p>쿼리가 데이터를 고유하게 설명하기 위해 더 많은 정보가 필요한 경우, 문자열과 직렬화 가능한 객체를 원하는 만큼 포함하는 배열을 사용할 수 있습니다. 이것은 다음에 유용합니다:</p>
+                <ul>
+                    <li>계층적이거나 중첩된 리소스 (ID, 인덱스 또는 기타 기본 키를 전달하는 것이 일반적)</li>
+                    <li>추가 매개변수가 있는 쿼리</li>
+                </ul>
+                
+                <div class="code-block">
+                    <pre>// 개별 할 일
+useQuery({ queryKey: ['todo', 5], ... })
+
+// "미리보기" 형식의 개별 할 일
+useQuery({ queryKey: ['todo', 5, { preview: true }], ...})
+
+// "완료된" 할 일 목록
+useQuery({ queryKey: ['todos', { type: 'done' }], ... })</pre>
+                </div>
+                
+                <h3>쿼리 키는 결정적으로 해시됩니다</h3>
+                <p>이는 객체의 키 순서에 관계없이 다음의 모든 쿼리가 동일하게 간주됨을 의미합니다:</p>
+                
+                <div class="code-block">
+                    <pre>useQuery({ queryKey: ['todos', { status, page }], ... })
+useQuery({ queryKey: ['todos', { page, status }], ...})
+useQuery({ queryKey: ['todos', { page, status, other: undefined }], ... })</pre>
+                </div>
+                
+                <div class="highlight">
+                    <p><strong>주의:</strong> 그러나 다음 쿼리 키는 동일하지 않습니다. 배열 항목 순서가 중요합니다!</p>
+                </div>
+                
+                <div class="code-block">
+                    <pre>useQuery({ queryKey: ['todos', status, page], ... })
+useQuery({ queryKey: ['todos', page, status], ...})
+useQuery({ queryKey: ['todos', undefined, page, status], ...})</pre>
+                </div>
+                
+                <h3>쿼리 함수가 변수에 의존하는 경우</h3>
+                <p>쿼리 키는 가져오는 데이터를 고유하게 설명하므로 변경되는 쿼리 함수에서 사용하는 모든 변수를 포함해야 합니다. 예를 들어:</p>
+                
+                <div class="code-block">
+                    <pre>function Todos({ todoId }) {
+  const result = useQuery({
+    queryKey: ['todos', todoId],
+    queryFn: () =&gt; fetchTodoById(todoId),
+  })
+}</pre>
+                </div>
+                
+                <div class="info-box">
+                    <p><strong>참고:</strong> 쿼리 키는 쿼리 함수의 종속성으로 작동합니다. 쿼리 키에 종속 변수를 추가하면 쿼리가 독립적으로 캐시되고 변수가 변경될 때마다 쿼리가 자동으로 다시 가져오게 됩니다(staleTime 설정에 따라). 자세한 정보 및 예제는 exhaustive-deps 섹션을 참조하세요.</p>
+                </div>
+                
+                <h3>더 큰 애플리케이션에서 쿼리 키 구성</h3>
+                <p>더 큰 애플리케이션에서 쿼리 키를 구성하는 팁은 Effective React Query Keys를 참조하고 Community Resources에서 Query Key Factory Package를 확인하세요.</p>
+            </div>
+            
+            <div class="section" id="query-functions">
+                <h2>4. 쿼리 함수 (Query Functions)</h2>
+                
+                <p>쿼리 함수는 말 그대로 Promise를 반환하는 모든 함수가 될 수 있습니다. 반환되는 Promise는 데이터를 resolve하거나 오류를 throw해야 합니다.</p>
+                
+                <h3>유효한 쿼리 함수 구성</h3>
+                <p>다음은 모두 유효한 쿼리 함수 구성입니다:</p>
+                
+                <div class="code-block">
+                    <pre>useQuery({ queryKey: ['todos'], queryFn: fetchAllTodos })
+useQuery({ queryKey: ['todos', todoId], queryFn: () =&gt; fetchTodoById(todoId) })
+useQuery({
+  queryKey: ['todos', todoId],
+  queryFn: async () =&gt; {
+    const data = await fetchTodoById(todoId)
+    return data
+  },
+})
+useQuery({
+  queryKey: ['todos', todoId],
+  queryFn: ({ queryKey }) =&gt; fetchTodoById(queryKey[1]),
+})</pre>
+                </div>
+                
+                <h3>오류 처리</h3>
+                <p>TanStack Query가 쿼리에 오류가 발생했다고 판단하려면 쿼리 함수가 throw하거나 거부된 Promise를 반환해야 합니다. 쿼리 함수에서 throw된 모든 오류는 쿼리의 error 상태에 유지됩니다.</p>
+                
+                <div class="code-block">
+                    <pre>const { error } = useQuery({
+  queryKey: ['todos', todoId],
+  queryFn: async () =&gt; {
+    if (somethingGoesWrong) {
+      throw new Error('Oh no!')
+    }
+    if (somethingElseGoesWrong) {
+      return Promise.reject(new Error('Oh no!'))
+    }
+    return data
+  },
+})</pre>
+                </div>
+                
+                <h3>fetch API 사용 시 주의사항</h3>
+                <p>axios나 graphql-request와 같은 대부분의 유틸리티는 실패한 HTTP 호출에 대해 자동으로 오류를 throw하지만, fetch와 같은 일부 유틸리티는 기본적으로 오류를 throw하지 않습니다. 그런 경우 직접 throw해야 합니다. 다음은 인기 있는 fetch API로 이를 수행하는 간단한 방법입니다:</p>
+                
+                <div class="code-block">
+                    <pre>useQuery({
+  queryKey: ['todos', todoId],
+  queryFn: async () =&gt; {
+    const response = await fetch('/todos/' + todoId)
+    if (!response.ok) {
+      throw new Error('Network response was not ok')
+    }
+    return response.json()
+  },
+})</pre>
+                </div>
+                
+                <h3>QueryFunctionContext 사용하기</h3>
+                <p>쿼리 키는 가져오는 데이터를 고유하게 식별하는 것뿐만 아니라 QueryFunctionContext의 일부로 쿼리 함수에 편리하게 전달됩니다. 항상 필요한 것은 아니지만 필요한 경우 쿼리 함수를 추출할 수 있습니다:</p>
+                
+                <div class="code-block">
+                    <pre>function Todos({ status, page }) {
+  const result = useQuery({
+    queryKey: ['todos', { status, page }],
+    queryFn: fetchTodoList,
+  })
+}
+
+// 쿼리 함수에서 key, status 및 page 변수에 액세스합니다!
+function fetchTodoList({ queryKey }) {
+  const [_key, { status, page }] = queryKey
+  return new Promise()
+}</pre>
+                </div>
+                
+                <h3>QueryFunctionContext</h3>
+                <p>QueryFunctionContext는 각 쿼리 함수에 전달되는 객체입니다. 여기에는 다음이 포함됩니다:</p>
+                
+                <ul class="feature-list">
+                    <li><strong>queryKey:</strong> 쿼리 키</li>
+                    <li><strong>signal:</strong> AbortSignal 인스턴스 (쿼리 취소용)</li>
+                    <li><strong>meta:</strong> 쿼리에 대한 추가 정보가 포함된 선택적 필드</li>
+                </ul>
+                
+                <p>또한 Infinite Queries는 다음 옵션이 전달됩니다:</p>
+                <ul>
+                    <li><strong>pageParam:</strong> 현재 페이지를 가져오는 데 사용되는 페이지 매개변수</li>
+                    <li><strong>direction:</strong> 현재 페이지를 가져오는 방향</li>
+                </ul>
+            </div>
+            
+            <div class="section" id="query-options">
+                <h2>5. 쿼리 옵션 (Query Options)</h2>
+                
+                <p><code>queryKey</code>와 <code>queryFn</code>을 여러 위치 간에 공유하면서도 서로 같은 위치에 배치하는 가장 좋은 방법 중 하나는 <code>queryOptions</code> 헬퍼를 사용하는 것입니다. 런타임에 이 헬퍼는 전달한 내용을 그대로 반환하지만, TypeScript와 함께 사용할 때 많은 장점이 있습니다. 하나의 장소에서 쿼리에 대한 모든 가능한 옵션을 정의할 수 있으며 모든 옵션에 대해 타입 추론과 타입 안전성을 얻을 수 있습니다.</p>
+                
+                <h3>queryOptions 사용 예제</h3>
+                
+                <div class="code-block">
+                    <pre>import { queryOptions } from '@tanstack/react-query'
+
+function groupOptions(id: number) {
+  return queryOptions({
+    queryKey: ['groups', id],
+    queryFn: () =&gt; fetchGroups(id),
+    staleTime: 5 * 1000,
+  })
+}
+
+// 사용법:
+useQuery(groupOptions(1))
+useSuspenseQuery(groupOptions(5))
+useQueries({
+  queries: [groupOptions(1), groupOptions(2)],
+})
+queryClient.prefetchQuery(groupOptions(23))
+queryClient.setQueryData(groupOptions(42).queryKey, newGroups)</pre>
+                </div>
+                
+                <div class="info-box">
+                    <p><strong>참고:</strong> Infinite Queries의 경우 별도의 <code>infiniteQueryOptions</code> 헬퍼를 사용할 수 있습니다.</p>
+                </div>
+                
+                <h3>컴포넌트 레벨에서 옵션 재정의</h3>
+                <p>컴포넌트 레벨에서 일부 옵션을 재정의할 수도 있습니다. 매우 일반적이고 유용한 패턴은 컴포넌트별 select 함수를 만드는 것입니다:</p>
+                
+                <div class="code-block">
+                    <pre>// 타입 추론이 여전히 작동하므로 query.data는 
+// queryFn 대신 select의 반환 타입이 됩니다
+const query = useQuery({
+  ...groupOptions(1),
+  select: (data) =&gt; data.groupName,
+})</pre>
+                </div>
+                
+                <div class="highlight">
+                    <p><strong>팁:</strong> 이 패턴을 사용하면 쿼리 설정을 중앙 집중화하면서도 각 컴포넌트의 요구사항에 맞게 유연하게 조정할 수 있습니다. 특히 대규모 애플리케이션에서 코드 재사용성과 유지보수성을 크게 향상시킵니다.</p>
+                </div>
+            </div>
+            
+            <div class="section" id="network-mode">
+                <h2>6. 네트워크 모드 (Network Mode)</h2>
+                
+                <p>TanStack Query는 네트워크 연결이 없을 때 Queries와 Mutations가 어떻게 동작해야 하는지 구분하기 위해 세 가지 다른 네트워크 모드를 제공합니다. 이 모드는 각 Query/Mutation에 대해 개별적으로 설정하거나 query/mutation 기본값을 통해 전역적으로 설정할 수 있습니다.</p>
+                
+                <p>TanStack Query는 데이터 페칭 라이브러리와 함께 사용되는 경우가 가장 많으므로 기본 네트워크 모드는 online입니다.</p>
+                
+                <h3>online 모드</h3>
+                <p>이 모드에서는 네트워크 연결이 있어야만 Queries와 Mutations가 실행됩니다. 이것이 기본 모드입니다. 쿼리에 대한 fetch가 시작되면 네트워크 연결이 없어서 fetch를 수행할 수 없는 경우 현재 상태(pending, error, success)를 유지합니다. 그러나 fetchStatus가 추가로 노출됩니다. 이것은 다음 중 하나일 수 있습니다:</p>
+                
+                <ul class="feature-list">
+                    <li><strong>fetching:</strong> queryFn이 실제로 실행 중 - 요청이 진행 중입니다</li>
+                    <li><strong>paused:</strong> 쿼리가 실행되지 않음 - 네트워크 연결이 없어서 일시 중지되었습니다</li>
+                    <li><strong>idle:</strong> 쿼리가 현재 아무것도 하고 있지 않습니다</li>
+                </ul>
+                
+                <p><code>isFetching</code> 및 <code>isPaused</code> 플래그는 이 상태에서 파생되어 편의를 위해 노출됩니다.</p>
+                
+                <div class="highlight">
+                    <p><strong>중요:</strong> 로딩 스피너를 표시하기 위해 pending 상태를 확인하는 것만으로는 충분하지 않을 수 있습니다. 쿼리가 처음 마운트되고 네트워크 연결이 없는 경우 <code>state: 'pending'</code>이지만 <code>fetchStatus: 'paused'</code>일 수 있습니다.</p>
+                </div>
+                
+                <h3>재연결 시 쿼리 계속하기</h3>
+                <p>온라인 상태에서 쿼리가 실행되지만 fetch가 진행되는 동안 오프라인이 되면 TanStack Query도 재시도 메커니즘을 일시 중지합니다. 일시 중지된 쿼리는 네트워크 연결을 다시 얻으면 계속 실행됩니다. 이는 <code>refetchOnReconnect</code>와는 독립적입니다(이 모드에서도 기본값은 true). 이는 리페치가 아니라 계속이기 때문입니다. 그 사이에 쿼리가 취소된 경우 계속되지 않습니다.</p>
+                
+                <h3>always 모드</h3>
+                <p>이 모드에서는 TanStack Query가 항상 fetch를 수행하며 온라인/오프라인 상태를 무시합니다. TanStack Query를 활성 네트워크 연결이 필요하지 않은 환경에서 사용하는 경우 이 모드를 선택하고 싶을 것입니다. 예를 들어:</p>
+                <ul>
+                    <li>AsyncStorage에서 읽기만 하는 경우</li>
+                    <li>queryFn에서 <code>Promise.resolve(5)</code>를 반환하고 싶은 경우</li>
+                </ul>
+                
+                <h3>offlineFirst 모드</h3>
+                <p>이 모드는 처음 두 옵션의 중간 지점으로, TanStack Query가 queryFn을 한 번 실행하지만 재시도를 일시 중지합니다. 이것은 오프라인 우선 PWA에서처럼 캐싱을 위해 요청을 가로채는 serviceWorker가 있거나 Cache-Control 헤더를 통한 HTTP 캐싱을 사용하는 경우 매우 편리합니다.</p>
+                
+                <p>이러한 상황에서 첫 번째 fetch는 오프라인 저장소/캐시에서 나오기 때문에 성공할 수 있습니다. 그러나 캐시 미스가 있으면 네트워크 요청이 나가서 실패하고, 이 경우 이 모드는 온라인 쿼리처럼 동작하여 재시도를 일시 중지합니다.</p>
+                
+                <h3>Devtools</h3>
+                <p>TanStack Query Devtools는 fetch를 시도하지만 네트워크 연결이 없는 경우 일시 중지 상태의 쿼리를 표시합니다. 오프라인 동작을 Mock하는 토글 버튼도 있습니다. 이 버튼은 실제로 네트워크 연결을 건드리지 않지만(브라우저 개발자 도구에서 할 수 있음) OnlineManager를 오프라인 상태로 설정합니다.</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <h3>TanStack Query 완벽 가이드 - 한글 번역</h3>
+            <p>원문 출처:</p>
+            <ul style="list-style: none; padding: 0; margin: 10px 0;">
+                <li><a href="https://tanstack.com/query/latest/docs/framework/react/guides/important-defaults" target="_blank">Important Defaults</a></li>
+                <li><a href="https://tanstack.com/query/latest/docs/framework/react/guides/queries" target="_blank">Queries</a></li>
+                <li><a href="https://tanstack.com/query/latest/docs/framework/react/guides/query-keys" target="_blank">Query Keys</a></li>
+                <li><a href="https://tanstack.com/query/latest/docs/framework/react/guides/query-functions" target="_blank">Query Functions</a></li>
+                <li><a href="https://tanstack.com/query/latest/docs/framework/react/guides/query-options" target="_blank">Query Options</a></li>
+                <li><a href="https://tanstack.com/query/latest/docs/framework/react/guides/network-mode" target="_blank">Network Mode</a></li>
+            </ul>
+            <p style="margin-top: 20px;">이 문서는 학습 목적으로 번역되었습니다.</p>
+        </div>
+    </div>
+</body>
+</html>
