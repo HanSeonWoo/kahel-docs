@@ -71,4 +71,11 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
   }
+  
+  /* 모바일 사이드바 배경색 보장 */
+  @media (max-width: 768px) {
+    aside[role="complementary"] {
+      background-color: hsl(var(--card)) !important;
+    }
+  }
 }

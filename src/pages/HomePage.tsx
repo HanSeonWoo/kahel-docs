@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useConfig } from '../hooks/use-config';
 import { Card, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
-import { Separator } from '../components/ui/separator';
-import { FileText, Home as HomeIcon, BookOpen, Code, Layers } from 'lucide-react';
+import { FileText, Home as HomeIcon, BookOpen, Code, Layers, Package, Smartphone, Database, Video } from 'lucide-react';
 
 export function HomePage() {
   const { config, loading, error } = useConfig();
@@ -23,18 +22,18 @@ export function HomePage() {
     );
   }
 
-  const getCategoryIcon = (categoryId: string) => {
-    switch (categoryId) {
-      case 'python':
-      case 'react':
-      case 'vue':
-        return <Code className="w-5 h-5" />;
-      case 'tanstack-query':
-      case 'webrtc':
-        return <Layers className="w-5 h-5" />;
-      default:
-        return <BookOpen className="w-5 h-5" />;
-    }
+  const getCategoryIcon = (iconName?: string) => {
+    const iconMap: Record<string, JSX.Element> = {
+      Package: <Package className="w-5 h-5" />,
+      Smartphone: <Smartphone className="w-5 h-5" />,
+      Database: <Database className="w-5 h-5" />,
+      Video: <Video className="w-5 h-5" />,
+      Code: <Code className="w-5 h-5" />,
+      Layers: <Layers className="w-5 h-5" />,
+      BookOpen: <BookOpen className="w-5 h-5" />,
+    };
+
+    return iconMap[iconName || 'BookOpen'] || <BookOpen className="w-5 h-5" />;
   };
 
   return (
@@ -43,8 +42,8 @@ export function HomePage() {
       <header className="border-b border-border bg-card">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <HomeIcon className="w-4 h-4" />
-            <span className="font-medium text-foreground">Docs Hub</span>
+            <HomeIcon className="w-6 h-6" />
+            <span className="font-medium text-foreground">kahel-docs</span>
           </div>
         </div>
       </header>
@@ -54,10 +53,10 @@ export function HomePage() {
         {/* 헤더 섹션 */}
         <div className="mb-16">
           <h1 className="text-4xl font-bold text-foreground mb-3">
-            기술 문서 허브
+            개인 학습 문서 저장소
           </h1>
           <p className="text-lg text-muted-foreground">
-            프로젝트에 필요한 기술 문서를 카테고리별로 쉽게 찾아보세요
+            익히고 기억하고자 하는 기술 문서와 블로그 글을 번역하고 정리한 저장소입니다
           </p>
         </div>
 
@@ -74,7 +73,7 @@ export function HomePage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
-                          {getCategoryIcon(category.id)}
+                          {getCategoryIcon(category.icon)}
                         </div>
                         <CardTitle className="text-lg font-semibold">
                           {category.name}

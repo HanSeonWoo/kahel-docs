@@ -14,6 +14,7 @@ export interface Category {
   path: string;
   documentCount: number;
   documents: Document[];
+  icon?: string;
 }
 
 export interface Config {
