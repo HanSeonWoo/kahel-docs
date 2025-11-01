@@ -1,12 +1,45 @@
 {
   "categories": [
     {
-      "id": "package-manager",
-      "name": "Package-manager",
-      "description": "package-manager 관련 문서 모음",
-      "path": "package-manager",
+      "id": "ai",
+      "name": "Ai",
+      "description": "ai 관련 문서 모음",
+      "path": "ai",
       "documentCount": 0,
       "documents": []
+    },
+    {
+      "id": "animation",
+      "name": "Animation",
+      "description": "animation 관련 문서 모음",
+      "path": "animation",
+      "documentCount": 0,
+      "documents": []
+    },
+    {
+      "id": "etc",
+      "name": "Etc",
+      "description": "etc 관련 문서 모음",
+      "path": "etc",
+      "documentCount": 2,
+      "documents": [
+        {
+          "id": "tanstack-query-1",
+          "title": "TanStack Query 가이드 - 한글 번역",
+          "description": "",
+          "date": "2025-11-01",
+          "path": "etc/tanstack-query-1.html",
+          "category": "etc"
+        },
+        {
+          "id": "tanstack_query_2",
+          "title": "TanStack Query 가이드 모음 - 한글 번역",
+          "description": "",
+          "date": "2025-11-01",
+          "path": "etc/tanstack_query_2.html",
+          "category": "etc"
+        }
+      ]
     },
     {
       "id": "react-native",
@@ -17,29 +50,12 @@
       "documents": []
     },
     {
-      "id": "tanstack-query",
-      "name": "Tanstack-query",
-      "description": "tanstack-query 관련 문서 모음",
-      "path": "tanstack-query",
-      "documentCount": 2,
-      "documents": [
-        {
-          "id": "tanstack-query-1",
-          "title": "TanStack Query 가이드 - 한글 번역",
-          "description": "",
-          "date": "2025-11-01",
-          "path": "tanstack-query/tanstack-query-1.html",
-          "category": "tanstack-query"
-        },
-        {
-          "id": "tanstack_query_2",
-          "title": "TanStack Query 가이드 모음 - 한글 번역",
-          "description": "",
-          "date": "2025-11-01",
-          "path": "tanstack-query/tanstack_query_2.html",
-          "category": "tanstack-query"
-        }
-      ]
+      "id": "test",
+      "name": "Test",
+      "description": "test 관련 문서 모음",
+      "path": "test",
+      "documentCount": 0,
+      "documents": []
     },
     {
       "id": "webrtc",
@@ -54,19 +70,19 @@
     {
       "id": "tanstack-query-1",
       "title": "TanStack Query 가이드 - 한글 번역",
-      "category": "tanstack-query",
+      "category": "etc",
       "date": "2025-11-01"
     },
     {
       "id": "tanstack_query_2",
       "title": "TanStack Query 가이드 모음 - 한글 번역",
-      "category": "tanstack-query",
+      "category": "etc",
       "date": "2025-11-01"
     }
   ],
   "metadata": {
     "totalDocuments": 2,
-    "totalCategories": 4,
-    "lastUpdated": "2025-11-01T09:24:36.524Z"
+    "totalCategories": 6,
+    "lastUpdated": "2025-11-01T09:54:45.107Z"
   }
 }
