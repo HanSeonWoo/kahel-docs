@@ -1,0 +1,50 @@
+{
+  "categories": [
+    {
+      "id": "python",
+      "name": "Python",
+      "description": "python 관련 문서 모음",
+      "path": "python",
+      "documentCount": 0,
+      "documents": []
+    },
+    {
+      "id": "react",
+      "name": "React",
+      "description": "react 관련 문서 모음",
+      "path": "react",
+      "documentCount": 1,
+      "documents": [
+        {
+          "id": "hooks",
+          "title": "React Hooks 완벽 가이드",
+          "description": "React Hooks의 모든 것을 다루는 종합 가이드",
+          "date": "2025-01-15",
+          "path": "react/hooks.html",
+          "category": "react"
+        }
+      ]
+    },
+    {
+      "id": "vue",
+      "name": "Vue",
+      "description": "vue 관련 문서 모음",
+      "path": "vue",
+      "documentCount": 0,
+      "documents": []
+    }
+  ],
+  "recentDocuments": [
+    {
+      "id": "hooks",
+      "title": "React Hooks 완벽 가이드",
+      "category": "react",
+      "date": "2025-01-15"
+    }
+  ],
+  "metadata": {
+    "totalDocuments": 1,
+    "totalCategories": 3,
+    "lastUpdated": "2025-11-01T07:44:41.610Z"
+  }
+}
