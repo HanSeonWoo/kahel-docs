@@ -1,50 +1,72 @@
 {
   "categories": [
     {
-      "id": "python",
-      "name": "Python",
-      "description": "python 관련 문서 모음",
-      "path": "python",
+      "id": "package-manager",
+      "name": "Package-manager",
+      "description": "package-manager 관련 문서 모음",
+      "path": "package-manager",
       "documentCount": 0,
       "documents": []
     },
     {
-      "id": "react",
-      "name": "React",
-      "description": "react 관련 문서 모음",
-      "path": "react",
-      "documentCount": 1,
+      "id": "react-native",
+      "name": "React-native",
+      "description": "react-native 관련 문서 모음",
+      "path": "react-native",
+      "documentCount": 0,
+      "documents": []
+    },
+    {
+      "id": "tanstack-query",
+      "name": "Tanstack-query",
+      "description": "tanstack-query 관련 문서 모음",
+      "path": "tanstack-query",
+      "documentCount": 2,
       "documents": [
         {
-          "id": "hooks",
-          "title": "React Hooks 완벽 가이드",
-          "description": "React Hooks의 모든 것을 다루는 종합 가이드",
-          "date": "2025-01-15",
-          "path": "react/hooks.html",
-          "category": "react"
+          "id": "tanstack-query-1",
+          "title": "TanStack Query 가이드 - 한글 번역",
+          "description": "",
+          "date": "2025-11-01",
+          "path": "tanstack-query/tanstack-query-1.html",
+          "category": "tanstack-query"
+        },
+        {
+          "id": "tanstack_query_2",
+          "title": "TanStack Query 가이드 모음 - 한글 번역",
+          "description": "",
+          "date": "2025-11-01",
+          "path": "tanstack-query/tanstack_query_2.html",
+          "category": "tanstack-query"
         }
       ]
     },
     {
-      "id": "vue",
-      "name": "Vue",
-      "description": "vue 관련 문서 모음",
-      "path": "vue",
+      "id": "webrtc",
+      "name": "Webrtc",
+      "description": "webrtc 관련 문서 모음",
+      "path": "webrtc",
       "documentCount": 0,
       "documents": []
     }
   ],
   "recentDocuments": [
     {
-      "id": "hooks",
-      "title": "React Hooks 완벽 가이드",
-      "category": "react",
-      "date": "2025-01-15"
+      "id": "tanstack-query-1",
+      "title": "TanStack Query 가이드 - 한글 번역",
+      "category": "tanstack-query",
+      "date": "2025-11-01"
+    },
+    {
+      "id": "tanstack_query_2",
+      "title": "TanStack Query 가이드 모음 - 한글 번역",
+      "category": "tanstack-query",
+      "date": "2025-11-01"
     }
   ],
   "metadata": {
-    "totalDocuments": 1,
-    "totalCategories": 3,
-    "lastUpdated": "2025-11-01T07:52:24.688Z"
+    "totalDocuments": 2,
+    "totalCategories": 4,
+    "lastUpdated": "2025-11-01T08:27:25.554Z"
   }
 }
