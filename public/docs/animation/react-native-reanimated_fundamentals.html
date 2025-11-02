@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>(번역) React Native Reanimated - Fundamentals</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #f5f5f5; 
+            padding: 20px; 
+        }
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: white; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+            border-radius: 8px; 
+            overflow: hidden; 
+        }
+        .header { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            padding: 40px 30px; 
+            text-align: center; 
+        }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { font-size: 1.1em; opacity: 0.95; }
+        .content { padding: 40px; line-height: 1.8; color: #333; }
+        .section { margin-bottom: 50px; padding-bottom: 30px; border-bottom: 1px solid #eee; }
+        .section:last-child { border-bottom: none; }
+        .doc-title {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+        h2 { 
+            font-size: 1.8em; 
+            color: #2c3e50; 
+            margin-top: 30px;
+            margin-bottom: 20px; 
+            border-bottom: 2px solid #667eea; 
+            padding-bottom: 10px; 
+        }
+        h3 { 
+            font-size: 1.3em; 
+            color: #34495e; 
+            margin: 25px 0 15px 0; 
+        }
+        p { margin-bottom: 15px; font-size: 1em; }
+        .code-block { 
+            background: #f8f9fa; 
+            border-left: 4px solid #667eea; 
+            padding: 15px; 
+            margin: 15px 0; 
+            border-radius: 4px; 
+            font-family: 'Monaco', 'Courier New', monospace; 
+            font-size: 0.85em; 
+            overflow-x: auto; 
+        }
+        .code-block pre { 
+            margin: 0; 
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+        }
+        .highlight { 
+            background: #fff3cd; 
+            padding: 15px; 
+            border-radius: 4px; 
+            border-left: 4px solid #ffc107; 
+            margin: 15px 0; 
+        }
+        .feature-list { 
+            list-style: none; 
+            padding-left: 0; 
+            margin: 15px 0; 
+        }
+        .feature-list li { 
+            padding: 10px 0 10px 30px; 
+            position: relative; 
+        }
+        .feature-list li:before { 
+            content: "✓"; 
+            position: absolute; 
+            left: 0; 
+            color: #667eea; 
+            font-weight: bold; 
+            font-size: 1.2em; 
+        }
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .footer { 
+            background: #f8f9fa; 
+            padding: 30px; 
+            border-top: 1px solid #ddd; 
+            text-align: center; 
+            color: #666; 
+            font-size: 0.9em; 
+        }
+        @media (max-width: 768px) { 
+            .header h1 { font-size: 1.8em; } 
+            .content { padding: 20px; } 
+        }
+        strong { color: #2c3e50; }
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>React Native Reanimated 기초 가이드</h1>
+            <p>완전한 애니메이션 라이브러리 학습 가이드</p>
+        </div>
+        <div class="content">
+            <!-- 문서 1: Getting Started -->
+            <div class="section">
+                <h1 class="doc-title">시작하기</h1>
+                
+                <p>기초 섹션의 목표는 Reanimated의 핵심 개념에 대한 강력한 기초를 다지고, 더 고급 사용 사례를 스스로 탐색할 수 있는 자신감을 갖도록 돕는 것입니다. 이 섹션은 인터랙티브 예제, 코드 스니펫, 설명으로 가득합니다. 준비되셨나요? 시작해봅시다!</p>
+
+                <h2>React Native Reanimated란 무엇인가?</h2>
+                <p>React Native Reanimated는 Software Mansion에서 제작한 강력한 애니메이션 라이브러리입니다.</p>
+                <p>Reanimated를 사용하면 UI 스레드에서 실행되는 부드러운 애니메이션과 인터랙션을 쉽게 만들 수 있습니다.</p>
+
+                <h2>필수 조건</h2>
+                <p>Reanimated 4.x는 React Native New Architecture (Fabric)에서만 작동합니다.</p>
+                <p>앱이 여전히 구 아키텍처를 사용하는 경우, 여전히 적극적으로 유지보수되는 버전 3의 Reanimated를 사용할 수 있습니다.</p>
+                <p>또는 GitHub에서 제공하는 예제를 살펴볼 수 있습니다.</p>
+
+                <h2>설치</h2>
+                <p>Expo 프로젝트에 Reanimated 4를 추가하는 데는 두 단계가 필요합니다:</p>
+
+                <h3>1단계: 패키지 설치</h3>
+                <p>npm에서 <code>react-native-reanimated</code>와 <code>react-native-worklets</code> 패키지를 설치합니다:</p>
+
+                <div class="code-block">
+<pre>npm install react-native-reanimated
+yarn add react-native-reanimated</pre>
+                </div>
+
+                <h3>의존성</h3>
+                <p>이 라이브러리는 <code>react-native-worklets</code> 의존성 설치가 필요합니다. 더 나은 모듈성을 위해 <code>react-native-reanimated</code>에서 분리되었으며 별도로 설치해야 합니다.</p>
+
+                <div class="code-block">
+<pre>npm install react-native-worklets
+yarn add react-native-worklets</pre>
+                </div>
+
+                <h3>2단계: 네이티브 의존성 재빌드</h3>
+                <p>prebuild를 실행하여 <code>ios</code> 및 <code>android</code> 디렉토리의 네이티브 코드를 업데이트합니다.</p>
+
+                <div class="code-block">
+<pre>npx expo prebuild
+yarn expo prebuild</pre>
+                </div>
+
+                <p>그게 전부입니다! Reanimated 4가 이제 Expo 프로젝트에 구성되었습니다.</p>
+
+                <h2>React Native Community CLI</h2>
+                <p>React Native Community CLI를 사용하는 경우, <code>babel.config.js</code>에 <code>react-native-worklets/plugin</code> 플러그인을 수동으로 추가해야 합니다.</p>
+
+                <div class="code-block">
+<pre>module.exports = {
+  presets: [
+    ... // 여기에 추가하지 마세요 :)
+  ],
+  plugins: [
+    ...
+    'react-native-worklets/plugin',
+  ],
+};</pre>
+                </div>
+
+                <div class="warning-box">
+                    <strong>중요:</strong> <code>react-native-worklets/plugin</code>은 마지막에 위치해야 합니다.
+                </div>
+
+                <h3>왜 이것이 필요한가요?</h3>
+                <div class="info-box">
+                    간단히 말해, Reanimated babel 플러그인은 특수한 JavaScript 함수(워클릿이라고 함)를 자동으로 변환하여 UI 스레드에서 전달되고 실행될 수 있도록 합니다.
+                    <br><br>
+                    Expo SDK 50부터 Expo 스타터 템플릿에는 기본적으로 Reanimated babel 플러그인이 포함되어 있습니다.
+                </div>
+
+                <h2>Metro 번들러 캐시 지우기 (권장)</h2>
+                <div class="code-block">
+<pre>npm start -- --reset-cache
+yarn start --reset-cache</pre>
+                </div>
+
+                <h2>Android</h2>
+                <p>추가 단계가 필요하지 않습니다.</p>
+
+                <h2>iOS</h2>
+                <p>iOS용으로 개발할 때는 앱을 실행하기 전에 먼저 pods를 설치해야 합니다:</p>
+
+                <div class="code-block">
+<pre>cd ios &amp;&amp; pod install &amp;&amp; cd ..</pre>
+                </div>
+
+                <h2>Web</h2>
+                <p>react-native-web을 사용하여 웹을 타겟으로 하는 앱을 빌드하려면 Expo 사용을 강력히 권장합니다.</p>
+                <p>웹에서 Reanimated를 사용하려면 <code>@babel/plugin-proposal-export-namespace-from</code> Babel 플러그인을 설치하고 <code>babel.config.js</code>에 추가하기만 하면 됩니다.</p>
+
+                <div class="code-block">
+<pre>npm install @babel/plugin-proposal-export-namespace-from
+yarn add @babel/plugin-proposal-export-namespace-from</pre>
+                </div>
+
+                <div class="code-block">
+<pre>module.exports = {
+  presets: [
+    ... // 여기에 추가하지 마세요 :)
+  ],
+  plugins: [
+    ...
+    '@babel/plugin-proposal-export-namespace-from',
+    'react-native-worklets/plugin',
+  ],
+};</pre>
+                </div>
+
+                <div class="warning-box">
+                    <code>react-native-worklets/plugin</code>을 마지막에 나열해야 합니다.
+                </div>
+
+                <p>webpack이나 Next.js와 함께 Reanimated를 실행하는 것과 같은 더 고급 사용 사례는 별도의 웹 지원 가이드에서 설명됩니다.</p>
+            </div>
+
+            <!-- 문서 2: Your First Animation -->
+            <div class="section">
+                <h1 class="doc-title">첫 번째 애니메이션</h1>
+                
+                <p>이 섹션에서는 Reanimated의 기본 개념을 안내합니다. Reanimated를 처음 사용하신다면 제대로 찾아오셨습니다! 라이브러리에 대한 기본적인 이해를 돕는 간단한 애니메이션을 만드는 것으로 시작하겠습니다. 그런 다음 다음 섹션에서 이 지식을 기반으로 하여 여러분의 기술을 더욱 확장할 것입니다. 시작합시다!</p>
+
+                <h2>Animated 컴포넌트 사용하기</h2>
+                <p>먼저 화면에 표시할 수 있는 무언가를 만들어봅시다. 애니메이션 가능한 컴포넌트를 만들려면 <code>Animated</code> 객체를 import해야 합니다:</p>
+
+                <div class="code-block">
+<pre>import Animated from 'react-native-reanimated';</pre>
+                </div>
+
+                <p>이 <code>Animated</code> 객체는 <code>View</code>, <code>ScrollView</code>, <code>FlatList</code>와 같은 React Native 내장 컴포넌트를 래핑합니다.</p>
+                <p>이러한 컴포넌트는 다른 JSX 컴포넌트처럼 사용합니다:</p>
+
+                <div class="code-block">
+<pre>import Animated from 'react-native-reanimated';
+
+export default function App() {
+  return (
+    &lt;Animated.View
+      style={{
+        width: 100,
+        height: 100,
+        backgroundColor: 'violet',
+      }}
+    /&gt;
+  );
+}</pre>
+                </div>
+
+                <div class="info-box">
+                    <code>createAnimatedComponent</code>를 사용하여 자신만의 커스텀 Animated 컴포넌트를 만들 수 있습니다.
+                </div>
+
+                <h2>Shared Value 정의하기</h2>
+                <p>Shared Value는 모든 애니메이션의 구동 요인입니다. 앱의 "JavaScript" 측과 "네이티브" 측 사이에서 자동으로 동기화되는 React state로 생각할 수 있습니다(그래서 그런 이름이 붙었습니다). <code>useSharedValue</code> 훅을 사용하여 shared value를 만듭니다:</p>
+
+                <div class="code-block">
+<pre>import { useSharedValue } from 'react-native-reanimated';</pre>
+                </div>
+
+                <p>다른 React 훅과 마찬가지로 컴포넌트 본문에서 정의해야 합니다. Shared value에는 <code>number</code>, <code>string</code>, <code>boolean</code>과 같은 모든 JS 값뿐만 아니라 <code>array</code>나 <code>object</code>와 같은 데이터 구조도 저장할 수 있습니다.</p>
+
+                <p>지금은 <code>useSharedValue</code> 훅의 기본값으로 <code>100</code>을 사용하고 반환된 값을 <code>Animated.View</code>의 인라인 스타일로 전달해봅시다:</p>
+
+                <div class="code-block">
+<pre>import Animated, { useSharedValue } from 'react-native-reanimated';
+
+export default function App() {
+  const width = useSharedValue(100);
+
+  return (
+    &lt;Animated.View
+      style={{
+        width,
+        height: 100,
+        backgroundColor: 'violet',
+      }}
+    /&gt;
+  );
+}</pre>
+                </div>
+
+                <h2>Shared Value 사용하기</h2>
+                <p>요소의 <code>width</code>를 애니메이션하는 매우 간단한 애니메이션을 만들어봅시다. 버튼을 누를 때마다 50px씩 확장되도록 하겠습니다. <code>Animated.View</code> 컴포넌트의 <code>width</code> 속성에 연결된 shared value를 수정하여 이를 수행할 수 있습니다. 복잡하게 들릴 수 있지만 실제로는 매우 간단합니다.</p>
+
+                <p>Shared value에 저장된 값은 <code>.value</code> 속성을 통해 액세스하고 수정됩니다.</p>
+                <p>setter나 다른 것은 없습니다 - 그냥 <code>.value</code> 속성을 직접 변경하면 됩니다.</p>
+
+                <p>Shared value를 수정할 <code>handlePress</code> 함수를 정의해봅시다:</p>
+
+                <div class="code-block">
+<pre>import { Button, View } from 'react-native';
+import Animated, { useSharedValue } from 'react-native-reanimated';
+
+export default function App() {
+  const width = useSharedValue(100);
+
+  const handlePress = () =&gt; {
+    width.value = width.value + 50;
+  };
+
+  return (
+    &lt;View style={{ flex: 1, alignItems: 'center' }}&gt;
+      &lt;Animated.View
+        style={{
+          width,
+          height: 100,
+          backgroundColor: 'violet',
+        }}
+      /&gt;
+      &lt;Button onPress={handlePress} title="Click me" /&gt;
+    &lt;/View&gt;
+  );
+}</pre>
+                </div>
+
+                <div class="warning-box">
+                    <strong>잠깐!</strong> <code>width.value = width.value + 50</code>을 <code>width.value += 50</code>으로 단축하기 전에 잠시 기다려주세요. 애니메이션을 실제로 구현할 마지막 단계를 위해 이 코드를 준비하고 있습니다!
+                    <br><br>
+                    <code>sv = sv + 100;</code>처럼 shared value를 직접 수정하는 것은 흔한 실수입니다. 항상 <code>.value</code> 속성을 사용하여 shared value에 액세스해야 합니다. 여기서 올바른 사용법은 <code>sv.value = sv.value + 100;</code>입니다.
+                </div>
+
+                <h2>애니메이션 함수 사용하기</h2>
+                <p>마지막으로 <code>withSpring</code> 함수를 import하고 <code>handlePress</code> 함수의 <code>width.value + 50</code> 주위를 감싸서 <code>withSpring</code>이 반환하는 값이 shared value를 수정하도록 합니다. 이렇게 하면 요소의 너비를 현재 값(여기서는 <code>width.value</code>)에서 새 값(여기서는 <code>width.value + 50</code>)으로 전환하는 튀는 스프링 애니메이션이 만들어집니다.</p>
+
+                <div class="code-block">
+<pre>import { Button, View } from 'react-native';
+import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
+
+export default function App() {
+  const width = useSharedValue(100);
+
+  const handlePress = () =&gt; {
+    width.value = withSpring(width.value + 50);
+  };
+
+  return (
+    &lt;View style={{ flex: 1, alignItems: 'center' }}&gt;
+      &lt;Animated.View
+        style={{
+          width,
+          height: 100,
+          backgroundColor: 'violet',
+        }}
+      /&gt;
+      &lt;Button onPress={handlePress} title="Click me" /&gt;
+    &lt;/View&gt;
+  );
+}</pre>
+                </div>
+
+                <p>짜잔! Reanimated를 사용하여 첫 번째 애니메이션을 만들었습니다!</p>
+
+                <h2>요약</h2>
+                <p>이 섹션에서는 Reanimated의 기본 개념을 확실히 이해했습니다. <code>Animated</code> 컴포넌트, shared value 및 이를 사용하여 간단한 애니메이션을 만드는 방법에 대해 배웠습니다. 요약하면:</p>
+
+                <ul class="feature-list">
+                    <li><code>Animated</code> 컴포넌트는 애니메이션 가능한 요소를 정의하는 데 사용됩니다.</li>
+                    <li>Shared value는 모든 애니메이션의 구동 요인이며 <code>useSharedValue</code> 훅을 사용하여 정의합니다.</li>
+                    <li>Shared value는 항상 <code>.value</code> 속성을 통해 액세스하고 수정됩니다 (예: <code>sv.value = 100;</code>).</li>
+                    <li>부드러운 애니메이션을 만들려면 <code>withTiming</code>이나 <code>withSpring</code>과 같은 애니메이션 함수를 사용하여 shared value를 수정합니다.</li>
+                </ul>
+
+                <h2>다음은?</h2>
+                <p>다음 섹션에서는 <code>useAnimatedStyle</code> 및 <code>useAnimatedProps</code> 훅을 사용하여 스타일과 props를 애니메이션하는 방법에 대해 자세히 알아봅니다.</p>
+            </div>
+
+            <!-- 문서 3: Animating styles and props -->
+            <div class="section">
+                <h1 class="doc-title">스타일과 Props 애니메이션</h1>
+                
+                <p>이전 섹션에서는 간단한 애니메이션을 만드는 방법, shared value가 무엇인지, 그리고 이를 사용하는 방법을 배웠습니다. 이제 컴포넌트에 애니메이션 스타일을 전달하는 다른 방법을 배울 것입니다. 또한 스타일과 props 애니메이션의 차이점과 <code>useAnimatedStyle</code> 및 <code>useAnimatedProps</code>를 사용하여 이들을 처리하는 방법을 살펴봅니다.</p>
+
+                <h2>스타일 애니메이션</h2>
+                <p>이전 섹션에서 배운 것처럼 요소의 <code>style</code> 속성에 shared value를 인라인으로 전달하여 스타일을 애니메이션할 수 있습니다:</p>
+
+                <div class="code-block">
+<pre>import Animated, { useSharedValue } from 'react-native-reanimated';
+
+function App() {
+  const width = useSharedValue(100);
+  return &lt;Animated.View style={{ width }} /&gt;;
+}</pre>
+                </div>
+
+                <p>기본적인 경우에는 이 구문이 잘 작동하지만 한 가지 큰 단점이 있습니다. Shared value에 저장된 값에 액세스할 수 없습니다. 예를 들어, 인라인 스타일링을 사용하여 <code>style</code> prop에 할당하기 전에 이 값을 곱하거나 다른 수학적 연산을 수행하여 더 복잡한 애니메이션을 만들 수 없습니다.</p>
+
+                <div class="code-block">
+<pre>&lt;Animated.View style={{ width: width * 5 }} /&gt; // 이것은 작동하지 않습니다</pre>
+                </div>
+
+                <p>버튼을 누를 때마다 오른쪽으로 이동하는 박스가 있는 예제가 있다고 가정해봅시다:</p>
+
+                <div class="code-block">
+<pre>import { View, Button } from 'react-native';
+import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
+
+function App() {
+  const translateX = useSharedValue(0);
+
+  const handlePress = () =&gt; {
+    translateX.value = withSpring(translateX.value + 50);
+  };
+
+  return (
+    &lt;View style={styles.container}&gt;
+      &lt;Animated.View style={[styles.box, { transform: [{ translateX }] }]} /&gt;
+      &lt;Button onPress={handlePress} title="Click me" /&gt;
+    &lt;/View&gt;
+  );
+}</pre>
+                </div>
+
+                <p>사용자 입력에 따라 shared value가 변경되는 방식을 사용자 정의하려면(예: 2를 곱하거나 다른 수학 방정식을 따르는 경우) 인라인 스타일링을 사용할 수 없습니다.</p>
+
+                <p>다행히도 <code>useAnimatedStyle</code> 훅이 도움을 줍니다. 애니메이션에 대한 추가 제어와 유연성을 제공합니다. 이는 조건문이나 루프를 포함하는 좀 더 복잡한 애니메이션을 만들 때 매우 유용할 수 있습니다.</p>
+
+                <p>실제로 작동하는 모습을 봅시다:</p>
+
+                <div class="code-block">
+<pre>export default function App() {
+  const translateX = useSharedValue&lt;number&gt;(0);
+
+  const handlePress = () =&gt; {
+    translateX.value += 50;
+  };
+
+  const animatedStyles = useAnimatedStyle(() =&gt; ({
+    transform: [{ translateX: withSpring(translateX.value * 2) }],
+  }));
+
+  return (
+    &lt;&gt;
+      &lt;Animated.View style={[styles.box, animatedStyles]} /&gt;
+      &lt;View style={styles.container}&gt;
+        &lt;Button onPress={handlePress} title="Click me" /&gt;
+      &lt;/View&gt;
+    &lt;/&gt;
+  );
+}</pre>
+                </div>
+
+                <p><code>useAnimatedStyle</code>을 사용하면 shared value에 저장된 값에 액세스할 수 있습니다. 덕분에 <code>style</code>에 할당하기 전에 값을 <code>2</code>로 곱할 수 있었습니다. 이 훅에는 인라인 스타일에 애니메이션을 전달하는 것보다 한 가지 더 장점이 있습니다. 모든 애니메이션 관련 로직을 한 곳에 보관할 수 있습니다.</p>
+
+                <h2>Props 애니메이션</h2>
+                <p>개발자가 애니메이션하는 대부분의 값(<code>width</code>, <code>color</code>, <code>transform</code> 등)은 요소의 <code>style</code> 속성에 객체로 전달하여 수정됩니다. 하지만 항상 그런 것은 아닙니다.</p>
+
+                <p>때로는 스타일뿐만 아니라 컴포넌트에 전달되는 props도 애니메이션하고 싶을 때가 있습니다.</p>
+
+                <p>예를 들어, SVG 요소를 애니메이션하고 싶다고 가정해봅시다. <code>style</code> 속성에 값을 전달하는 대신 값이 props로 정의됩니다:</p>
+
+                <div class="code-block">
+<pre>&lt;Circle cx="50" cy="50" r="10" fill="blue" /&gt;</pre>
+                </div>
+
+                <p>Reanimated에는 <code>Animated.View</code>나 <code>Animated.ScrollView</code>와 같은 내장 컴포넌트가 몇 개만 제공됩니다. Reanimated의 일부가 아닌 컴포넌트의 경우, props를 애니메이션 가능하게 만들려면 <code>createAnimatedComponent</code>로 래핑해야 합니다:</p>
+
+                <div class="code-block">
+<pre>import Animated from 'react-native-reanimated';
+import { Circle } from 'react-native-svg';
+
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);</pre>
+                </div>
+
+                <p>SVG 원의 반지름을 애니메이션하려면 shared value를 prop으로 전달하기만 하면 됩니다:</p>
+
+                <div class="code-block">
+<pre>import { useSharedValue } from 'react-native-reanimated';
+import { Svg } from 'react-native-svg';
+
+function App() {
+  const r = useSharedValue(10);
+
+  return (
+    &lt;Svg&gt;
+      &lt;AnimatedCircle cx="50" cy="50" r={r} fill="blue" /&gt;
+    &lt;/Svg&gt;
+  );
+}</pre>
+                </div>
+
+                <p>이 방법은 잘 작동하지만 스타일 애니메이션을 위한 <code>useAnimatedStyle</code>과 마찬가지로 애니메이션 로직을 캡슐화하고 shared value의 <code>.value</code> 속성에 액세스하기 위해 <code>useAnimatedProps</code>를 사용할 수 있습니다.</p>
+
+                <p>버튼을 누를 때마다 원의 반지름을 10px씩 부드럽게 증가시키려면 <code>useAnimatedProps</code>를 사용할 수 있습니다:</p>
+
+                <div class="code-block">
+<pre>const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+
+export default function App() {
+  const r = useSharedValue&lt;number&gt;(20);
+
+  const handlePress = () =&gt; {
+    r.value += 10;
+  };
+
+  const animatedProps = useAnimatedProps(() =&gt; ({
+    r: withTiming(r.value),
+  }));
+
+  return (
+    &lt;View style={styles.container}&gt;
+      &lt;Svg style={styles.svg}&gt;
+        &lt;AnimatedCircle
+          cx="50%"
+          cy="50%"
+          fill="#b58df1"
+          animatedProps={animatedProps}
+        /&gt;
+      &lt;/Svg&gt;
+      &lt;Button onPress={handlePress} title="Click me" /&gt;
+    &lt;/View&gt;
+  );
+}</pre>
+                </div>
+
+                <p><code>useAnimatedProps</code>가 인수로 받는 함수에서 애니메이션하려는 모든 props가 포함된 객체를 반환합니다. 그런 다음 <code>useAnimatedProps</code>가 반환하는 값을 Animated 컴포넌트의 <code>animatedProps</code> prop에 전달할 수 있습니다.</p>
+
+                <h2>요약</h2>
+                <p>이 섹션에서는 스타일과 props 애니메이션의 차이점과 <code>useAnimatedStyle</code> 및 <code>useAnimatedProps</code>를 사용하는 방법을 살펴봤습니다. 요약하면:</p>
+
+                <ul class="feature-list">
+                    <li>Shared value를 인라인 스타일에 전달하는 것은 애니메이션을 만드는 간단한 방법이지만 몇 가지 제한 사항이 있습니다.</li>
+                    <li><code>props</code>와 <code>styles</code>를 애니메이션하는 차이점은 props가 <code>style</code> 객체가 아니라 컴포넌트의 별도 props로 전달된다는 것입니다.</li>
+                    <li><code>useAnimatedStyle</code>과 <code>useAnimatedProps</code>를 사용하면 shared value에 저장된 값에 액세스할 수 있습니다. 이를 통해 애니메이션에 대한 추가 제어가 가능합니다.</li>
+                    <li><code>Animated.createAnimatedComponent</code>로 래핑하여 자신만의 애니메이션 가능한 컴포넌트를 만들 수 있습니다.</li>
+                </ul>
+
+                <h2>다음은?</h2>
+                <p>다음 섹션에서는 애니메이션 함수와 그 동작을 사용자 정의하는 방법에 대해 자세히 알아봅니다.</p>
+            </div>
+
+            <!-- 문서 4: Customizing animations -->
+            <div class="section">
+                <h1 class="doc-title">애니메이션 커스터마이징</h1>
+                
+                <p>이전 섹션에서는 shared value를 실제로 사용하는 방법을 배웠을 뿐만 아니라 <code>withSpring</code> 및 <code>withTiming</code> 함수를 사용하여 애니메이션을 만들었습니다. 이제 애니메이션 커스터마이징에 대해 더 깊이 들어갈 준비가 되셨다고 생각합니다!</p>
+
+                <p>Reanimated에는 세 가지 내장 애니메이션 함수가 있습니다: <code>withTiming</code>, <code>withSpring</code>, <code>withDecay</code>. 지금은 처음 두 개에 집중하고, <code>withDecay</code>는 제스처 처리 섹션에서 다시 다루겠습니다.</p>
+
+                <p>Reanimated에서 애니메이션 함수의 동작을 커스터마이징하는 것은 매우 쉽습니다. <code>withTiming</code> 또는 <code>withSpring</code> 함수의 두 번째 매개변수에 <code>config</code> 객체를 전달하여 이를 수행할 수 있습니다.</p>
+
+                <h2>withTiming 구성하기</h2>
+                <p><code>withTiming</code>의 <code>config</code> 매개변수에는 <code>duration</code>과 <code>easing</code>이라는 두 가지 속성이 있습니다.</p>
+
+                <div class="code-block">
+<pre>import { withTiming, Easing } from 'react-native-reanimated';
+
+withTiming(sv.value, {
+  duration: 300,
+  easing: Easing.inOut(Easing.quad),
+});</pre>
+                </div>
+
+                <p>간단하게, <code>duration</code> 매개변수는 애니메이션이 할당된 <code>toValue</code>에 도달하는 데 걸리는 시간을 밀리초 단위로 정의합니다. 기본적으로 duration은 <code>300</code>밀리초로 설정됩니다.</p>
+
+                <p><code>easing</code> 매개변수를 사용하면 지정된 시간 동안 애니메이션을 미세 조정할 수 있습니다. 예를 들어, 애니메이션을 천천히 시작한 다음 속도를 높이고 끝 부분에서 다시 느려지게 만들 수 있습니다. 이 값은 기본적으로 <code>Easing.inOut(Easing.quad)</code>로 설정됩니다.</p>
+
+                <p><code>linear</code> easing과 기본 easing을 나란히 비교하면 모든 것이 이해되기 시작할 것입니다.</p>
+
+                <p>Reanimated에는 미리 정의된 easing 함수가 많이 제공됩니다. 아래의 인터랙티브 플레이그라운드에서 사용해보거나 전체 <code>withTiming</code> API 참조를 확인할 수 있습니다.</p>
+
+                <h2>withSpring 구성하기</h2>
+                <p><code>withSpring</code>은 <code>withTiming</code>과 완전히 다르게 작동하는 물리 기반 애니메이션 함수입니다. 애니메이션하는 객체가 실제 스프링에 연결된 것처럼 보이게 만듭니다. 물리 기반 접근 방식은 애니메이션을 믿을 수 있게 만듭니다.</p>
+
+                <p>대부분의 경우 스프링을 조정할 때 <code>mass</code>, <code>stiffness</code>(tension이라고도 함), <code>damping</code>(friction이라고도 함)이라는 세 가지 속성 중 하나를 조정하게 됩니다.</p>
+
+                <div class="code-block">
+<pre>import { withSpring } from 'react-native-reanimated';
+
+withSpring(sv.value, {
+  mass: 1,
+  stiffness: 100,
+  damping: 10,
+});</pre>
+                </div>
+
+                <p>스프링의 <code>mass</code>는 물체를 움직이게 하고 멈추게 하는 것이 얼마나 어려운지에 영향을 줍니다. Mass는 움직이려는 물체에 관성 느낌을 더합니다. 플레이그라운드에서 볼 수 있듯이 질량이 큰 스프링은 기본 구성에 비해 더 "느리게" 움직입니다.</p>
+
+                <p><code>Stiffness</code>는 스프링이 얼마나 튀는지에 영향을 줍니다. 예를 들어, 강철 스프링(매우 높은 stiffness)과 부드러운 플라스틱으로 만든 스프링(낮은 stiffness)의 차이를 생각해보세요.</p>
+
+                <p><code>Damping</code>은 스프링 애니메이션이 얼마나 빨리 끝나는지를 설명합니다. 더 높은 damping은 스프링이 더 빨리 정지한다는 것을 의미합니다. 현실 세계에서는 공중에서 튀는 같은 스프링과 물속에서 튀는 스프링을 생각할 수 있습니다. 예를 들어, 진공 속의 스프링은 마찰이 없고 따라서 damping이 없습니다.</p>
+
+                <p>Reanimated에는 스프링 애니메이션을 커스터마이징하는 데 사용되는 다른 많은 속성이 있습니다. 인터랙티브 플레이그라운드에서 사용해보거나 전체 <code>withSpring</code> API 참조를 확인할 수 있습니다.</p>
+
+                <h2>요약</h2>
+                <p>이 섹션에서는 <code>withTiming</code> 및 <code>withSpring</code> 애니메이션 함수를 커스터마이징하는 방법을 배웠습니다. 요약하면:</p>
+
+                <ul class="feature-list">
+                    <li><code>withTiming</code>과 <code>withSpring</code> 함수 모두 두 번째 매개변수로 <code>config</code> 객체를 받습니다.</li>
+                    <li><code>duration</code> 및 <code>easing</code> 속성으로 <code>withTiming</code> 동작을 조정할 수 있습니다. 편의를 위해 Reanimated에는 내장 <code>Easing</code> 모듈이 제공됩니다.</li>
+                    <li><code>withSpring</code>의 동작을 조정하는 속성 중 일부는 <code>mass</code>, <code>stiffness</code>, <code>damping</code>입니다.</li>
+                </ul>
+
+                <h2>다음은?</h2>
+                <p>다음 섹션에서는 <code>withSequence</code> 및 <code>withRepeat</code>와 같은 애니메이션 수정자를 사용하는 방법을 알아봅니다. 이러한 수정자를 통해 더 복잡하고 매력적인 애니메이션을 만들 수 있습니다.</p>
+            </div>
+
+            <!-- 문서 5: Applying modifiers -->
+            <div class="section">
+                <h1 class="doc-title">수정자 적용하기</h1>
+                
+                <p>Reanimated에서 애니메이션을 커스터마이징하는 또 다른 방법은 애니메이션 수정자를 사용하는 것입니다. Reanimated에는 세 가지 내장 수정자가 있습니다: <code>withRepeat</code>, <code>withSequence</code>, <code>withDelay</code>.</p>
+
+                <p>모든 수정자를 사용하는 간단한 흔들기 애니메이션을 만들고 이를 통해 배워봅시다. 시작합시다!</p>
+
+                <h2>시작점</h2>
+                <p>이 예제에서는 약간의 지연 후 버튼을 누르면 흔들리는 애니메이션 박스를 만들 것입니다.</p>
+
+                <p>버튼을 누르면 뷰를 오른쪽으로 이동시키는 <code>Animated.View</code>와 <code>Button</code>을 만드는 것으로 시작하겠습니다. 이를 위해 <code>useAnimatedStyle</code>과 <code>withTiming</code> 함수를 사용하여 박스를 오른쪽으로 40px 부드럽게 애니메이션할 수 있습니다.</p>
+
+                <div class="code-block">
+<pre>export default function App() {
+  const offset = useSharedValue&lt;number&gt;(0);
+
+  const style = useAnimatedStyle(() =&gt; ({
+    transform: [{ translateX: offset.value }],
+  }));
+
+  const OFFSET = 40;
+
+  const handlePress = () =&gt; {
+    offset.value = withTiming(OFFSET);
+  };
+
+  return (
+    &lt;View style={styles.container}&gt;
+      &lt;Animated.View style={[styles.box, style]} /&gt;
+      &lt;Button title="shake" onPress={handlePress} /&gt;
+    &lt;/View&gt;
+  );
+}</pre>
+                </div>
+
+                <h2>애니메이션 반복하기</h2>
+                <p>원하는 흔들기 애니메이션을 구현하려면 <code>withRepeat</code> 수정자를 사용할 수 있습니다. 이 수정자를 사용하면 제공된 애니메이션을 반복할 수 있습니다.</p>
+
+                <div class="code-block">
+<pre>import { withRepeat } from 'react-native-reanimated';
+
+function App() {
+  sv.value = withRepeat(withTiming(50), 5);
+  // ...
+}</pre>
+                </div>
+
+                <p>함수의 두 번째 매개변수에 숫자를 전달하여 주어진 횟수만큼 반복하도록 만듭니다. 양수가 아닌 값(예: <code>0</code> 또는 <code>-1</code>)을 전달하여 영원히 반복되도록 만들 수 있습니다. 세 번째(<code>reverse</code>) 인수에 <code>true</code>를 전달하여 애니메이션이 앞뒤로 움직이도록 만들 수 있습니다.</p>
+
+                <p>예제에서 이 함수를 사용해봅시다:</p>
+
+                <div class="code-block">
+<pre>export default function App() {
+  const offset = useSharedValue&lt;number&gt;(0);
+
+  const style = useAnimatedStyle(() =&gt; ({
+    transform: [{ translateX: offset.value }],
+  }));
+
+  const OFFSET = 40;
+
+  const handlePress = () =&gt; {
+    offset.value = withRepeat(withTiming(OFFSET), 5, true);
+  };
+
+  return (
+    &lt;View style={styles.container}&gt;
+      &lt;Animated.View style={[styles.box, style]} /&gt;
+      &lt;Button title="shake" onPress={handlePress} /&gt;
+    &lt;/View&gt;
+  );
+}</pre>
+                </div>
+
+                <p>이 코드를 실행하면 박스가 설정된 오프셋과 시작 위치 사이에서 좌우로 흔들리는 것을 볼 수 있습니다. 애니메이션이 끝나면 박스가 초기 위치로 돌아가지 않습니다. 우리가 상상한 흔들기 애니메이션은 아니지만 곧 해결할 것입니다!</p>
+
+                <h2>순차적으로 애니메이션 실행하기</h2>
+                <p>애니메이션을 개선하는 한 가지 방법은 왼쪽 오프셋으로 시작하고 애니메이션이 끝난 후 시작 위치로 재설정하는 것입니다. 이는 <code>withSequence</code> 수정자의 완벽한 사용 사례입니다.</p>
+
+                <div class="code-block">
+<pre>import { withSequence } from 'react-native-reanimated';
+
+function App() {
+  sv.value = withSequence(withTiming(50), withTiming(0));
+  // ...
+}</pre>
+                </div>
+
+                <p>이 수정자를 사용하면 애니메이션을 연결할 수 있습니다. 다음 애니메이션은 이전 애니메이션이 끝나면 시작됩니다. 실행하려는 순서대로 애니메이션을 인수로 전달하여 사용합니다.</p>
+
+                <p>예제로 돌아가서 - <code>withSequence</code>를 활용하여 애니메이션을 개선할 수 있습니다. 먼저 박스를 왼쪽으로 흔들며, 한 번의 스윙 지속 시간의 절반이 걸리도록 합니다. 그런 다음 박스를 5번 흔들고, 마지막으로 애니메이션 지속 시간의 절반으로 시작 위치로 되돌립니다.</p>
+
+                <div class="code-block">
+<pre>const TIME = 250;
+
+const handlePress = () =&gt; {
+  offset.value = withSequence(
+    // -OFFSET에서 시작
+    withTiming(-OFFSET, { duration: TIME / 2 }),
+    // -OFFSET과 OFFSET 사이를 5번 흔들기
+    withRepeat(withTiming(OFFSET, { duration: TIME }), 5, true),
+    // 마지막에 0으로 돌아가기
+    withTiming(0, { duration: TIME / 2 })
+  );
+};</pre>
+                </div>
+
+                <h2>지연 후 애니메이션 시작하기</h2>
+                <p>마무리로, 애니메이션이 시작되기 전에 약간의 지연을 추가하여 긴장감을 더하겠습니다. 이를 위해 Reanimated에는 <code>withDelay</code> 수정자가 있습니다.</p>
+
+                <div class="code-block">
+<pre>import { withDelay } from 'react-native-reanimated';
+
+function App() {
+  sv.value = withDelay(500, withTiming(0));
+  // ...
+}</pre>
+                </div>
+
+                <p>이 함수는 첫 번째 매개변수로 애니메이션이 시작되기 전의 지속 시간을 밀리초 단위로 받습니다. 두 번째 매개변수는 지연시킬 애니메이션을 정의합니다.</p>
+
+                <div class="code-block">
+<pre>const OFFSET = 40;
+const TIME = 250;
+const DELAY = 400;
+
+const handlePress = () =&gt; {
+  offset.value = withDelay(
+    DELAY,
+    withSequence(
+      // -OFFSET에서 시작
+      withTiming(-OFFSET, { duration: TIME / 2 }),
+      // -OFFSET과 OFFSET 사이를 5번 흔들기
+      withRepeat(withTiming(OFFSET, { duration: TIME }), 5, true),
+      // 마지막에 0으로 돌아가기
+      withTiming(0, { duration: TIME / 2 })
+    )
+  );
+};</pre>
+                </div>
+
+                <h2>요약</h2>
+                <p>이 섹션에서는 애니메이션 수정자를 사용하여 복잡한 애니메이션을 만드는 방법을 배웠습니다. 요약하면:</p>
+
+                <ul class="feature-list">
+                    <li>Reanimated에는 세 가지 내장 애니메이션 수정자가 있습니다 - <code>withRepeat</code>, <code>withSequence</code>, <code>withDelay</code>.</li>
+                    <li><code>withRepeat</code>을 사용하면 애니메이션을 주어진 횟수만큼 반복하거나 무한정 실행할 수 있습니다.</li>
+                    <li><code>withSequence</code>를 사용하면 애니메이션을 순차적으로 실행할 수 있습니다.</li>
+                    <li><code>withDelay</code>를 사용하면 지연 후 애니메이션을 시작할 수 있습니다.</li>
+                </ul>
+
+                <h2>다음은?</h2>
+                <p>다음 섹션에서는 <code>Tap</code> 및 <code>Pan</code> 제스처 처리에 대해 배울 것입니다. 또한 <code>withDecay</code> 애니메이션 함수에 대해서도 알아봅니다.</p>
+            </div>
+
+            <!-- 문서 6: Handling gestures -->
+            <div class="section">
+                <h1 class="doc-title">제스처 처리하기</h1>
+                
+                <p>이 섹션에서는 Reanimated로 제스처를 처리하는 방법을 배웁니다. 이를 위해 Reanimated는 Software Mansion에서 만든 또 다른 라이브러리인 React Native Gesture Handler와 긴밀하게 통합됩니다.</p>
+
+                <p>Gesture Handler에는 <code>Pinch</code>나 <code>Fling</code>과 같은 풍부한 제스처가 제공됩니다. 지금은 간단하게 시작하여 <code>Tap</code> 및 <code>Pan</code> 제스처와 <code>withDecay</code> 애니메이션 함수를 사용하는 방법을 알아봅니다.</p>
+
+                <p>먼저 Gesture Handler 설치 단계를 거친 후 여기로 돌아와서 Reanimated와 함께 사용하는 방법을 배우세요.</p>
+
+                <h2>탭 제스처 처리하기</h2>
+                <p>가장 간단한 제스처인 탭부터 시작하겠습니다. 탭 제스처는 짧은 시간 동안 화면을 터치하는 손가락을 감지합니다. 처음부터 커스텀 버튼이나 누를 수 있는 요소를 구현하는 데 사용할 수 있습니다.</p>
+
+                <p>이 예제에서는 터치 시 커지고 색상이 변하는 원을 만들 것입니다.</p>
+
+                <p>먼저 앱을 <code>GestureHandlerRootView</code>로 래핑해봅시다. <code>GestureHandlerRootView</code>를 실제 루트 뷰에 최대한 가깝게 유지하세요. 이렇게 하면 제스처가 서로 예상대로 작동합니다.</p>
+
+                <div class="code-block">
+<pre>import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+function App() {
+  return (
+    &lt;GestureHandlerRootView style={{ flex: 1 }}&gt;
+      {/* 앱의 나머지 부분 */}
+    &lt;/GestureHandlerRootView&gt;
+  );
+}</pre>
+                </div>
+
+                <p>새로운 탭 제스처는 컴포넌트 본문에서 <code>Gesture.Tap()</code>으로 정의됩니다. <code>onBegin</code>, <code>onStart</code>, <code>onEnd</code>, <code>onFinalize</code>와 같은 메서드를 체이닝하여 제스처의 동작을 정의할 수 있습니다. 제스처가 시작된 직후와 제스처가 완료될 때 shared value를 업데이트하는 데 사용하겠습니다.</p>
+
+                <div class="code-block">
+<pre>export default function App() {
+  const pressed = useSharedValue&lt;boolean&gt;(false);
+
+  const tap = Gesture.Tap()
+    .onBegin(() =&gt; {
+      pressed.value = true;
+    })
+    .onFinalize(() =&gt; {
+      pressed.value = false;
+    });</pre>
+                </div>
+
+                <div class="info-box">
+                    제스처에 전달되는 콜백은 자동으로 워클릿화되므로 shared value에 안전하게 액세스할 수 있습니다.
+                </div>
+
+                <p>탭 시 원의 색상을 보라색에서 노란색으로 변경하고 20% 부드럽게 확대하고 싶습니다. <code>useAnimatedStyle</code>에서 <code>withTiming</code>을 사용하여 애니메이션 로직을 정의해봅시다:</p>
+
+                <div class="code-block">
+<pre>const animatedStyles = useAnimatedStyle(() =&gt; ({
+  backgroundColor: pressed.value ? '#FFE04B' : '#B58DF1',
+  transform: [{ scale: withTiming(pressed.value ? 1.2 : 1) }],
+}));</pre>
+                </div>
+
+                <p>정의한 제스처를 <code>GestureDetector</code> 컴포넌트의 <code>gesture</code> prop에 전달해야 합니다. 이 컴포넌트는 제스처를 처리하려는 뷰를 래핑해야 합니다. 또한 정의한 <code>animatedStyles</code>를 애니메이션하려는 뷰에 다음과 같이 전달해야 합니다:</p>
+
+                <div class="code-block">
+<pre>return (
+  &lt;GestureHandlerRootView style={styles.container}&gt;
+    &lt;View style={styles.container}&gt;
+      &lt;GestureDetector gesture={tap}&gt;
+        &lt;Animated.View style={[styles.circle, animatedStyles]} /&gt;
+      &lt;/GestureDetector&gt;
+    &lt;/View&gt;
+  &lt;/GestureHandlerRootView&gt;
+);
+}</pre>
+                </div>
+
+                <p>그게 전부입니다! 꽤 간단하지 않나요?</p>
+
+                <h2>팬 제스처 처리하기</h2>
+                <p>원을 드래그 가능하게 만들고 놓았을 때 시작 위치로 튕겨 돌아오도록 하여 조금 더 재미있게 만들어봅시다. 이전 예제에서 추가한 색상 하이라이트 및 스케일 효과도 유지하겠습니다. 이 동작을 구현하는 것은 단순한 탭 제스처만으로는 불가능합니다. 대신 팬 제스처를 사용해야 합니다.</p>
+
+                <p>다행히도 모든 제스처는 유사한 API를 공유하므로 이를 구현하는 것은 <code>Tap</code> 제스처를 <code>Pan</code>으로 이름을 변경하고 추가 <code>onChange</code> 메서드를 체이닝하는 것만큼 쉽습니다.</p>
+
+                <div class="code-block">
+<pre>const offset = useSharedValue&lt;number&gt;(0);
+
+const pan = Gesture.Pan()
+  .onBegin(() =&gt; {
+    pressed.value = true;
+  })
+  .onChange((event) =&gt; {
+    offset.value = event.translationX;
+  })
+  .onFinalize(() =&gt; {
+    offset.value = withSpring(0);
+    pressed.value = false;
+  });</pre>
+                </div>
+
+                <p><code>onChange</code>에 전달된 콜백에는 많은 유용한 속성이 있는 이벤트 데이터가 제공됩니다. 그 중 하나는 <code>translationX</code>로, 객체가 X축에서 얼마나 이동했는지를 나타냅니다. 이를 shared value에 저장하여 그에 따라 원을 이동시킵니다. 원을 초기 위치로 되돌리려면 <code>onFinalize</code> 메서드에서 <code>offset.value</code>를 재설정하기만 하면 됩니다. <code>withSpring</code>이나 <code>withTiming</code> 함수를 사용하여 애니메이션과 함께 되돌릴 수 있습니다.</p>
+
+                <p>남은 작업은 <code>useAnimatedStyle</code>의 로직을 조정하여 오프셋을 처리하는 것입니다.</p>
+
+                <div class="code-block">
+<pre>const animatedStyles = useAnimatedStyle(() =&gt; ({
+  transform: [
+    { translateX: offset.value },
+    { scale: withTiming(pressed.value ? 1.2 : 1) },
+  ],
+  backgroundColor: pressed.value ? '#FFE04B' : '#b58df1',
+}));</pre>
+                </div>
+
+                <h2>withDecay 사용하기</h2>
+                <p>얼마 전에 <code>withDecay</code>로 돌아올 것이라고 말한 것을 기억하시나요? 이제 그 시간입니다!</p>
+
+                <p><code>withDecay</code>를 사용하면 제스처의 속도를 유지하고 일부 감속으로 애니메이션할 수 있습니다. 즉, 일부 속도로 잡은 객체를 놓으면 천천히 멈출 수 있습니다. 복잡하게 들리지만 실제로는 그렇지 않습니다!</p>
+
+                <p><code>onFinalize</code> 메서드에서 최종 속도를 <code>withDecay</code> 함수의 <code>velocity</code> 속성에 전달하기만 하면 Reanimated가 처리해줍니다. 객체의 새 위치를 유지하려면 다음과 같이 <code>onChange</code> 메서드에서 X축의 변경 사항을 업데이트합니다:</p>
+
+                <div class="code-block">
+<pre>const pan = Gesture.Pan()
+  .onChange((event) =&gt; {
+    offset.value += event.changeX;
+  })
+  .onFinalize((event) =&gt; {
+    offset.value = withDecay({
+      velocity: event.velocityX,
+      rubberBandEffect: true,
+      clamp: [
+        -(width.value / 2) + SIZE / 2 + BOUNDARY_OFFSET,
+        width.value / 2 - SIZE / 2 - BOUNDARY_OFFSET,
+      ],
+    });
+  });</pre>
+                </div>
+
+                <p>나머지 코드는 사각형이 화면 안에 머물도록 하기 위한 것입니다.</p>
+
+                <p>사각형이 일부 속도로 놓았을 때 어떻게 감속하는지 확인해보세요!</p>
+
+                <h2>요약</h2>
+                <p>이 섹션에서는 Reanimated 및 Gesture Handler로 제스처를 처리하는 기본 사항을 살펴봤습니다. <code>Tap</code> 및 <code>Pan</code> 제스처와 <code>withDecay</code> 함수에 대해 배웠습니다. 요약하면:</p>
+
+                <ul class="feature-list">
+                    <li>Reanimated는 원활한 인터랙션을 제공하기 위해 React Native Gesture Handler라는 다른 패키지와 통합됩니다.</li>
+                    <li><code>Gesture.Pan()</code>이나 <code>Gesture.Tap()</code>과 같은 새로운 제스처를 만들고 이를 <code>GestureDetector</code>에 전달합니다. 이는 인터랙션을 처리하려는 요소를 래핑해야 합니다.</li>
+                    <li>추가 보일러플레이트 없이 제스처 콜백 내에서 shared value에 액세스하고 수정할 수 있습니다.</li>
+                    <li><code>withDecay</code>를 사용하면 제스처에서 나오는 속도를 기반으로 감속 애니메이션을 만들 수 있습니다.</li>
+                </ul>
+
+                <h2>다음은?</h2>
+                <p>이 문서에서는 Reanimated의 제스처로 가능한 것의 표면만 긁었습니다. <code>Tap</code> 및 <code>Pan</code> 제스처 외에도 Gesture Handler에는 <code>Pinch</code>나 <code>Fling</code>과 같은 많은 제스처가 제공됩니다. React Native Gesture Handler 문서의 빠른 시작 섹션을 살펴보고 이 라이브러리가 제공하는 모든 가능성을 탐색하시기 바랍니다.</p>
+
+                <p>다음 섹션에서는 용어집을 함께 살펴봅시다!</p>
+            </div>
+
+            <!-- 문서 7: Glossary -->
+            <div class="section">
+                <h1 class="doc-title">용어 사전</h1>
+                
+                <h2>Animated 컴포넌트</h2>
+                <p>Animated 컴포넌트는 Reanimated가 애니메이션할 수 있는 컴포넌트입니다. Reanimated에는 <code>Animated.View</code>, <code>Animated.Text</code>, <code>Animated.ScrollView</code>와 같은 내장 컴포넌트가 몇 개만 제공됩니다.</p>
+
+                <div class="code-block">
+<pre>import Animated from 'react-native-reanimated';
+
+function App() {
+  return (
+    &lt;Animated.View
+      style={{
+        width: 100,
+        height: 100,
+        backgroundColor: 'violet',
+      }}
+    /&gt;
+  );
+}</pre>
+                </div>
+
+                <p>Reanimated의 일부가 아닌 컴포넌트의 경우, props와 스타일을 애니메이션 가능하게 만들려면 <code>createAnimatedComponent</code>로 래핑해야 합니다:</p>
+
+                <div class="code-block">
+<pre>import Animated from 'react-native-reanimated';
+import { Circle } from 'react-native-svg';
+
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);</pre>
+                </div>
+
+                <h2>Shared Value</h2>
+                <p>Shared value는 Reanimated에서 모든 애니메이션의 구동 요인입니다.</p>
+                <p><code>useSharedValue</code> 훅을 사용하여 정의됩니다:</p>
+
+                <div class="code-block">
+<pre>import { useSharedValue } from 'react-native-reanimated';</pre>
+                </div>
+
+                <p>그리고 <code>.value</code> 속성을 통해 액세스하고 수정됩니다:</p>
+
+                <div class="code-block">
+<pre>function App() {
+  const sv = useSharedValue(0);
+
+  const handlePress = () =&gt; {
+    sv.value += 10;
+  };
+
+  // 나머지 멋진 코드 ✨
+}</pre>
+                </div>
+
+                <p>모든 유형의 값이 될 수 있습니다. 사용될 때 shared value에 저장된 데이터는 JavaScript 스레드와 UI 스레드 사이에서 자동으로 동기화됩니다.</p>
+
+                <h2>Animatable Value (애니메이션 가능한 값)</h2>
+                <p>Animatable value는 애니메이션에 사용할 수 있는 값의 유형을 나타냅니다. 이러한 값에는 숫자, 문자열 및 숫자 배열이 포함됩니다.</p>
+
+                <p>문자열 값은 <code>"10deg"</code>, <code>"21%"</code> 또는 <code>"#ffaabb"</code>나 <code>"rgba(100, 200, 100, 0.7)"</code>과 같은 색상과 같은 특정 형식인 경우 애니메이션할 수 있습니다.</p>
+
+                <h2>Animation Function (애니메이션 함수)</h2>
+                <p>애니메이션 함수는 애니메이션을 만들 수 있는 함수입니다. 애니메이션이 어떻게 동작해야 하는지를 설명하는 빌딩 블록입니다.</p>
+
+                <p>Reanimated에는 3가지 내장 애니메이션 함수가 있습니다:</p>
+
+                <ul class="feature-list">
+                    <li><code>withSpring</code> - 스프링 기반 애니메이션을 만들 수 있습니다</li>
+                    <li><code>withTiming</code> - 지속 시간과 easing을 기반으로 한 애니메이션을 만들 수 있습니다</li>
+                    <li><code>withDecay</code> - 주어진 감속률로 움직이는 물체를 모방하는 애니메이션을 만들 수 있습니다</li>
+                </ul>
+
+                <p>이러한 함수는 애니메이션 수정자와 결합하여 풍부하고 복잡한 애니메이션을 만들 수 있습니다.</p>
+
+                <h2>Animation Modifier (애니메이션 수정자)</h2>
+                <p>애니메이션 수정자는 애니메이션을 사용자 정의하는 데 사용되는 함수입니다. 고차 애니메이션이라고도 합니다.</p>
+
+                <p>Reanimated에는 3가지 내장 수정자가 있습니다:</p>
+
+                <ul class="feature-list">
+                    <li><code>withDelay</code> - 애니메이션이 시작되기 전에 지연을 추가할 수 있습니다</li>
+                    <li><code>withRepeat</code> - 애니메이션을 특정 횟수만큼 반복할 수 있습니다</li>
+                    <li><code>withSequence</code> - 애니메이션을 하나씩 연결할 수 있습니다</li>
+                    <li><code>withClamp</code> - 애니메이션 경계를 지정된 범위로 제한할 수 있습니다</li>
+                </ul>
+
+                <h2>Animation Object (애니메이션 객체)</h2>
+                <p>애니메이션 객체는 애니메이션 함수 및 수정자에서 반환되는 값으로, 시작 및 종료 조건과 <code>onFrame</code> 함수를 포함하여 애니메이션의 현재 상태를 보유합니다. 이러한 값을 통해 각 프레임의 애니메이션 상태를 계산할 수 있습니다.</p>
+
+                <p>애니메이션 객체를 shared value에 전달하면 자동으로 애니메이션 가능한 값으로 처리됩니다.</p>
+
+                <p>예를 들어, 다음 코드를 고려하세요:</p>
+
+                <div class="code-block">
+<pre>sv.value = withSpring(100);</pre>
+                </div>
+
+                <p><code>withSpring</code>이 애니메이션 객체를 반환하더라도 shared value에 저장되는 최종 결과는 단지 숫자입니다.</p>
+
+                <h2>Animations in Inline Styling (인라인 스타일링의 애니메이션)</h2>
+                <p><code>useAnimatedStyle</code>을 사용하지 않고 shared value를 <code>style</code> 속성에 직접 전달하는 것입니다.</p>
+
+                <p>예를 들어:</p>
+
+                <div class="code-block">
+<pre>function App() {
+  const width = useSharedValue(100);
+  return &lt;Animated.View style={{ width }} /&gt;;
+}</pre>
+                </div>
+
+                <h2>Layout Animation Modifier (레이아웃 애니메이션 수정자)</h2>
+                <p>레이아웃 애니메이션 수정자는 레이아웃 애니메이션을 사용자 정의하는 데 사용되는 메서드입니다.</p>
+
+                <div class="code-block">
+<pre>&lt;Animated.View entering={FadeOutLeft.duration(500).easing(Easing.ease)} /&gt;</pre>
+                </div>
+
+                <p>Reanimated에는 많은 내장 레이아웃 애니메이션 수정자가 제공됩니다. 그 중 일부는:</p>
+
+                <ul class="feature-list">
+                    <li><code>.duration(durationMs: number)</code> - 애니메이션의 길이(밀리초)</li>
+                    <li><code>.easing(easingFunction: EasingFunction)</code> - 애니메이션 곡선을 정의하는 easing 함수</li>
+                    <li><code>.springify()</code> - 스프링 기반 애니메이션 구성을 활성화</li>
+                    <li><code>.damping(value: number)</code> - 스프링이 멈추는 속도를 결정</li>
+                    <li><code>.withCallback(callback: (finished: boolean) =&gt; void)</code> - 애니메이션이 끝난 후 실행될 콜백</li>
+                </ul>
+
+                <h2>Worklet</h2>
+                <p>Worklet은 UI 스레드에서 실행할 수 있는 짧은 실행 JavaScript 함수입니다. 코드에서 함수를 실행하는 것처럼 JavaScript 스레드에서도 실행할 수 있습니다.</p>
+
+                <p>Reanimated로 작업할 때 대부분의 경우 코드가 자동으로 워클릿화되어 기본적으로 UI 스레드에서 실행됩니다.</p>
+
+                <div class="code-block">
+<pre>const style = useAnimatedStyle(() =&gt; {
+  console.log('UI 스레드에서 실행 중');
+  return { opacity: 0.5 };
+});</pre>
+                </div>
+
+                <p>함수 상단에 <code>"worklet";</code> 지시문을 사용하여 자신만의 worklet을 만들 수 있습니다.</p>
+
+                <div class="code-block">
+<pre>function myWorklet() {
+  'worklet';
+  console.log('UI 스레드에서 실행 중');
+}</pre>
+                </div>
+
+                <p><code>runOnUI</code>를 사용하면 UI 스레드에서 worklet을 수동으로 실행할 수 있습니다:</p>
+
+                <div class="code-block">
+<pre>function myWorklet(greeting) {
+  'worklet';
+  console.log(`${greeting} from the UI thread`);
+}
+
+function onPress() {
+  runOnUI(myWorklet)('Howdy');
+}</pre>
+                </div>
+
+                <h2>To Workletize (워클릿화하다)</h2>
+                <p>JavaScript 함수를 UI 스레드에서 복사하고 실행할 수 있는 직렬화 가능한 객체로 변환하는 것입니다.</p>
+
+                <p><code>"worklet";</code> 지시문으로 표시된 함수는 Reanimated Babel 플러그인에 의해 자동으로 선택되고 워클릿화됩니다.</p>
+
+                <h2>JavaScript Thread (JavaScript 스레드)</h2>
+                <p>JavaScript 스레드(또는 줄여서 JS 스레드)는 앱에서 JavaScript 코드 실행을 담당합니다.</p>
+                <p>이것은 React Native 앱 코드가 실행되는 주요 장소입니다.</p>
+
+                <h2>UI Thread (UI 스레드)</h2>
+                <p>UI 스레드는 사용자 인터페이스 업데이트를 담당합니다. 메인 스레드라고도 합니다.</p>
+                <p>공식 React Native 문서의 Threading model 문서를 읽어 이에 대해 자세히 알아볼 수 있습니다.</p>
+
+                <h2>Reanimated Babel Plugin</h2>
+                <p>플러그인은 Reanimated와 함께 사용되는 특정 함수의 자동 워클릿화를 수행하여 보일러플레이트 코드의 양을 줄입니다.</p>
+                <p>Reanimated Babel plugin README를 읽어 자세한 내용을 알아볼 수 있습니다.</p>
+            </div>
+        </div>
+        <div class="footer">
+            <p>React Native Reanimated 기초 가이드 - 한글 번역</p>
+            <p>원문: <a href="https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started" target="_blank">React Native Reanimated Documentation</a></p>
+            <br>
+            <p>번역된 문서:</p>
+            <p>1. Getting Started</p>
+            <p>2. Your First Animation</p>
+            <p>3. Animating Styles and Props</p>
+            <p>4. Customizing Animations</p>
+            <p>5. Applying Modifiers</p>
+            <p>6. Handling Gestures</p>
+            <p>7. Glossary of Terms</p>
+        </div>
+    </div>
+</body>
+</html>
