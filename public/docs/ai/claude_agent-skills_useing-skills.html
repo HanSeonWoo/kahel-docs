@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="API를 통해 Agent Skills를 사용하여 Claude의 기능을 확장하는 방법을 알아보세요">
+    <title>API와 함께 Agent Skills 사용하기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .header {
+            border-left: 8px solid #2c3e50;
+            padding: 30px 30px 30px 40px;
+            background: #f8f9fa;
+            position: relative;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 8px;
+            height: 60px;
+            background: #667eea;
+        }
+
+        .category {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #2c3e50;
+            color: white;
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .header h1 {
+            font-size: 2.3em;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 1em;
+            color: #666;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            color: #34495e;
+            margin: 25px 0 15px 0;
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border-left: 4px solid #2c3e50;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #ffc107;
+            margin: 15px 0;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 15px 0;
+        }
+
+        .feature-list li {
+            padding: 10px 0 10px 30px;
+            position: relative;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #2c3e50;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 30px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        strong {
+            color: #2c3e50;
+        }
+
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Print Optimization */
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            
+            @page {
+                margin: 2cm;
+                size: A4;
+            }
+            
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+                max-width: 100%;
+            }
+            
+            .section {
+                page-break-inside: avoid;
+            }
+            
+            h2 {
+                page-break-after: avoid;
+                margin-top: 20px;
+            }
+            
+            h3 {
+                page-break-after: avoid;
+            }
+            
+            .code-block {
+                page-break-inside: avoid;
+                border: 1px solid #2c3e50;
+            }
+            
+            .highlight {
+                page-break-inside: avoid;
+                border: 1px solid #ffc107;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="category">CLAUDE API</div>
+            <h1>API와 함께 Agent Skills 사용하기</h1>
+            <p>API를 통해 Agent Skills를 사용하여 Claude의 기능을 확장하는 방법을 알아보세요</p>
+        </div>
+        <div class="content">
+            <div class="section">
+                <p>Agent Skills는 구조화된 폴더에 담긴 지침, 스크립트, 리소스를 통해 Claude의 기능을 확장합니다. 이 가이드는 Claude API에서 사전 제작된 Skills와 커스텀 Skills를 모두 사용하는 방법을 설명합니다.</p>
+
+                <div class="highlight">
+                    <p><strong>참고:</strong> 요청/응답 스키마 및 모든 매개변수를 포함한 완전한 API 레퍼런스는 다음을 참조하세요:</p>
+                    <ul>
+                        <li><strong>Skill Management API Reference</strong> - Skills에 대한 CRUD 작업</li>
+                        <li><strong>Skill Versions API Reference</strong> - 버전 관리</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>빠른 링크</h2>
+                <ul class="feature-list">
+                    <li><strong>Agent Skills 시작하기</strong> - 첫 번째 Skill 만들기</li>
+                    <li><strong>커스텀 Skills 만들기</strong> - Skills 작성 모범 사례</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>개요</h2>
+                <div class="highlight">
+                    <p><strong>참고:</strong> Agent Skills의 아키텍처와 실제 적용 사례에 대한 심층 분석은 엔지니어링 블로그를 참조하세요: <em>Equipping agents for the real world with Agent Skills</em>.</p>
+                </div>
+
+                <p>Skills는 코드 실행 도구를 통해 Messages API와 통합됩니다. Anthropic이 관리하는 사전 제작된 Skills를 사용하든, 직접 업로드한 커스텀 Skills를 사용하든 통합 방식은 동일합니다. 둘 다 코드 실행이 필요하며 동일한 <code>container</code> 구조를 사용합니다.</p>
+
+                <h3>Skills 사용하기</h3>
+                <p>Skills는 출처와 관계없이 Messages API에서 동일하게 통합됩니다. <code>container</code> 매개변수에서 <code>skill_id</code>, <code>type</code> 및 선택적 <code>version</code>을 지정하면 코드 실행 환경에서 실행됩니다.</p>
+
+                <p><strong>두 가지 출처의 Skills를 사용할 수 있습니다:</strong></p>
+
+                <table>
+                    <tr>
+                        <th>항목</th>
+                        <th>Anthropic Skills</th>
+                        <th>커스텀 Skills</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Type 값</strong></td>
+                        <td><code>anthropic</code></td>
+                        <td><code>custom</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Skill ID</strong></td>
+                        <td>짧은 이름: <code>pptx</code>, <code>xlsx</code>, <code>docx</code>, <code>pdf</code></td>
+                        <td>생성된 ID: <code>skill_01AbCdEfGhIjKlMnOpQrStUv</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>버전 형식</strong></td>
+                        <td>날짜 기반: <code>20251013</code> 또는 <code>latest</code></td>
+                        <td>Epoch 타임스탬프: <code>1759178010641129</code> 또는 <code>latest</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>관리 방식</strong></td>
+                        <td>Anthropic이 사전 제작 및 관리</td>
+                        <td>Skills API를 통해 업로드 및 관리</td>
+                    </tr>
+                    <tr>
+                        <td><strong>사용 가능 범위</strong></td>
+                        <td>모든 사용자에게 제공</td>
+                        <td>워크스페이스에 비공개</td>
+                    </tr>
+                </table>
+
+                <p>두 Skill 출처 모두 List Skills 엔드포인트에서 반환됩니다(<code>source</code> 매개변수로 필터링 가능). 통합 방식과 실행 환경은 동일하며, 유일한 차이점은 Skills의 출처와 관리 방법입니다.</p>
+
+                <h3>사전 요구사항</h3>
+                <p>Skills를 사용하려면 다음이 필요합니다:</p>
+                <ol>
+                    <li><strong>Anthropic API 키</strong> - Console에서 발급</li>
+                    <li><strong>Beta 헤더</strong>:
+                        <ul>
+                            <li><code>code-execution-2025-08-25</code> - 코드 실행 활성화 (Skills에 필수)</li>
+                            <li><code>skills-2025-10-02</code> - Skills API 활성화</li>
+                            <li><code>files-api-2025-04-14</code> - 컨테이너로/에서 파일 업로드/다운로드</li>
+                        </ul>
+                    </li>
+                    <li><strong>코드 실행 도구</strong> - 요청에서 활성화</li>
+                </ol>
+            </div>
+
+            <div class="section">
+                <h2>메시지에서 Skills 사용하기</h2>
+
+                <h3>Container 매개변수</h3>
+                <p>Skills는 Messages API의 <code>container</code> 매개변수를 사용하여 지정됩니다. 요청당 최대 8개의 Skills를 포함할 수 있습니다.</p>
+
+                <p>Anthropic Skills와 커스텀 Skills 모두 구조가 동일합니다. 필수 항목인 <code>type</code>과 <code>skill_id</code>를 지정하고, 특정 버전을 고정하려면 선택적으로 <code>version</code>을 포함하면 됩니다:</p>
+
+                <div class="code-block">
+                    <pre>import anthropic
+
+client = anthropic.Anthropic()
+
+response = client.beta.messages.create(
+    model="claude-sonnet-4-5-20250929",
+    max_tokens=4096,
+    betas=["code-execution-2025-08-25", "skills-2025-10-02"],
+    container={
+        "skills": [
+            {
+                "type": "anthropic",
+                "skill_id": "pptx",
+                "version": "latest"
+            }
+        ]
+    },
+    messages=[{
+        "role": "user",
+        "content": "Create a presentation about renewable energy"
+    }],
+    tools=[{
+        "type": "code_execution_20250825",
+        "name": "code_execution"
+    }]
+)</pre>
+                </div>
+
+                <h3>생성된 파일 다운로드하기</h3>
+                <p>Skills가 문서(Excel, PowerPoint, PDF, Word)를 생성하면 응답에 <code>file_id</code> 속성을 반환합니다. 이러한 파일을 다운로드하려면 Files API를 사용해야 합니다.</p>
+
+                <p><strong>작동 방식:</strong></p>
+                <ol>
+                    <li>코드 실행 중 Skills가 파일을 생성</li>
+                    <li>응답에 생성된 각 파일의 <code>file_id</code> 포함</li>
+                    <li>Files API를 사용하여 실제 파일 콘텐츠 다운로드</li>
+                    <li>로컬에 저장하거나 필요에 따라 처리</li>
+                </ol>
+
+                <h3>다중 턴 대화</h3>
+                <p>컨테이너 ID를 지정하여 여러 메시지에서 동일한 컨테이너를 재사용할 수 있습니다:</p>
+
+                <div class="code-block">
+                    <pre># 첫 번째 요청이 컨테이너 생성
+response1 = client.beta.messages.create(
+    model="claude-sonnet-4-5-20250929",
+    max_tokens=4096,
+    betas=["code-execution-2025-08-25", "skills-2025-10-02"],
+    container={
+        "skills": [
+            {"type": "anthropic", "skill_id": "xlsx", "version": "latest"}
+        ]
+    },
+    messages=[{"role": "user", "content": "Analyze this sales data"}],
+    tools=[{"type": "code_execution_20250825", "name": "code_execution"}]
+)
+
+# 동일한 컨테이너로 대화 계속
+messages = [
+    {"role": "user", "content": "Analyze this sales data"},
+    {"role": "assistant", "content": response1.content},
+    {"role": "user", "content": "What was the total revenue?"}
+]
+
+response2 = client.beta.messages.create(
+    model="claude-sonnet-4-5-20250929",
+    max_tokens=4096,
+    betas=["code-execution-2025-08-25", "skills-2025-10-02"],
+    container={
+        "id": response1.container.id,  # 컨테이너 재사용
+        "skills": [
+            {"type": "anthropic", "skill_id": "xlsx", "version": "latest"}
+        ]
+    },
+    messages=messages,
+    tools=[{"type": "code_execution_20250825", "name": "code_execution"}]
+)</pre>
+                </div>
+
+                <h3>장시간 실행 작업</h3>
+                <p>Skills는 여러 턴이 필요한 작업을 수행할 수 있습니다. <code>pause_turn</code> 중지 사유를 처리하세요:</p>
+
+                <div class="code-block">
+                    <pre>messages = [{"role": "user", "content": "Process this large dataset"}]
+max_retries = 10
+
+response = client.beta.messages.create(
+    model="claude-sonnet-4-5-20250929",
+    max_tokens=4096,
+    betas=["code-execution-2025-08-25", "skills-2025-10-02"],
+    container={
+        "skills": [
+            {"type": "custom", "skill_id": "skill_01AbCdEfGhIjKlMnOpQrStUv", "version": "latest"}
+        ]
+    },
+    messages=messages,
+    tools=[{"type": "code_execution_20250825", "name": "code_execution"}]
+)
+
+# 장시간 작업을 위한 pause_turn 처리
+for i in range(max_retries):
+    if response.stop_reason != "pause_turn":
+        break
+
+    messages.append({"role": "assistant", "content": response.content})
+    response = client.beta.messages.create(
+        model="claude-sonnet-4-5-20250929",
+        max_tokens=4096,
+        betas=["code-execution-2025-08-25", "skills-2025-10-02"],
+        container={
+            "id": response.container.id,
+            "skills": [
+                {"type": "custom", "skill_id": "skill_01AbCdEfGhIjKlMnOpQrStUv", "version": "latest"}
+            ]
+        },
+        messages=messages,
+        tools=[{"type": "code_execution_20250825", "name": "code_execution"}]
+    )</pre>
+                </div>
+
+                <div class="highlight">
+                    <p><strong>참고:</strong> 응답에 <code>pause_turn</code> 중지 사유가 포함될 수 있으며, 이는 API가 장시간 실행 중인 Skill 작업을 일시 중지했음을 나타냅니다. 후속 요청에서 응답을 그대로 제공하여 Claude가 턴을 계속하게 하거나, 대화를 중단하고 추가 지침을 제공하려면 콘텐츠를 수정할 수 있습니다.</p>
+                </div>
+
+                <h3>여러 Skills 사용하기</h3>
+                <p>복잡한 워크플로를 처리하기 위해 단일 요청에서 여러 Skills를 결합할 수 있습니다:</p>
+
+                <div class="code-block">
+                    <pre>response = client.beta.messages.create(
+    model="claude-sonnet-4-5-20250929",
+    max_tokens=4096,
+    betas=["code-execution-2025-08-25", "skills-2025-10-02"],
+    container={
+        "skills": [
+            {
+                "type": "anthropic",
+                "skill_id": "xlsx",
+                "version": "latest"
+            },
+            {
+                "type": "anthropic",
+                "skill_id": "pptx",
+                "version": "latest"
+            },
+            {
+                "type": "custom",
+                "skill_id": "skill_01AbCdEfGhIjKlMnOpQrStUv",
+                "version": "latest"
+            }
+        ]
+    },
+    messages=[{
+        "role": "user",
+        "content": "Analyze sales data and create a presentation"
+    }],
+    tools=[{
+        "type": "code_execution_20250825",
+        "name": "code_execution"
+    }]
+)</pre>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>커스텀 Skills 관리하기</h2>
+
+                <h3>Skill 생성하기</h3>
+                <p>커스텀 Skill을 업로드하여 워크스페이스에서 사용할 수 있도록 합니다. 디렉토리 경로 또는 개별 파일 객체를 사용하여 업로드할 수 있습니다.</p>
+
+                <div class="code-block">
+                    <pre>import anthropic
+
+client = anthropic.Anthropic()
+
+# 옵션 1: files_from_dir 헬퍼 사용 (Python 전용, 권장)
+from anthropic.lib import files_from_dir
+
+skill = client.beta.skills.create(
+    display_title="Financial Analysis",
+    files=files_from_dir("/path/to/financial_analysis_skill"),
+    betas=["skills-2025-10-02"]
+)
+
+# 옵션 2: zip 파일 사용
+skill = client.beta.skills.create(
+    display_title="Financial Analysis",
+    files=[("skill.zip", open("financial_analysis_skill.zip", "rb"))],
+    betas=["skills-2025-10-02"]
+)
+
+print(f"Created skill: {skill.id}")
+print(f"Latest version: {skill.latest_version}")</pre>
+                </div>
+
+                <p><strong>요구사항:</strong></p>
+                <ul>
+                    <li>최상위 레벨에 SKILL.md 파일이 반드시 포함되어야 함</li>
+                    <li>모든 파일은 경로에서 공통 루트 디렉토리를 지정해야 함</li>
+                    <li>총 업로드 크기는 8MB 미만이어야 함</li>
+                    <li>YAML 프론트매터 요구사항:
+                        <ul>
+                            <li><code>name</code>: 최대 64자, 소문자/숫자/하이픈만 사용, XML 태그 없음, 예약어 불가("anthropic", "claude")</li>
+                            <li><code>description</code>: 최대 1024자, 비어있지 않아야 함, XML 태그 없음</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3>Skills 목록 조회하기</h3>
+                <p>Anthropic이 사전 제작한 Skills와 커스텀 Skills를 포함하여 워크스페이스에서 사용 가능한 모든 Skills를 조회합니다. <code>source</code> 매개변수를 사용하여 Skill 유형별로 필터링할 수 있습니다:</p>
+
+                <div class="code-block">
+                    <pre># 모든 Skills 조회
+skills = client.beta.skills.list(
+    betas=["skills-2025-10-02"]
+)
+
+for skill in skills.data:
+    print(f"{skill.id}: {skill.display_title} (source: {skill.source})")
+
+# 커스텀 Skills만 조회
+custom_skills = client.beta.skills.list(
+    source="custom",
+    betas=["skills-2025-10-02"]
+)</pre>
+                </div>
+
+                <h3>버전 관리</h3>
+                <p>Skills는 안전한 업데이트 관리를 위한 버전 관리를 지원합니다:</p>
+
+                <p><strong>Anthropic 관리 Skills:</strong></p>
+                <ul>
+                    <li>버전은 날짜 형식 사용: <code>20251013</code></li>
+                    <li>업데이트가 이루어지면 새 버전 출시</li>
+                    <li>안정성을 위해 정확한 버전 지정</li>
+                </ul>
+
+                <p><strong>커스텀 Skills:</strong></p>
+                <ul>
+                    <li>자동 생성된 epoch 타임스탬프: <code>1759178010641129</code></li>
+                    <li>항상 최신 버전을 얻으려면 <code>"latest"</code> 사용</li>
+                    <li>Skill 파일을 업데이트할 때 새 버전 생성</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>Skills 로딩 방식</h2>
+                <p>컨테이너에서 Skills를 지정하면:</p>
+                <ol>
+                    <li><strong>메타데이터 발견</strong>: Claude는 시스템 프롬프트에서 각 Skill의 메타데이터(이름, 설명)를 확인</li>
+                    <li><strong>파일 로딩</strong>: Skill 파일이 <code>/skills/{directory}/</code>의 컨테이너로 복사됨</li>
+                    <li><strong>자동 사용</strong>: 요청과 관련이 있을 때 Claude가 자동으로 Skills를 로드하고 사용</li>
+                    <li><strong>구성</strong>: 복잡한 워크플로를 위해 여러 Skills가 함께 구성됨</li>
+                </ol>
+
+                <p>점진적 공개 아키텍처는 효율적인 컨텍스트 사용을 보장합니다. Claude는 필요할 때만 전체 Skill 지침을 로드합니다.</p>
+            </div>
+
+            <div class="section">
+                <h2>사용 사례</h2>
+
+                <h3>조직용 Skills</h3>
+                <p><strong>브랜드 & 커뮤니케이션</strong></p>
+                <ul>
+                    <li>문서에 회사별 서식(색상, 글꼴, 레이아웃) 적용</li>
+                    <li>조직 템플릿에 따라 커뮤니케이션 생성</li>
+                    <li>모든 출력물에서 일관된 브랜드 가이드라인 보장</li>
+                </ul>
+
+                <p><strong>프로젝트 관리</strong></p>
+                <ul>
+                    <li>회사별 형식(OKR, 의사결정 로그)으로 노트 구조화</li>
+                    <li>팀 규칙에 따라 작업 생성</li>
+                    <li>표준화된 회의록 및 상태 업데이트 생성</li>
+                </ul>
+
+                <p><strong>비즈니스 운영</strong></p>
+                <ul>
+                    <li>회사 표준 보고서, 제안서, 분석 자료 생성</li>
+                    <li>회사별 분석 절차 실행</li>
+                    <li>조직 템플릿에 따라 재무 모델 생성</li>
+                </ul>
+
+                <h3>개인용 Skills</h3>
+                <p><strong>콘텐츠 제작</strong></p>
+                <ul>
+                    <li>커스텀 문서 템플릿</li>
+                    <li>전문화된 서식 및 스타일링</li>
+                    <li>도메인별 콘텐츠 생성</li>
+                </ul>
+
+                <p><strong>데이터 분석</strong></p>
+                <ul>
+                    <li>커스텀 데이터 처리 파이프라인</li>
+                    <li>전문화된 시각화 템플릿</li>
+                    <li>산업별 분석 방법</li>
+                </ul>
+
+                <p><strong>개발 & 자동화</strong></p>
+                <ul>
+                    <li>코드 생성 템플릿</li>
+                    <li>테스팅 프레임워크</li>
+                    <li>배포 워크플로</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>제한 사항 및 제약</h2>
+
+                <h3>요청 제한</h3>
+                <ul>
+                    <li><strong>요청당 최대 Skills 수</strong>: 8개</li>
+                    <li><strong>최대 Skill 업로드 크기</strong>: 8MB (모든 파일 합산)</li>
+                    <li><strong>YAML 프론트매터 요구사항</strong>:
+                        <ul>
+                            <li><code>name</code>: 최대 64자, 소문자/숫자/하이픈만 사용, XML 태그 없음, 예약어 불가</li>
+                            <li><code>description</code>: 최대 1024자, 비어있지 않아야 함, XML 태그 없음</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3>환경 제약</h3>
+                <p>Skills는 다음과 같은 제한 사항이 있는 코드 실행 컨테이너에서 실행됩니다:</p>
+                <ul>
+                    <li><strong>네트워크 액세스 없음</strong> - 외부 API 호출 불가</li>
+                    <li><strong>런타임 패키지 설치 불가</strong> - 사전 설치된 패키지만 사용 가능</li>
+                    <li><strong>격리된 환경</strong> - 각 요청마다 새로운 컨테이너 제공</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>모범 사례</h2>
+
+                <h3>여러 Skills를 사용해야 하는 경우</h3>
+                <p>작업에 여러 문서 유형이나 도메인이 포함된 경우 Skills를 결합하세요:</p>
+
+                <p><strong>좋은 사용 사례:</strong></p>
+                <ul>
+                    <li>데이터 분석(Excel) + 프레젠테이션 생성(PowerPoint)</li>
+                    <li>보고서 생성(Word) + PDF로 내보내기</li>
+                    <li>커스텀 도메인 로직 + 문서 생성</li>
+                </ul>
+
+                <p><strong>피해야 할 경우:</strong></p>
+                <ul>
+                    <li>사용하지 않는 Skills 포함 (성능에 영향)</li>
+                </ul>
+
+                <h3>버전 관리 전략</h3>
+                <p><strong>프로덕션용:</strong></p>
+                <div class="code-block">
+                    <pre># 안정성을 위해 특정 버전에 고정
+container={
+    "skills": [{
+        "type": "custom",
+        "skill_id": "skill_01AbCdEfGhIjKlMnOpQrStUv",
+        "version": "1759178010641129"  # 특정 버전
+    }]
+}</pre>
+                </div>
+
+                <p><strong>개발용:</strong></p>
+                <div class="code-block">
+                    <pre># 활발한 개발을 위해 latest 사용
+container={
+    "skills": [{
+        "type": "custom",
+        "skill_id": "skill_01AbCdEfGhIjKlMnOpQrStUv",
+        "version": "latest"  # 항상 최신 버전
+    }]
+}</pre>
+                </div>
+
+                <h3>프롬프트 캐싱 고려사항</h3>
+                <p>프롬프트 캐싱을 사용할 때 컨테이너의 Skills 목록을 변경하면 캐시가 무효화된다는 점에 유의하세요. 최상의 캐싱 성능을 위해 요청 간에 Skills 목록을 일관되게 유지하세요.</p>
+
+                <h3>오류 처리</h3>
+                <p>Skill 관련 오류를 적절히 처리하세요:</p>
+
+                <div class="code-block">
+                    <pre>try:
+    response = client.beta.messages.create(
+        model="claude-sonnet-4-5-20250929",
+        max_tokens=4096,
+        betas=["code-execution-2025-08-25", "skills-2025-10-02"],
+        container={
+            "skills": [
+                {"type": "custom", "skill_id": "skill_01AbCdEfGhIjKlMnOpQrStUv", "version": "latest"}
+            ]
+        },
+        messages=[{"role": "user", "content": "Process data"}],
+        tools=[{"type": "code_execution_20250825", "name": "code_execution"}]
+    )
+except anthropic.BadRequestError as e:
+    if "skill" in str(e):
+        print(f"Skill error: {e}")
+        # Skill 관련 오류 처리
+    else:
+        raise</pre>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>다음 단계</h2>
+                <ul class="feature-list">
+                    <li><strong>API 레퍼런스</strong> - 모든 엔드포인트를 포함한 완전한 API 레퍼런스</li>
+                    <li><strong>작성 가이드</strong> - 효과적인 Skills 작성 모범 사례</li>
+                    <li><strong>코드 실행 도구</strong> - 코드 실행 환경에 대해 알아보기</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer">
+            <p><strong>API와 함께 Agent Skills 사용하기</strong> - 기술 문서</p>
+            <p>Anthropic Documentation | 2025.11.05</p>
+        </div>
+    </div>
+</body>
+</html>
