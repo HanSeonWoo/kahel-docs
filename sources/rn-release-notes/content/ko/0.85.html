@@ -1,0 +1,278 @@
+<div class="wrap">
+
+<header class="post">
+  <span class="kicker">React Native 릴리스</span>
+  <h1>React Native 0.85 — 새로운 애니메이션 백엔드, 새로운 Jest 프리셋 패키지</h1>
+  <p class="orig-title">원문: React Native 0.85 - New Animation Backend, New Jest Preset Package</p>
+  <p class="meta">2026년 4월 7일 · 약 6분 분량</p>
+  <p class="source">출처: <a href="https://reactnative.dev/blog/2026/04/07/react-native-0.85">reactnative.dev/blog/2026/04/07/react-native-0.85</a></p>
+  <div class="authors">
+    <div class="author"><img src="@@AV_alanleedev@@" alt="Alan Lee"><div><div class="n">Alan Lee</div><div class="a">Software Engineer @ Meta</div></div></div>
+    <div class="author"><img src="@@AV_CalixTang@@" alt="Calix Tang"><div><div class="n">Calix Tang</div><div class="a">Software Engineer @ Meta</div></div></div>
+    <div class="author"><img src="@@AV_zoontek@@" alt="Mathieu Acthernoene"><div><div class="n">Mathieu Acthernoene</div><div class="a">Software Engineer @ Expo</div></div></div>
+    <div class="author"><img src="@@AV_gabrieldonadel@@" alt="Gabriel Donadel Dall'Agnol"><div><div class="n">Gabriel Donadel Dall'Agnol</div><div class="a">Software Engineer @ Expo</div></div></div>
+    <div class="author"><img src="@@AV_bartlomiejbloniarz@@" alt="Bartłomiej Błoniarz"><div><div class="n">Bartłomiej Błoniarz</div><div class="a">Software Engineer @ Software Mansion</div></div></div>
+    <div class="author"><img src="@@AV_coado@@" alt="Dawid Małecki"><div><div class="n">Dawid Małecki</div><div class="a">Software Engineer @ Software Mansion</div></div></div>
+    <div class="author"><img src="@@AV_zeyap@@" alt="Zeya Peng"><div><div class="n">Zeya Peng</div><div class="a">Software Engineer @ Meta</div></div></div>
+    <div class="author"><img src="@@AV_sammy-SC@@" alt="Samuel Susla"><div><div class="n">Samuel Susla</div><div class="a">Software Engineer @ Meta</div></div></div>
+  </div>
+</header>
+
+<div class="admon rich">
+  <div class="t">문서 범위 · 2026-10-02 확인</div>
+  <p>블로그 번역은 최초 발표 당시의 설명을 보존합니다. 본문의 “최신 버전”, 지원 상태, 출시 예정 안내도 발표 당시 기준입니다.</p>
+  <p><a href="#patches">0.85.x 패치 내역</a>을 별도로 정리했습니다. 확인한 가장 최근 정식 패치는 <strong>0.85.3</strong>입니다.</p>
+</div>
+
+
+<p class="lead">오늘 React Native 0.85를 릴리스하게 되어 기쁩니다!</p>
+<p>이번 릴리스에는 <strong>새로운 애니메이션 백엔드(New Animation Backend)</strong>가 들어갔고, Jest 프리셋이 전용 패키지로 분리되었으며, 그 외에도 많은 개선과 버그 수정이 포함되어 있습니다.</p>
+
+<div class="toc">
+  <section>
+    <h3>주요 변경 사항 (Highlights)</h3>
+    <ul>
+      <li><a href="#animation-backend">새로운 애니메이션 백엔드</a></li>
+      <li><a href="#devtools">React Native DevTools 개선</a></li>
+      <li><a href="#metro-tls">Metro TLS 지원</a></li>
+    </ul>
+  </section>
+  <section>
+    <h3>호환성이 깨지는 변경 (Breaking Changes)</h3>
+    <ul>
+      <li><a href="#jest-preset">Jest 프리셋이 새 패키지로 이동</a></li>
+      <li><a href="#node">EOL Node.js 버전 지원 중단</a></li>
+      <li><a href="#absolutefill"><code>StyleSheet.absoluteFillObject</code> 제거</a></li>
+      <li><a href="#other-breaking">그 외 호환성 깨지는 변경</a></li>
+    </ul>
+  </section>
+</div>
+
+<h2 id="highlights">주요 변경 사항</h2>
+
+<h3 id="animation-backend">새로운 애니메이션 백엔드</h3>
+<p>React Native 0.85는 <a href="https://swmansion.com/">Software Mansion</a>과 협업하여 만든 새로운 <strong>공유 애니메이션 백엔드(Shared Animation Backend)</strong>를 도입합니다.</p>
+<p>이것은 Animated와 Reanimated 양쪽 모두에서 애니메이션이 내부적으로 어떻게 적용되는지를 담당하는 새로운 내부 엔진입니다. 핵심 애니메이션 업데이트 로직을 React Native 코어로 옮김으로써, Reanimated는 이전에는 불가능했던 성능 개선을 적용할 수 있게 되었고, 업데이트 재조정(reconciliation) 과정이 제대로 테스트되어 앞으로의 RN 업데이트에서도 안정적으로 유지되도록 보장할 수 있게 되었습니다.</p>
+<p>Animated에서는 이제 <strong>네이티브 드라이버로 레이아웃 속성을 애니메이션할 수 있습니다</strong>. (<a href="https://reactnative.dev/docs/animations#caveats">기존에 문서에 명시되어 있던 제약</a>은 더 이상 적용되지 않습니다.)</p>
+
+<div class="demos">
+  <figure><figcaption>iOS</figcaption><img src="@@IMG_IOS@@" alt="iOS 애니메이션 백엔드 데모"></figure>
+  <figure><figcaption>Android</figcaption><img src="@@IMG_ANDROID@@" alt="Android 애니메이션 백엔드 데모"></figure>
+</div>
+
+<p>더 많은 예제는 <a href="https://github.com/facebook/react-native/tree/main/packages/rn-tester/js/examples/AnimationBackend"><code>react-native/packages/rn-tester/js/examples/AnimationBackend/</code></a>에서 확인할 수 있습니다.</p>
+<p>사용하려면 <a href="https://reactnative.dev/docs/release-levels">이 문서에서 설명하는 방법</a>에 따라 React Native의 experimental 채널을 활성화하면 됩니다.</p>
+
+<div class="admon">
+  <div class="t">참고</div>
+  <p>이 실험적 기능은 곧 릴리스될 React Native <strong>0.85.1</strong>부터 사용할 수 있습니다.</p>
+</div>
+
+<h4>레이아웃 속성을 애니메이션하는 방법</h4>
+<p>새로운 애니메이션 백엔드를 사용하면 Animated에서 Flexbox 속성과 position 속성을 네이티브 드라이버로 애니메이션할 수 있습니다.</p>
+
+<div class="codeblock">
+<pre><code><span class="kw">import</span> {
+  Animated,
+  Button,
+  View,
+  useAnimatedValue,
+} <span class="kw">from</span> <span class="str">'react-native'</span>;
+
+<span class="kw">function</span> <span class="attr">MyComponent</span>() {
+  <span class="kw">const</span> width = <span class="attr">useAnimatedValue</span>(<span class="num">100</span>);
+
+  <span class="kw">const</span> toggle = () <span class="kw">=&gt;</span> {
+    Animated.<span class="attr">timing</span>(width, {
+      toValue: <span class="num">300</span>,
+      duration: <span class="num">500</span>,
+      useNativeDriver: <span class="num">true</span>,
+    }).<span class="attr">start</span>();
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;View</span> style={{flex: <span class="num">1</span>}}<span class="tag">&gt;</span>
+      <span class="tag">&lt;Animated.View</span>
+        style={{width, height: <span class="num">100</span>, backgroundColor: <span class="str">'blue'</span>}}
+      <span class="tag">/&gt;</span>
+      <span class="tag">&lt;Button</span> title=<span class="str">"Expand"</span> onPress={toggle} <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/View&gt;</span>
+  );
+}</code></pre>
+</div>
+
+<h3 id="devtools">React Native DevTools 개선</h3>
+<p>이번 릴리스에서 React Native DevTools에 여러 개선이 이루어졌습니다.</p>
+<ul>
+  <li><strong>다중 CDP 연결</strong>: 이제 React Native는 여러 개의 Chrome DevTools Protocol 연결을 동시에 지원합니다. 덕분에 React Native DevTools, VS Code, AI 에이전트 같은 클라이언트가 동시에 접속할 수 있습니다. 세션이 예기치 않게 종료되는 일 없이, 더 풍부하고 조합 가능한 툴링 워크플로를 사용할 수 있게 되었습니다.</li>
+  <li><strong>macOS 네이티브 탭</strong>: 데스크톱 앱을 macOS 26용으로 컴파일하도록 업데이트했고, 파워 유저를 위해 시스템 레벨 탭 처리도 활성화했습니다. DevTools 창이 여러 개 열려 있을 때 <strong>Window &gt; Merge All Windows</strong>로 사용할 수 있습니다.</li>
+</ul>
+
+<figure class="shot">
+  <img src="@@IMG_TABS@@" alt="macOS DevTools 네이티브 탭">
+  <figcaption>macOS에서의 DevTools 네이티브 탭</figcaption>
+</figure>
+
+<ul>
+  <li><strong>요청 페이로드 미리보기</strong>: 회귀 이슈로 비활성화되어 있던 네트워크 패널의 요청 본문(request body) 미리보기가 Android에서 다시 복구되었습니다.</li>
+</ul>
+
+<h3 id="metro-tls">Metro TLS 지원</h3>
+<p>Metro 개발 서버가 이제 TLS 설정 객체를 받을 수 있습니다. 개발 중에 HTTPS(그리고 Fast Refresh용 WSS)를 사용할 수 있게 되어, 보안 연결을 강제하는 API를 테스트할 때 유용합니다.</p>
+<p><code>metro.config.js</code>에서 다음과 같이 설정합니다.</p>
+
+<div class="codeblock">
+<div class="fname">metro.config.js</div>
+<pre><code><span class="kw">const</span> fs = <span class="attr">require</span>(<span class="str">'fs'</span>);
+
+config.server.tls = {
+  ca: fs.<span class="attr">readFileSync</span>(<span class="str">'path/to/ca'</span>),
+  cert: fs.<span class="attr">readFileSync</span>(<span class="str">'path/to/cert'</span>),
+  key: fs.<span class="attr">readFileSync</span>(<span class="str">'path/to/key'</span>),
+};</code></pre>
+</div>
+
+<p>로컬 개발에서는 <a href="https://github.com/FiloSottile/mkcert">mkcert</a>를 사용하면 브라우저 경고 없이 로컬에서 신뢰되는 인증서를 간단히 만들 수 있습니다.</p>
+
+<h2 id="breaking">호환성이 깨지는 변경</h2>
+
+<h3 id="jest-preset">Jest 프리셋이 새 패키지로 이동</h3>
+<p>React Native의 Jest 프리셋이 <code>react-native</code>에서 분리되어 새로운 <code>@react-native/jest-preset</code> 패키지로 옮겨졌습니다. 코어 패키지 크기가 줄어들고, 각 프로젝트가 테스트 설정을 더 유연하게 구성할 수 있게 됩니다.</p>
+<p><code>jest.config.js</code>를 한 줄만 수정하면 됩니다.</p>
+
+<div class="codeblock">
+<div class="fname">jest.config.js</div>
+<pre><code><span class="del">- preset: 'react-native',</span><span class="add">+ preset: '@react-native/jest-preset',</span></code></pre>
+</div>
+
+<h3 id="node">EOL Node.js 버전 지원 중단</h3>
+<p>React Native 0.85는 지원이 종료(EOL)된 Node.js 버전과 v20.19.4 이전 릴리스에 대한 지원을 중단합니다. 업그레이드 전에 지원되는 Node.js 버전을 사용 중인지 확인하세요.</p>
+<ul class="nodes">
+  <li><span class="v">Node.js v20</span><span class="badge ok">지원</span><span>(&gt;=20.19.4) Active LTS</span></li>
+  <li><span class="v">Node.js v21</span><span class="badge no">미지원</span><span>EOL</span></li>
+  <li><span class="v">Node.js v22</span><span class="badge ok">지원</span><span>Active LTS</span></li>
+  <li><span class="v">Node.js v23</span><span class="badge no">미지원</span><span>EOL</span></li>
+  <li><span class="v">Node.js v24+</span><span class="badge ok">지원</span><span></span></li>
+</ul>
+
+<h3 id="absolutefill"><code>StyleSheet.absoluteFillObject</code> 제거</h3>
+<p>deprecated 상태였던 <code>StyleSheet.absoluteFillObject</code> API가 제거되었습니다. 대신 <code>StyleSheet.absoluteFill</code>을 사용하거나, 직접 absolute 포지셔닝 스타일을 정의하세요.</p>
+
+<div class="codeblock">
+<pre><code><span class="del">- const styles = StyleSheet.absoluteFillObject;</span><span class="add">+ const styles = StyleSheet.absoluteFill;</span></code></pre>
+</div>
+
+<h3 id="other-breaking">그 외 호환성 깨지는 변경</h3>
+
+<h4>공통</h4>
+<ul>
+  <li><code>Pressable</code>이 숨겨진 <code>Activity</code> 안에서 더 이상 이벤트 리스너를 언마운트하지 않습니다.</li>
+  <li>deprecated 되어 있던 C++ 타입 별칭 <code>ShadowNode::Shared</code>, <code>ShadowNode::Weak</code>, <code>ShadowNode::Unshared</code>, <code>ShadowNode::ListOfWeak</code>, <code>ShadowNode::ListOfShared</code>, <code>SharedImageManager</code>, <code>ContextContainer::Shared</code>가 제거되었습니다. 실제로 사용되지 않던 것들이며, 라이브러리는 해당 타입을 직접 사용해야 합니다.</li>
+</ul>
+
+<h4>Android</h4>
+<ul>
+  <li><code>RCTEventEmitter</code>에 <code>receiveTouches</code>를 기본 no-op 구현으로 다시 추가했습니다. 아직 이 메서드에서 벗어나지 못한 라이브러리들의 breaking change를 줄이기 위한 수정입니다.</li>
+  <li><code>ReactTextUpdate</code>가 internal로 바뀌었으며, 외부에서 직접 접근해서는 안 됩니다.</li>
+  <li>레거시 아키텍처 정리 작업의 일환으로 여러 클래스가 deprecated 되거나 제거되었습니다.
+    <ul>
+      <li><code>ReactZIndexedViewGroup</code> deprecated.</li>
+      <li><code>UIManagerHelper</code> deprecated.</li>
+      <li><code>CatalystInstanceImpl</code> 제거 (이미 deprecated 상태였습니다).</li>
+      <li><code>NativeViewHierarchyManager</code>가 완전히 stub 처리되었습니다.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>iOS</h4>
+<ul>
+  <li><code>RCTHostRuntimeDelegate</code>가 deprecated 되었고 <code>RCTHostDelegate</code>로 통합되었습니다.</li>
+  <li><code>React.XCFramework</code> 사용 시 발생하던 중복 심볼(duplicate symbol) 에러가 수정되었습니다 (<code>fmt</code> 12.1.0 버전업을 통해).</li>
+</ul>
+
+<h2 id="other-changes">기타 변경 사항</h2>
+<ul>
+  <li><strong>Metro</strong>가 <code>^0.84.0</code>으로 올라갔습니다.</li>
+  <li><strong>React</strong>가 Hermes <code>250829098.0.10</code>을 사용하도록 업데이트되었습니다.</li>
+  <li><strong>Yoga</strong>: Android에서 <code>YogaNode</code>가 Kotlin으로 마이그레이션되었습니다.</li>
+  <li><strong>접근성</strong>: <code>AccessibilityInfo.setAccessibilityFocus</code>가 deprecated 되었고, <code>AccessibilityInfo.sendAccessibilityEvent</code> 사용이 권장됩니다.</li>
+  <li><strong>TypeScript</strong>: 여러 유틸리티 타입이 변환되었습니다 (<code>$Values</code>, <code>mixed</code>, <code>$ReadOnly</code>, <code>$ReadOnlyArray</code>).</li>
+  <li><strong>Android 빌드</strong>: Gradle 속성 <code>reactNativeDevServerIp</code>로 개발 서버 IP를 지정할 수 있습니다.</li>
+  <li><strong>iOS 빌드</strong>: <code>React.XCFramework</code>에서 clang virtual file system 지원이 추가되었습니다.</li>
+</ul>
+
+<h2 id="thanks">감사의 말</h2>
+<p>React Native 0.85에는 58명의 컨트리뷰터가 만든 604개 이상의 커밋이 담겨 있습니다. 모든 분들의 노고에 감사드립니다!</p>
+<p>이번 릴리스에서 특히 큰 기여를 해주신 커뮤니티 멤버들께 특별히 감사를 전합니다.</p>
+<ul>
+  <li>Animated 백엔드: <a href="https://github.com/zeyap">Zeya Peng</a>, <a href="https://github.com/bartlomiejbloniarz">Bartłomiej Błoniarz</a>, <a href="https://github.com/coado">Dawid Małecki</a></li>
+  <li>Metro TLS: <a href="https://github.com/vzaidman">Vitali Zaidman</a></li>
+  <li>다중 CDP 연결: <a href="https://github.com/motiz88">Moti Zilberman</a></li>
+  <li>Jest 프리셋 마이그레이션: <a href="https://github.com/kitten">Phil Pluckthun</a>, <a href="https://github.com/huntie">Alex Hunt</a></li>
+</ul>
+<p>또한 이번 릴리스 포스트에서 기능 문서화 작업에 참여해주신 다른 저자분들께도 감사드립니다.</p>
+
+<h2 id="upgrade">0.85로 업그레이드하기</h2>
+
+<div class="admon">
+  <div class="t">참고</div>
+  <p>이제 0.85가 React Native의 최신 안정 버전이며, 0.82.x는 지원 종료(unsupported) 상태가 됩니다. 자세한 내용은 <a href="https://github.com/reactwg/react-native-releases/blob/main/docs/support.md">React Native 지원 정책</a>을 참고하세요.</p>
+</div>
+
+<h4>업그레이드</h4>
+<p>기존 프로젝트에서는 <a href="https://react-native-community.github.io/upgrade-helper/">React Native Upgrade Helper</a>로 버전 간 코드 변경 사항을 확인하고, 함께 <a href="https://reactnative.dev/docs/upgrading">업그레이드 문서</a>도 참고하세요.</p>
+
+<h4>새 프로젝트 생성</h4>
+<div class="codeblock">
+<pre><code>npx @react-native-community/cli@latest init MyProject --version latest</code></pre>
+</div>
+
+<h4>Expo</h4>
+<p>Expo를 사용한다면, 다음 SDK인 SDK 56에 React Native 0.85가 포함될 예정입니다.</p>
+
+<section aria-labelledby="patches">
+<h2 id="patches">0.85.x 패치 릴리스</h2>
+<p class="meta">확인일: 2026-10-02 · 배포일: 한국 시간(UTC+9) · RC와 nightly는 제외</p>
+<p>공식 GitHub 릴리스와 CHANGELOG의 변경 항목을 한국어로 정리했습니다. 기록이 짧거나 비어 있는 버전은 공식 태그 비교로 보충하고 그 근거를 표시했습니다. 각 항목은 해당 패치의 변경 사항입니다.</p>
+<div class="tblwrap"><table><thead><tr><th scope="col">버전</th><th scope="col">배포일</th><th scope="col">주요 내용</th></tr></thead><tbody>
+<tr><td><a href="#patch-0-85-3">0.85.3</a></td><td>2026-05-06</td><td>Hermes 버전 선택, iOS 압축 해제, DevTools 갱신</td></tr>
+<tr><td><a href="#patch-0-85-2">0.85.2</a></td><td>2026-04-21</td><td>애니메이션 커밋 재시도 오류와 Metro 배너 수정</td></tr>
+<tr><td><a href="#patch-0-85-1">0.85.1</a></td><td>2026-04-14</td><td>Android 디버그 FormData 업로드와 실험 기능 플래그 수정</td></tr>
+</tbody></table></div>
+<h3 id="patch-0-85-3">0.85.3 · Hermes 버전 선택, iOS 압축 해제, DevTools 갱신</h3>
+<p class="meta">배포일: 2026-05-06</p>
+<ul>
+  <li>DevTools: <code>debugger-frontend</code>를 <code>8edd9be</code>에서 <code>194d3f8</code> 기준으로 갱신했습니다.</li>
+  <li>빌드: <code>version.properties</code>의 값이 <code>1000.0.0</code>이 아니면 고정된 Hermes 버전을 사용합니다.</li>
+  <li>iOS / 빌드: <code>replace-rncore-version.js</code>가 임시 디렉터리에 먼저 압축을 풀도록 바꿨습니다. EdenFS에서 압축 해제가 오류 표시 없이 실패하던 문제를 수정했습니다.</li>
+  <li>내부 iOS CI: DynamicFrameworks 테스트 작업에서 사전 빌드 바이너리 사용을 건너뜁니다.</li>
+</ul>
+<p class="source">출처: <a href="https://github.com/react/react-native/releases/tag/v0.85.3">공식 릴리스 0.85.3</a> · <a href="https://github.com/react/react-native/blob/main/CHANGELOG.md#v0853">공식 CHANGELOG</a></p>
+<h3 id="patch-0-85-2">0.85.2 · 애니메이션 커밋 재시도 오류와 Metro 배너 수정</h3>
+<p class="meta">배포일: 2026-04-21</p>
+<ul>
+  <li>Animated: 이벤트에 따른 특정 애니메이션 갱신에 사용할 <code>pushAnimationMutations</code>를 AnimationBackend에 추가했습니다.</li>
+  <li>Animated: ShadowTree 커밋을 재시도할 때 <code>RawProps</code>를 이동하지 않고 복사하도록 바꿨습니다. 애니메이션 백엔드에서 데이터가 손상될 수 있던 문제를 수정했습니다.</li>
+  <li>iOS / 개발 도구: 빠르게 연속으로 새로 고침하면 <code>Loading from Metro...</code> 배너가 남는 문제를 수정했습니다.</li>
+</ul>
+<p class="source">출처: <a href="https://github.com/react/react-native/releases/tag/v0.85.2">공식 릴리스 0.85.2</a> · <a href="https://github.com/react/react-native/blob/main/CHANGELOG.md#v0852">공식 CHANGELOG</a></p>
+<h3 id="patch-0-85-1">0.85.1 · Android 디버그 FormData 업로드와 실험 기능 플래그 수정</h3>
+<p class="meta">배포일: 2026-04-14</p>
+<ul>
+  <li>Animated / 실험 기능: 공유 애니메이션 백엔드와 C++ Native Animated의 플래그를 실험 릴리스 단계에 맞게 활성화했습니다. 일반 안정 설정에서 기본 활성화되었다는 뜻은 아닙니다.</li>
+  <li>Android / 네트워크: 디버그 빌드에서 <code>FormData</code> 업로드가 실패하던 문제를 수정했습니다.</li>
+</ul>
+<p class="source">출처: <a href="https://github.com/react/react-native/releases/tag/v0.85.1">공식 릴리스 0.85.1</a> · <a href="https://github.com/react/react-native/blob/main/CHANGELOG.md#v0851">공식 CHANGELOG</a> · <a href="https://github.com/react/react-native/commit/401b1620dc674b3f7b9e88a783baca68a2f94ebc">기능 플래그 수정 커밋</a></p>
+</section>
+
+<div class="tags">
+  <strong style="color:var(--text)">태그:</strong>
+  <span>announcement</span><span>release</span>
+</div>
+
+<footer class="note">
+  이 문서의 본문은 React Native 공식 블로그 글의 한국어 번역입니다. 패치 내역은 공식 릴리스와 변경 기록을 바탕으로 별도 정리했습니다. 이미지와 GIF는 파일 안에 포함되어 있어 인터넷 연결 없이도 그대로 표시됩니다.<br>
+  원문(영문): <a href="https://reactnative.dev/blog/2026/04/07/react-native-0.85">https://reactnative.dev/blog/2026/04/07/react-native-0.85</a>
+</footer>
+
+</div>

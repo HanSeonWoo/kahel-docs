@@ -1,0 +1,273 @@
+<div class="wrap">
+
+<header class="post">
+  <span class="kicker">React Native 릴리스</span>
+  <h1>React Native 0.87 — Strict TypeScript API, Metro 업데이트, Swift Package Manager, AGP 9 지원</h1>
+  <p class="orig-title">원문: React Native 0.87 - Strict TypeScript API, Metro Update, Swift Package Manager, AGP 9 Support</p>
+  <p class="meta">2026년 8월 11일 · 약 9분 분량</p>
+  <p class="source">출처: <a href="https://reactnative.dev/blog/2026/08/11/react-native-0.87">reactnative.dev/blog/2026/08/11/react-native-0.87</a></p>
+  <div class="authors">
+    <div class="author"><img src="@@AV_zeyap@@" alt="Zeya Peng"><div><div class="n">Zeya Peng</div><div class="a">Software Engineer @ Meta</div></div></div>
+    <div class="author"><img src="@@AV_fabriziocucci@@" alt="Fabrizio Cucci"><div><div class="n">Fabrizio Cucci</div><div class="a">Software Engineer @ Meta</div></div></div>
+    <div class="author"><img src="@@AV_gabrieldonadel@@" alt="Gabriel Donadel Dall'Agnol"><div><div class="n">Gabriel Donadel Dall'Agnol</div><div class="a">Software Engineer @ Expo</div></div></div>
+    <div class="author"><img src="@@AV_chrfalch@@" alt="Christian Falch"><div><div class="n">Christian Falch</div><div class="a">Software Engineer @ Expo</div></div></div>
+  </div>
+</header>
+
+<div class="admon rich">
+  <div class="t">문서 범위 · 2026-10-02 확인</div>
+  <p>블로그 번역은 최초 발표 당시의 설명을 보존합니다. 본문의 “최신 버전”, 지원 상태, 출시 예정 안내도 발표 당시 기준입니다.</p>
+  <p><a href="#patches">0.87.x 패치 내역</a>을 별도로 정리했습니다. 확인한 가장 최근 정식 패치는 <strong>0.87.1</strong>입니다.</p>
+</div>
+
+
+<p class="lead">오늘 React Native 0.87을 릴리스하게 되어 기쁩니다!</p>
+<p>이번 릴리스에서는 <strong>Strict TypeScript API</strong>가 기본 JavaScript API가 되고, Metro가 0.87로 올라가며, <strong>Swift Package Manager(SwiftPM)</strong> 실험 지원이 추가됩니다. 또한 최소 툴체인 요구사항이 올라갑니다 — Node.js 22, Android Gradle Plugin 9, Kotlin 2.0+.</p>
+
+<div class="toc">
+  <section>
+    <h3>주요 변경 사항 (Highlights)</h3>
+    <ul>
+      <li><a href="#strict">Strict TypeScript API 기본 적용</a></li>
+      <li><a href="#metro">더 빠르고 가벼워진 Metro</a></li>
+      <li><a href="#spm">iOS Swift Package Manager 실험 지원</a></li>
+      <li><a href="#agp">Android Gradle Plugin (AGP) v9</a></li>
+    </ul>
+  </section>
+  <section>
+    <h3>호환성이 깨지는 변경</h3>
+    <ul>
+      <li><a href="#toolchain">최소 툴체인 요구사항</a></li>
+      <li><a href="#removals">제거된 API</a></li>
+      <li><a href="#packages">패키지 · 툴링</a></li>
+      <li><a href="#deprecations">Deprecation</a></li>
+    </ul>
+  </section>
+</div>
+
+<h2 id="highlights">주요 변경 사항</h2>
+
+<h3 id="strict">Strict TypeScript API 기본 적용</h3>
+<p>React Native의 공개 JavaScript API가 이제 <a href="https://reactnative.dev/docs/strict-typescript-api">Strict TypeScript API</a>가 됩니다. 0.80에서 <a href="https://reactnative.dev/blog/2025/06/12/react-native-0.80#javascript-deep-imports-deprecation">deep import의 deprecation과 함께</a> opt-in 프리뷰로 처음 제공되었고, 0.87부터 모든 프로젝트의 기본값이 됩니다.</p>
+<p>생태계 전반에 걸친 변화이며, API 표면 전체에 <strong>의도된 호환성 깨짐</strong>을 동반합니다. 그 대가로 얻는 것은 다음과 같습니다.</p>
+<ul>
+  <li><strong>믿을 수 있는 타입</strong>: 이제 타입이 React Native 소스 코드에서 직접 생성됩니다. 기존에 손으로 관리하던 정의를 대체하며, 타입과 코드 사이에 오래 존재하던 괴리가 사라지고 API 전체의 커버리지와 정확도가 올라갑니다.</li>
+  <li><strong>안정적인 API</strong>: 안정적인 API는 그 범위를 정확히 정의하는 데서 시작합니다. 이제 API 범위는 <code>react-native</code>가 루트에서 export하는 것으로 한정되며, 내부 파일 변경이 더 이상 여러분의 breaking change가 되지 않습니다. 0.87부터 React Native의 JS API는 <strong>의도했을 때만</strong> 바뀝니다.</li>
+</ul>
+<p>새 타입이 실제로 어떻게 보이는지 — <code>TextInput</code> 컴포넌트에 마우스를 올렸을 때입니다.</p>
+
+<div class="demos">
+  <figure><figcaption>이전 (레거시 타입)</figcaption><img src="@@IMG_BEFORE@@" alt="레거시 타입에서 TextInput 심볼에 호버했을 때 — 문서가 없음"></figure>
+  <figure><figcaption>이후 (Strict API)</figcaption><img src="@@IMG_AFTER@@" alt="Strict API에서 TextInput 심볼에 호버했을 때 — 전체 타입 정보와 문서가 표시됨"></figure>
+</div>
+
+<p>이제 대부분의 심볼에 문서 주석이 포함되어, 호버만으로 훨씬 많은 정보를 한눈에 확인할 수 있습니다.</p>
+
+<h4>호환성이 깨지는 변경</h4>
+<ul>
+  <li>내부 경로로의 deep import(예: <code>react-native/Libraries/*</code>)는 이제 타입 에러이며, 마이그레이션이 필요합니다.</li>
+  <li>기존 정의가 부정확하거나 실제와 어긋났던 일부 타입의 이름과 형태가 바뀌었습니다. 가장 눈에 띄는 것은 ref에 전용 타입이 생긴 것입니다(예: <code>ViewInstance</code>, <code>TextInputInstance</code>) — <a href="https://reactnative.dev/docs/strict-typescript-api#refs-now-use-instance-types-since-087">문서</a>.</li>
+</ul>
+<p>0.80 프리뷰 이후 커뮤니티·파트너들과 함께 API를 다듬어 왔습니다. 루트 export를 확정하고 주요 라이브러리들과의 비호환 문제를 해결했습니다.</p>
+<p>많은 앱이 에러가 거의 없거나 전혀 없이 0.87로 올라갈 수 있을 것입니다. <a href="https://reactnative.dev/docs/strict-typescript-api#migration-guide">마이그레이션 가이드</a>에 각 breaking change가 정리되어 있습니다.</p>
+
+<div class="admon">
+  <div class="t">TIP</div>
+  <p>에이전트 기반 업그레이드를 한다면 <a href="https://www.skills.sh/react-native-community/skills/migrate-to-strict-api"><strong>/migrate-to-strict-api</strong></a> 스킬을 활용할 수 있습니다. 기존 ESLint fixer 위에 직접적인 마이그레이션 지침이 담겨 있습니다.</p>
+</div>
+
+<h4>opt-out 방법</h4>
+<p>모든 앱과 라이브러리가 당장 마이그레이션할 수 있는 것은 아니라는 점을 고려해, 사용자용 opt-out 스위치를 유지합니다.</p>
+<p>이 opt-out은 임시 다리입니다. <strong>React Native 0.88까지 사용할 수 있으며</strong>, 그다음 릴리스에서 레거시 TypeScript 타입을 제거할 계획입니다.</p>
+<p>이전 타입으로 잠시 되돌리려면 <code>tsconfig.json</code>에 <code>"react-native-legacy-deep-imports"</code> 커스텀 컨디션을 추가하세요.</p>
+
+<div class="codeblock">
+<div class="fname">tsconfig.json</div>
+<pre><code>  {
+    <span class="str">"extends"</span>: <span class="str">"@react-native/typescript-config"</span>,
+    <span class="str">"compilerOptions"</span>: {
+      ...
+<span class="add">+     "customConditions": ["react-native", "react-native-legacy-deep-imports"]</span>    }
+  }</code></pre>
+</div>
+
+<ul>
+  <li>opt-out은 <strong>자기 프로젝트의 TypeScript 분석에만</strong> 영향을 줍니다. 앱과 라이브러리는 각각 독립적으로 마이그레이션합니다 (<a href="https://reactnative.dev/docs/strict-typescript-api#opting-out-since-087">자세히</a>).</li>
+  <li>Strict API 도입을 가로막는 문제가 있다면 <a href="https://github.com/react-native-community/discussions-and-proposals/discussions/1015">피드백 스레드</a>에 알려주세요.</li>
+</ul>
+
+<details class="fold">
+  <summary>Strict API · 더 읽을거리와 FAQ</summary>
+  <ul>
+    <li><a href="https://reactnative.dev/docs/strict-typescript-api#faqs">FAQ</a> — 런타임에 영향이 있는지, 라이브러리 저자는 언제 마이그레이션해야 하는지, 왜 수동 타입을 교체했는지 등 자주 묻는 질문.</li>
+    <li><a href="https://reactnative.dev/blog/2025/06/12/moving-towards-a-stable-javascript-api">Moving Towards a Stable JavaScript API</a> — 0.80 프리뷰 발표 당시 설명한 이 마이그레이션의 근거.</li>
+    <li><a href="https://www.youtube.com/live/UTaJlqhTk2g?si=SDRmj80kss7hXuGG&amp;t=6520">발표 영상 보기</a> — App.js 2025에서 진행한 Strict TypeScript API의 동기와 작업 과정 딥다이브.</li>
+  </ul>
+</details>
+
+<h3 id="metro">더 빠르고 가벼워진 Metro</h3>
+<p>이번 릴리스에서 Metro가 0.84에서 0.87로 업데이트됩니다.</p>
+<ul>
+  <li>소스맵 생성이 <strong>2배 빨라져</strong> React Native DevTools 로딩이 빨라집니다.</li>
+  <li>소스맵 저장 방식이 효율화되어 Metro의 <strong>메모리 사용량이 절반</strong>으로 줄었습니다.</li>
+  <li>TypeScript·ESM <a href="https://metrobundler.dev/docs/configuration/">설정 파일</a>(예: <code>metro.config.mts</code>)을 정식 지원합니다. 반대로 <code>.es6</code> 확장자와 YAML 설정 지원은 제거되었습니다.</li>
+  <li>패키지 self-resolve 등 새로운 resolver 기능이 추가되었습니다.</li>
+  <li>그 외 다양한 수정과 개선은 Metro <a href="https://github.com/react/metro/releases">릴리스 노트</a>를 참고하세요.</li>
+</ul>
+
+<h3 id="spm">iOS Swift Package Manager 실험 지원</h3>
+<p>React Native 0.87은 iOS에서 CocoaPods의 대안으로 Swift Package Manager를 실험적으로 지원합니다. opt-in이며 기존 방식에 추가되는 형태로, CocoaPods가 여전히 기본이자 지원되는 경로입니다. SwiftPM 경로는 React Native가 이미 배포 중인 사전 빌드 XCFramework를 그대로 사용합니다.</p>
+<p>이 새 방식은 <strong>Xcode만 있으면 됩니다</strong>. Ruby도, Bundler도, CocoaPods도 필요 없습니다.</p>
+<p>기존 앱이나 새 앱에서 시험해보려면:</p>
+<div class="codeblock"><pre><code>cd ios
+<span class="com"># deintegrate는 프로젝트에서 CocoaPods를 제거합니다</span>
+npx react-native spm --deintegrate</code></pre></div>
+<p>이 명령은 프로젝트를 갈아엎는 게 아니라 기존 <code>.xcodeproj</code>에 Swift 패키지 참조를 주입합니다. 서명(signing), capability, 빌드 페이즈는 그대로 유지됩니다. <code>npx react-native spm deinit</code>으로 변경을 정확히 되돌릴 수 있습니다.</p>
+
+<div class="admon">
+  <div class="t">중요</div>
+  <p>이 명령은 <strong>한 번만</strong> 실행합니다. 최초 설정 이후에는 의존성이 바뀌어도 다시 실행하지 않습니다. 네이티브 패키지를 설치하거나 제거한 뒤 빌드하면, 프로젝트가 변경을 감지해 오토링킹을 다시 수행합니다. 의존성이 바뀔 때마다 <code>pod install</code>을 기억해야 하는 단계가 없습니다.</p>
+</div>
+
+<p>알려진 제약:</p>
+<ul>
+  <li>커뮤니티 라이브러리가 <code>Package.swift</code>를 제공해야 합니다. 없다면 <code>npx react-native spm scaffold</code>로 해당 라이브러리의 podspec에서 생성할 수 있습니다.</li>
+  <li>새로 clone한 직후나 CI에서는 빌드 전에 <code>npx react-native spm</code>을 한 번 실행하세요. <code>pod install</code>에 해당하는 단계입니다.</li>
+  <li>명령·플래그·생성되는 구조는 이후 릴리스에서 바뀔 수 있습니다. <strong>아직 프로덕션에서 사용하지 마세요.</strong></li>
+</ul>
+<p>전체 설계와 마이그레이션 계획은 <a href="https://github.com/react-native-community/discussions-and-proposals/pull/994">RFC #0994</a>를 참고하세요.</p>
+
+<h4>헤더 관련 호환성 깨짐</h4>
+<p>SwiftPM 통합을 제대로 지원하려면 React Native 자체의 사전 컴파일 바이너리를 배포하는 방식을 다시 생각해야 했습니다. SwiftPM은 XCFramework 구조와 헤더 위치에 대해 CocoaPods보다 훨씬 엄격하기 때문입니다.</p>
+<p>그래서 새로운 XCFramework 두 개가 보일 수 있습니다.</p>
+<ul>
+  <li><code>ReactNativeHeaders.xcframework</code></li>
+  <li><code>ReactNativeDependenciesHeaders.xcframework</code></li>
+</ul>
+<p>둘 다 헤더 전용 프레임워크입니다. 이 변경 덕분에 헤더가 표준 프레임워크·헤더 검색 경로 방식으로 해석되고, 모든 네임스페이스가 물리적으로 정확히 한 곳에만 존재하게 됩니다. 헤더 내용 자체는 소스 pod과 바이트 단위로 동일합니다. 사용자 입장에서 바뀌는 것은 네임스페이스 없는 angle include 하나뿐입니다. 네임스페이스 없이 React Native 헤더를 import하고 있었다면 다음과 같이 추가하세요.</p>
+
+<div class="codeblock">
+<pre><code><span class="del">- #import &lt;RCTAppDelegate.h&gt;</span><span class="add">+ #import &lt;React/RCTAppDelegate.h&gt;</span></code></pre>
+</div>
+
+<h3 id="agp">Android Gradle Plugin (AGP) v9</h3>
+<p>AGP 9 지원이 추가된 첫 React Native 릴리스입니다.</p>
+<p>AGP 9.0은 <a href="https://developer.android.com/build/releases/agp-9-0-0-release-notes">Gradle 빌드에 여러 API 변경과 호환성 깨짐</a>을 가져오는 메이저 릴리스입니다.</p>
+<p>특히 이번 릴리스에서는 AGP 9에 포함된 내장 Kotlin과 새 DSL API를 <strong>끄는 것을 권장</strong>합니다. 업그레이드 헬퍼에도 안내되어 있듯, <code>android/gradle.properties</code>에 다음 플래그를 추가하면 됩니다.</p>
+<div class="codeblock"><div class="fname">android/gradle.properties</div><pre><code><span class="com"># AGP 9에 포함된 내장 kotlin과 새 DSL 동작을 끕니다.</span>
+<span class="com"># AGP 10.x부터는 이 opt-out이 제거됩니다.</span>
+android.builtInKotlin=false
+android.newDsl=false</code></pre></div>
+<p>생태계 전반의 AGP 9 도입 진행 상황은 <a href="https://github.com/react-native-community/discussions-and-proposals/pull/1006">RFC #1006</a>에서 확인할 수 있습니다.</p>
+
+<h2 id="breaking">호환성이 깨지는 변경</h2>
+
+<h3 id="toolchain">최소 툴체인 요구사항</h3>
+<ul class="nodes">
+  <li><span class="v">Node.js</span><span class="badge ok">&gt;= 22.13.0</span><span>이제 필수입니다</span></li>
+  <li><span class="v">Kotlin (Android)</span><span class="badge ok">2.0+</span><span>번들 버전은 2.2.0</span></li>
+  <li><span class="v">minCompileSdk</span><span class="badge ok">34</span><span>라이브러리는 compileSdk 34 이상 필요</span></li>
+  <li><span class="v">compileSdk / buildTools</span><span class="badge ok">37</span><span>버전 상향</span></li>
+</ul>
+
+<h3 id="removals">제거된 API</h3>
+<ul>
+  <li><strong>Strict TypeScript API</strong>가 기본이 되면서(위 참조), <code>Libraries/</code>로의 deep import는 <code>"react-native-legacy-deep-imports"</code>로 되돌리지 않는 한 접근할 수 없습니다 (<a href="https://reactnative.dev/docs/strict-typescript-api#opting-out-since-087">자세히</a>).</li>
+  <li><code>src/private/</code>로의 deep import가 제거되었습니다.</li>
+  <li>deprecated 되었던 <code>*Properties</code> 타입 별칭(예: <code>ViewProperties</code>)은 Strict API에서 접근할 수 없습니다. <code>*Props</code> 쪽을 사용하세요 (<a href="https://reactnative.dev/docs/strict-typescript-api#removal-of-some-deprecated-types">자세히</a>).</li>
+  <li>YAML Metro 설정 파일과 <code>.es6</code> 확장자 JavaScript 설정 파일 지원이 제거되었습니다.</li>
+  <li><code>InteractionManager</code>가 제거되었습니다. <code>requestIdleCallback</code>을 사용하세요.</li>
+  <li>deprecated 되었던 <code>Modal</code>의 <code>animated</code> prop이 제거되었습니다.</li>
+  <li>deprecated 되었던 <code>StatusBar</code>의 <code>backgroundColor</code>, <code>translucent</code>, <code>networkActivityIndicatorVisible</code> prop과 해당 setter 메서드들이 제거되었습니다.</li>
+  <li><code>ScrollView</code>의 <code>keyboardShouldPersistTaps</code>에 불리언 값을 넣는 방식이 제거되었습니다.</li>
+  <li><code>useTurboModules</code> 기능 플래그가 제거되었습니다(TurboModules는 항상 활성화).</li>
+  <li><code>useColorScheme()</code>이 <code>ColorSchemeName | null</code>을 반환하며, 더 이상 <code>'unspecified'</code>를 반환하지 않습니다.</li>
+  <li><code>NativeDialogManagerAndroid</code> export와 (문서화되지 않았던) <code>Touchable</code> 루트 export가 제거되었습니다. 대신 <code>ViewProps</code>를 확장하세요.</li>
+  <li><code>NativeMethods</code> / <code>NativeMethodsMixin</code> 타입이 제거되었습니다(<code>HostInstance</code> 사용).</li>
+</ul>
+
+<h3 id="packages">패키지 · 툴링</h3>
+<ul>
+  <li><code>@react-native/core-cli-utils</code>가 더 이상 배포되지 않습니다(레퍼런스 구현으로 저장소 안에는 남아 있습니다).</li>
+  <li><code>react-native/rn-get-polyfills</code>가 제거되었습니다. <code>@react-native/js-polyfills</code>를 사용하세요.</li>
+  <li><code>@react-native/jest-preset</code>은 이제 패키지로 설치해서 사용해야 합니다.</li>
+  <li>독립 실행형 <code>react-devtools</code> 패키지에 WebSocket으로 연결하는 방식 지원이 제거되었습니다. React Native DevTools를 사용하세요.</li>
+</ul>
+
+<h2 id="deprecations">Deprecation</h2>
+<p>다음 API들은 deprecated 되었으며 이후 릴리스에서 제거될 예정입니다.</p>
+<ul>
+  <li><code>react-native/Libraries/Core/InitializeCore</code> → <code>react-native/setup-env</code> 사용 (<a href="https://reactnative.dev/docs/strict-typescript-api#initializecore-is-now-react-nativesetup-env-since-087">자세히</a>)</li>
+  <li><code>@react-native/assets-registry</code> → <code>react-native</code>의 <code>AssetRegistry</code>와 새로운 <code>@react-native/asset-utils</code> 사용</li>
+  <li><code>ImageBackground</code> → <code>View</code> 안에 absolute 포지션 <code>Image</code>를 두는 방식 사용</li>
+  <li><code>NativeMethods</code> 인터페이스 → <code>HostInstance</code> 사용</li>
+  <li><code>Appearance.setColorScheme('unspecified')</code> → <code>'auto'</code> 사용</li>
+  <li><strong>Android</strong>: <code>DrawerLayoutAndroid</code> → <code>react-native-drawer-layout</code> 사용, <code>UIBlock</code> / <code>UIManagerModule.addUIBlock</code> / <code>prependUIBlock</code> → <code>UIManagerListener</code>나 View Command 사용, <code>DefaultReactActivityDelegate</code>의 new-arch-flag 생성자들</li>
+  <li><strong>iOS</strong>: <code>TimingModule</code>, <code>RCTTurboModuleEnabled()</code> / <code>RCTEnableTurboModule()</code></li>
+</ul>
+
+<h2 id="thanks">감사의 말</h2>
+<p>React Native 0.87에는 74명의 컨트리뷰터가 만든 265개의 커밋이 담겨 있습니다. 모든 분들의 노고에 감사드립니다!</p>
+<p>이번 릴리스에서 특히 큰 기여를 해주신 커뮤니티 멤버들께 특별히 감사를 전합니다.</p>
+<ul>
+  <li>Strict TypeScript API 작업: <a href="https://github.com/huntie">Alex Hunt</a></li>
+  <li>Swift Package Manager 지원 추가: <a href="https://github.com/chrfalch">Christian Falch</a></li>
+  <li>Metro 개선: <a href="https://github.com/robhogan">Rob Hogan</a></li>
+  <li>AGP V9 도입: <a href="https://github.com/hurali97">Hur Ali</a></li>
+  <li>레거시 아키텍처 정리: <a href="https://github.com/christophpurrer">Christoph Purrer</a></li>
+</ul>
+
+<h2 id="upgrade">0.87로 업그레이드하기</h2>
+
+<div class="admon">
+  <div class="t">참고</div>
+  <p>이제 0.87이 React Native의 최신 안정 버전이며, 0.84.x는 지원 종료(unsupported) 상태가 됩니다. 자세한 내용은 <a href="https://github.com/reactwg/react-native-releases/blob/main/docs/support.md">React Native 지원 정책</a>을 참고하세요.</p>
+</div>
+
+<h4>업그레이드</h4>
+<p>기존 프로젝트에서는 <a href="https://react-native-community.github.io/upgrade-helper/">React Native Upgrade Helper</a>로 버전 간 코드 변경 사항을 확인하고, 함께 <a href="https://reactnative.dev/docs/upgrading">업그레이드 문서</a>도 참고하세요.</p>
+
+<h4>새 프로젝트 생성</h4>
+<div class="codeblock"><pre><code>npx @react-native-community/cli@latest init MyProject --version latest</code></pre></div>
+
+<h4>Expo</h4>
+<p>Expo 프로젝트에서는 React Native 0.87을 <code>expo@canary</code> 릴리스로 사용할 수 있습니다.</p>
+
+<section aria-labelledby="patches">
+<h2 id="patches">0.87.x 패치 릴리스</h2>
+<p class="meta">확인일: 2026-10-02 · 배포일: 한국 시간(UTC+9) · RC와 nightly는 제외</p>
+<p>공식 GitHub 릴리스와 CHANGELOG의 변경 항목을 한국어로 정리했습니다. 기록이 짧거나 비어 있는 버전은 공식 태그 비교로 보충하고 그 근거를 표시했습니다. 각 항목은 해당 패치의 변경 사항입니다.</p>
+<div class="tblwrap"><table><thead><tr><th scope="col">버전</th><th scope="col">배포일</th><th scope="col">주요 내용</th></tr></thead><tbody>
+<tr><td><a href="#patch-0-87-1">0.87.1</a></td><td>2026-08-27</td><td>SwiftPM 빌드·Hermes 불일치와 Animated 타입 수정</td></tr>
+</tbody></table></div>
+<h3 id="patch-0-87-1">0.87.1 · SwiftPM 빌드·Hermes 불일치와 Animated 타입 수정</h3>
+<p class="meta">배포일: 2026-08-27</p>
+<ul>
+  <li>Hermes: Hermes V1을 <code>250829098.0.17</code>로 갱신했습니다.</li>
+  <li>Animated / 타입: <code>Animated.Value.addListener()</code>의 콜백 인수를 <code>any</code>에서 <code>{ value: number }</code>로 명시했습니다.</li>
+  <li>Animated / 타입: <code>Animated.event()</code>의 반환 타입을 <code>any</code> 대신 이벤트 처리 함수로 명시했습니다.</li>
+  <li>iOS / CocoaPods: <code>add_rn_third_party_dependencies</code>에서 공백이 있는 헤더 검색 경로의 따옴표를 유지합니다.</li>
+  <li>iOS / SwiftPM: 자동 연결 플러그인 호스트를 의존성으로 참조하면 명확한 오류를 표시하고 빌드를 중단합니다.</li>
+  <li>iOS / SwiftPM: 잘못되었거나 충돌하는 <code>spm.modules</code> 이름 때문에 모듈을 조용히 제외하던 동작을 수정했습니다.</li>
+  <li>iOS / SwiftPM: Swift manifest의 이름 충돌을 수정하고, 내부 패키지 이름의 상수를 추가해 충돌 검사를 지원합니다.</li>
+  <li>iOS / SwiftPM: Swift manifest를 만들 때 <code>react-native.config.js</code>의 <code>spm.name</code>을 읽도록 수정했습니다.</li>
+  <li>iOS / SwiftPM: 사용하지 않는 설정 <code>spm.modules.publicHeaderFiles</code>를 제거했습니다.</li>
+  <li>iOS / SwiftPM: <code>react-native.config.js</code>의 <code>default export</code>를 올바르게 읽습니다.</li>
+  <li>iOS / SwiftPM: SPM 연결 시 <code>SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG</code>를 설정합니다.</li>
+  <li>iOS / SwiftPM: 상태 표시가 갱신되기 전에 중단된 React-Core-prebuilt 구성 교체를 복구할 수 있게 했습니다.</li>
+  <li>iOS / SwiftPM: Release 빌드에서 Hermes 런타임과 컴파일러 버전이 달라 <code>Wrong bytecode version</code>으로 앱이 종료되던 문제를 수정했습니다.</li>
+</ul>
+<p class="source">출처: <a href="https://github.com/react/react-native/releases/tag/v0.87.1">공식 릴리스 0.87.1</a> · <a href="https://github.com/react/react-native/blob/main/CHANGELOG.md#v0871">공식 CHANGELOG</a></p>
+</section>
+
+<div class="tags">
+  <strong style="color:var(--text)">태그:</strong>
+  <span>announcement</span><span>release</span>
+</div>
+
+<footer class="note">
+  이 문서의 본문은 React Native 공식 블로그 글의 한국어 번역입니다. 패치 내역은 공식 릴리스와 변경 기록을 바탕으로 별도 정리했습니다. 이미지는 파일 안에 포함되어 있어 인터넷 연결 없이도 그대로 표시됩니다.<br>
+  원문(영문): <a href="https://reactnative.dev/blog/2026/08/11/react-native-0.87">https://reactnative.dev/blog/2026/08/11/react-native-0.87</a>
+</footer>
+
+</div>

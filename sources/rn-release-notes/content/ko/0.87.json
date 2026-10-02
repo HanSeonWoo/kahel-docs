@@ -1,0 +1,31 @@
+{
+ "title_ko": "React Native 0.87 한국어판",
+ "assets": {
+  "@@IMG_BEFORE@@": {
+   "url": "https://reactnative.dev/blog/assets/0.87-symbol-docs-before.png",
+   "mime": "image/png"
+  },
+  "@@IMG_AFTER@@": {
+   "url": "https://reactnative.dev/blog/assets/0.87-symbol-docs-after.png",
+   "mime": "image/png"
+  }
+ },
+ "authors": [
+  {
+   "key": "zeyap",
+   "img": "https://github.com/zeyap.png?size=96"
+  },
+  {
+   "key": "fabriziocucci",
+   "img": "https://github.com/fabriziocucci.png?size=96"
+  },
+  {
+   "key": "gabrieldonadel",
+   "img": "https://github.com/gabrieldonadel.png?size=96"
+  },
+  {
+   "key": "chrfalch",
+   "img": "https://github.com/chrfalch.png?size=96"
+  }
+ ]
+}

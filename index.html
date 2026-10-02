@@ -1,13 +1,49 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>kahel-docs</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Kahel의 개인 한글 기술 문서. 제목과 분류로 문서를 찾고 본문을 검색합니다.">
+  <title>Kahel Docs · 한글 기술 문서</title>
+  <link rel="canonical" href="https://docs.kahel.kr/">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/pagefind/pagefind-ui.css">
+  <link rel="stylesheet" href="/site.css">
+  <script defer src="/pagefind/pagefind-ui.js"></script>
+  <script defer src="/site.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#documents">문서 목록으로 이동</a>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Kahel Docs 첫 화면">
+      <span class="brand-mark" aria-hidden="true">k.</span>
+      <span>kahel<span class="brand-docs"> docs</span></span>
+    </a>
+    <span class="header-note">개인 기술 문서</span>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">읽고, 기록하고, 다시 찾기</p>
+      <h1 id="page-title">한글로 읽는 기술 문서<span class="title-dot">.</span></h1>
+      <p class="description">기술 문서와 사용 가이드를 한곳에 모았습니다.</p>
+      <p class="stats">@@DOCUMENT_COUNT@@개 문서 <span aria-hidden="true">·</span> @@CATEGORY_COUNT@@개 분류</p>
+    </section>
+    <section class="search-section" aria-labelledby="search-title">
+      <h2 id="search-title">문서 검색</h2>
+      <div id="search"></div>
+      <noscript><p>본문 검색을 사용하려면 JavaScript를 켜세요. 아래 목록에서 문서를 바로 열 수 있습니다.</p></noscript>
+    </section>
+    <div class="catalog" id="documents">
+      <nav class="categories" aria-labelledby="categories-title">
+        <h2 id="categories-title">분류</h2>
+        <a class="all-documents" href="#documents">전체 문서 <span>@@DOCUMENT_COUNT@@</span></a>
+        @@CATEGORIES@@
+      </nav>
+      <div class="document-groups">
+        @@DOCUMENTS@@
+      </div>
+    </div>
+  </main>
+  <footer class="site-footer"><span>Kahel Docs</span><a href="https://github.com/HanSeonWoo/kahel-docs">GitHub 저장소 <span aria-hidden="true">↗</span></a></footer>
+</body>
 </html>

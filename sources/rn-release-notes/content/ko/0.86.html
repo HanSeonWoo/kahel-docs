@@ -1,0 +1,218 @@
+<div class="wrap">
+
+<header class="post">
+  <span class="kicker">React Native 릴리스</span>
+  <h1>React Native 0.86 — Edge-to-Edge와 DevTools 개선, 호환성 깨짐 없음</h1>
+  <p class="orig-title">원문: React Native 0.86 - Edge-to-Edge and DevTools Improvements, no breaking changes</p>
+  <p class="meta">2026년 6월 11일 · 약 7분 분량</p>
+  <p class="source">출처: <a href="https://reactnative.dev/blog/2026/06/11/react-native-0.86">reactnative.dev/blog/2026/06/11/react-native-0.86</a></p>
+  <div class="authors">
+    <div class="author"><img src="@@AV_fabriziocucci@@" alt="Fabrizio Cucci"><div><div class="n">Fabrizio Cucci</div><div class="a">Software Engineer @ Meta</div></div></div>
+    <div class="author"><img src="@@AV_robhogan@@" alt="Rob Hogan"><div><div class="n">Rob Hogan</div><div class="a">Software Engineer @ Meta</div></div></div>
+    <div class="author"><img src="@@AV_zoontek@@" alt="Mathieu Acthernoene"><div><div class="n">Mathieu Acthernoene</div><div class="a">Software Engineer @ Expo</div></div></div>
+    <div class="author"><img src="@@AV_gabrieldonadel@@" alt="Gabriel Donadel Dall'Agnol"><div><div class="n">Gabriel Donadel Dall'Agnol</div><div class="a">Software Engineer @ Expo</div></div></div>
+  </div>
+</header>
+
+<div class="admon rich">
+  <div class="t">문서 범위 · 2026-10-02 확인</div>
+  <p>블로그 번역은 최초 발표 당시의 설명을 보존합니다. 본문의 “최신 버전”, 지원 상태, 출시 예정 안내도 발표 당시 기준입니다.</p>
+  <p><a href="#patches">0.86.x 패치 내역</a>을 별도로 정리했습니다. 확인한 가장 최근 정식 패치는 <strong>0.86.3</strong>입니다.</p>
+</div>
+
+
+<p class="lead">오늘 React Native 0.86을 릴리스하게 되어 기쁩니다!</p>
+<p>이번 릴리스에는 Android 15+에서의 포괄적인 edge-to-edge 지원과 React Native DevTools 개선이 담겨 있습니다.</p>
+<p>0.83에 이어 <strong>사용자에게 영향을 주는 호환성 깨짐이 없는 두 번째 릴리스</strong>로, 업그레이드를 더 예측 가능하고 매끄럽게 만들겠다는 방향을 이어갑니다.</p>
+
+<div class="toc">
+  <section>
+    <h3>주요 변경 사항 (Highlights)</h3>
+    <ul>
+      <li><a href="#home">React Native의 새 보금자리</a></li>
+      <li><a href="#e2e">Android Edge-to-Edge</a></li>
+      <li><a href="#devtools">React Native DevTools 개선</a></li>
+    </ul>
+  </section>
+  <section>
+    <h3>그 외</h3>
+    <ul>
+      <li><a href="#breaking">호환성 깨지는 변경 (없음)</a></li>
+      <li><a href="#deprecations">Deprecation</a></li>
+      <li><a href="#other">기타 변경 사항</a></li>
+      <li><a href="#upgrade">업그레이드</a></li>
+    </ul>
+  </section>
+</div>
+
+<h2 id="highlights">주요 변경 사항</h2>
+
+<h3 id="home">React Native의 새 보금자리</h3>
+<p>React Native 저장소가 React, Metro, Yoga, React Native 웹사이트와 함께 GitHub의 <code>facebook</code> 조직에서 <code>react</code> 조직으로 이동했습니다. 이는 React와 React Native가 <a href="https://react.foundation/">React Foundation</a> — React 생태계를 장기적으로 관리하기 위한 독립 재단 — 으로 옮겨간 것을 반영합니다.</p>
+<p>GitHub이 기존 URL, 이슈, PR을 모두 새 위치로 자동 리다이렉트하므로 따로 해야 할 일은 없습니다.</p>
+
+<h3 id="e2e">Android Edge-to-Edge</h3>
+<p>React Native 0.86에는 Android 15+의 edge-to-edge 모드에 대한 포괄적인 수정이 들어갔습니다. <code>edgeToEdgeEnabled</code> Gradle 속성으로 명시적으로 켜지 않았는데 OS가 강제로 적용하는 경우까지 포함합니다.</p>
+<p>주요 수정 사항:</p>
+<ul>
+  <li><strong><code>measureInWindow</code></strong>가 edge-to-edge가 켜진 상태에서 올바른 좌표를 반환합니다.</li>
+  <li><strong><code>KeyboardAvoidingView</code></strong>가 <code>edgeToEdgeEnabled</code>인 Android 15+에서 정상 동작합니다.</li>
+  <li><strong><code>Dimensions</code></strong>의 window 값이 edge-to-edge가 켜진 Android 15 미만 버전에서도 정확해집니다.</li>
+  <li><strong><code>StatusBar</code></strong>가 Modal이 열려 있는 동안에도 스타일과 표시 여부 변경을 지원합니다.</li>
+  <li><strong>내비게이션 바</strong> 대비(contrast)가 테마의 <code>enforceNavigationBarContrast</code> 속성을 따릅니다.</li>
+</ul>
+
+<h3 id="devtools">React Native DevTools 개선</h3>
+<p>React Native DevTools가 <code>Emulation.setEmulatedMedia</code>를 통한 <strong>라이트/다크 모드 에뮬레이션</strong>을 지원합니다. 기기 설정을 바꾸지 않고도 앱의 외형 모드 처리를 DevTools에서 바로 테스트할 수 있습니다. <code>cmd</code>/<code>ctrl</code> + <code>shift</code> + <code>P</code>로 커맨드 팔레트에서 사용하세요.</p>
+<p>웹에서와 마찬가지로 임시 전환이며, DevTools 연결이 끊기면 원래대로 돌아갑니다.</p>
+
+<figure class="shot">
+  <img src="@@IMG_DEVTOOLS@@" alt="라이트/다크 모드 에뮬레이션 옵션이 보이는 React Native DevTools 커맨드 팔레트">
+  <figcaption>커맨드 팔레트의 라이트/다크 모드 에뮬레이션 옵션</figcaption>
+</figure>
+
+<h2 id="breaking">호환성이 깨지는 변경</h2>
+<p>React Native 0.86에는 <strong>사용자에게 영향을 주는 호환성 깨짐이 없습니다</strong>.</p>
+<p>React Native 0.85를 쓰고 있다면 앱 코드를 하나도 바꾸지 않고 0.86으로 업그레이드할 수 있습니다.</p>
+<p>무엇을 호환성 깨짐으로 보는지는 <a href="https://reactnative.dev/releases/versioning-policy#what-is-a-breaking-change">이 문서</a>에서 확인하세요.</p>
+
+<h2 id="deprecations">Deprecation</h2>
+<p>다음 API들이 deprecated 되었고, 이후 릴리스에서 제거될 예정입니다.</p>
+<ul>
+  <li><strong><code>ViewUtil.getUIManagerType</code></strong>: 레거시 아키텍처 제거 작업의 일환으로 deprecated 되었습니다. <code>UIManagerType.Fabric</code>을 직접 인라인하거나, UIManagerType 검사 자체를 없애면 됩니다.</li>
+  <li><strong><code>AppRegistry</code></strong>: <code>AppRegistry.setComponentProviderInstrumentationHook</code>의 두 번째 인자가 deprecated 되었으며, 사용하면 경고가 표시됩니다.</li>
+</ul>
+
+<h2 id="other">기타 변경 사항</h2>
+
+<h3>런타임 · 웹 스펙 정합성</h3>
+<ul>
+  <li><strong><code>ExceptionsManager.reportErrorsAsExceptions</code> 엄격해짐</strong>: <code>false</code>가 아닌 값을 넣는 것은 이제 아무 효과가 없습니다. 이전에는 <code>0</code>, <code>null</code>, <code>""</code> 같은 falsy 값이면 에러→예외 변환이 꺼졌지만, 이제는 명시적인 불리언 <code>false</code>만 opt-out으로 인정해 실수를 줄입니다.</li>
+  <li><strong><code>PerformanceObserver</code>의 기본 <code>durationThreshold</code></strong>: <code>observe({type: 'event'})</code>가 모든 이벤트를 보고하는 대신, W3C Event Timing 스펙에 맞춰 <code>durationThreshold</code> 기본값을 104ms로 사용합니다. 웹 표준과 정합성이 맞춰지고 아주 짧은 이벤트로 인한 노이즈가 줄어듭니다.</li>
+</ul>
+
+<h3>렌더링 · 레이아웃 · 애니메이션</h3>
+<ul>
+  <li><strong>Modal의 <code>style</code> prop</strong>: <code>style</code>이 Modal 내부 컨테이너 View로 전달됩니다. <code>transparent</code>나 <code>backdropColor</code> 동작을 덮어쓰지 않고도 padding, 배경색 같은 커스텀 스타일을 줄 수 있습니다.</li>
+  <li><strong>Animated 마운팅 레이어 동기화</strong>: Native Animated의 동기 업데이트가 이후 React 커밋에 덮어쓰이지 않도록 마운팅 레이어 동기화를 활성화했습니다. 애니메이션 중인 뷰가 잠깐 애니메이션 이전 값으로 튀는 깜빡임이 수정됩니다.</li>
+  <li><strong>텍스트 측정 크래시</strong>: 이미 중단된 surface에서 텍스트를 측정할 때 발생하던 크래시를 수정했습니다.</li>
+  <li><strong>역행렬이 없는 transform의 터치 처리</strong>: <code>scaleX: 0</code>, <code>scaleY: 0</code>처럼 역행렬을 구할 수 없는 transform이 걸린 뷰는 iOS·Android에서 더 이상 터치를 받지 않습니다. 히트 테스트가 변환 행렬의 역행렬 여부를 판단해 해당 뷰를 건너뜁니다.</li>
+  <li><strong>Yoga 레이아웃 수정</strong>: Android에서 absolute 포지션 요소의 텍스트 줄바꿈(<a href="https://github.com/facebook/react-native/pull/56651">#56651</a>), 음수 너비에서 Android <code>BoringLayout.isBoring()</code> 크래시(<a href="https://github.com/facebook/react-native/pull/56007">#56007</a>), <code>display: contents</code> 노드의 소유권 문제(<a href="https://github.com/facebook/react-native/pull/56422">#56422</a>) 등 여러 레이아웃 회귀를 수정했습니다.</li>
+</ul>
+
+<h3>접근성</h3>
+<ul>
+  <li><strong>영원히 resolve되지 않던 Promise</strong>: 지원하지 않는 플랫폼에서 <code>AccessibilityInfo.isDarkerSystemColorsEnabled</code>, <code>isHighTextContrastEnabled</code>, <code>prefersCrossFadeTransitions</code>가 끝나지 않는 Promise를 반환하던 문제를 수정했습니다. 이제 <code>false</code>로 resolve됩니다.</li>
+</ul>
+
+<h3>인프라 · 의존성</h3>
+<ul>
+  <li><strong>Metro <code>^0.84.2</code></strong>: Metro 번들러 의존성이 업데이트되었습니다.</li>
+  <li><strong><code>HeadlessJsTaskSupportModule</code> 자동 등록</strong>: 이 모듈이 <code>CoreReactPackage</code>에 등록되어, Android에서 headless JS task를 쓰는 앱이 더 이상 수동 등록을 신경 쓰지 않아도 됩니다.</li>
+</ul>
+
+<h3>JSI (네이티브 인터페이스)</h3>
+<p>네이티브 모듈과 JS 엔진 사이의 C++ 인터페이스를 강화하는 JSI API들이 추가되었습니다.</p>
+<ul>
+  <li><strong><code>IRuntime</code> 인터페이스</strong>: 기존에 protected였던 <code>Runtime</code> 메서드들을 public으로 열어, 인터페이스 버전을 연쇄적으로 올리지 않고도 새로운 JSI 기능을 추가할 수 있게 합니다.</li>
+  <li><strong><code>TypedArray</code> / <code>Uint8Array</code></strong>: 타입드 배열을 일급으로 지원합니다. 생성, 버퍼 접근, offset·length 조회를 포함합니다.</li>
+  <li><strong><code>ArrayBuffer.detached</code></strong>: <code>ArrayBuffer</code>가 detach되었는지 확인할 수 있습니다.</li>
+  <li><strong><code>Array.push</code></strong>: 배열에 요소를 추가할 수 있습니다(이전에는 생성 이후 크기 변경이 불가능했습니다).</li>
+  <li><strong><code>String.length</code></strong>: 전체 문자열로 변환하지 않고 UTF-16 코드 단위 길이를 구할 수 있습니다.</li>
+  <li><strong><code>isInteger</code></strong>: 런타임을 호출하지 않고 <code>jsi::Value</code>가 정수인지 확인합니다.</li>
+  <li><strong>에러 생성 API</strong>: 표준 JS 에러 타입(<code>TypeError</code>, <code>RangeError</code>, <code>ReferenceError</code>, <code>SyntaxError</code>, <code>EvalError</code>, <code>URIError</code>)에 대한 팩토리 메서드가 추가되었습니다.</li>
+</ul>
+
+<h3>Android 입력 · 내비게이션 · 이미지</h3>
+<ul>
+  <li><strong>BackHandler 이벤트 객체</strong>: <code>hardwareBackPress</code> 이벤트가 네이티브 이벤트의 <code>timeStamp</code> 속성을 담은 이벤트 객체를 전달합니다. 타이밍 분석과 이벤트 상관 분석에 쓸 수 있으며, 인자를 무시하는 기존 콜백에는 영향이 없습니다.</li>
+  <li><strong>API 36+ 복귀 시 BackHandler 수정</strong>: Android API 36+에서 앱이 백그라운드에서 복귀한 뒤 <code>BackHandler</code> 콜백이 동작하지 않던 문제를 수정했습니다. <code>onHostResume</code> 시점에 백 버튼 핸들러가 제대로 재등록됩니다.</li>
+  <li><strong>LogBox/RedBox 백 버튼으로 닫기</strong>: LogBox 알림 토스트와 인스펙터 오버레이를 Android 하드웨어 백 버튼으로 닫을 수 있습니다.</li>
+  <li><strong>TextInput <code>setAutoCapitalize</code> 삼성 키보드 수정</strong>: 삼성 키보드에서 <code>setAutoCapitalize</code>가 <code>TYPE_NUMBER_FLAG_SIGNED</code>, <code>TYPE_NUMBER_FLAG_DECIMAL</code> 플래그를 제거해 숫자 입력에 음수 기호를 넣지 못하던 문제를 수정했습니다.</li>
+  <li><strong>TextInput/KeyboardAvoidingView의 IME 높이</strong>: 키보드와 이모지 패널을 오갈 때, 예측 문자 바가 나타날 때 등 IME 높이 변화에 <code>KeyboardAvoidingView</code>와 TextInput 자동 스크롤이 올바르게 반응합니다.</li>
+  <li><strong>Pressable <code>android_ripple</code></strong>: <code>android_ripple</code> prop이 <code>PlatformColor</code>를 받을 수 있습니다.</li>
+  <li><strong><code>Image.getSize</code> / <code>Image.getSizeWithHeaders</code></strong>: Fresco가 다운샘플링한 값이 아니라 실제 원본 크기를 반환합니다.</li>
+</ul>
+
+<h3>Android 네트워킹</h3>
+<ul>
+  <li><strong><code>OutOfMemoryError</code> 처리</strong>: <code>NetworkingModule</code>이 아주 큰 HTTP 응답을 올바르게 처리하며, OOM이나 크래시를 일으키지 않습니다.</li>
+  <li><strong>WebSocket <code>Cookie</code> 헤더</strong>: <code>WebSocketModule</code>이 WebSocket 생성자의 <code>headers</code> 옵션으로 전달한 <code>Cookie</code> 헤더를 더 이상 제거하지 않습니다. 인증 쿠키를 WebSocket 연결로 보낼 수 있습니다.</li>
+  <li><strong>새 아키텍처에서의 Blob content provider</strong>: 바이너리 데이터 접근에 쓰이는 <code>blob:</code> URL용 Blob content provider가 새 아키텍처에서 정상 동작합니다.</li>
+</ul>
+
+<h2 id="thanks">감사의 말</h2>
+<p>React Native 0.86에는 97명의 컨트리뷰터가 만든 596개 이상의 커밋이 담겨 있습니다. 모든 분들의 노고에 감사드립니다!</p>
+<p>이번 릴리스에서 특히 큰 기여를 해주신 커뮤니티 멤버들께 특별히 감사를 전합니다.</p>
+<ul>
+  <li>Android edge-to-edge 지원과 StatusBar 개선: <a href="https://github.com/zoontek">Mathieu Acthernoene</a></li>
+  <li>ShadowTree와 Yoga 수정: <a href="https://github.com/j-piasecki">Jakub Piasecki</a></li>
+  <li>Text 렌더링 수정: <a href="https://github.com/NickGerleman">Nick Gerleman</a></li>
+  <li>LogBox, ScrollView, Image 수정: <a href="https://github.com/Abbondanzo">Peter Abbondanzo</a></li>
+</ul>
+
+<h2 id="upgrade">0.86으로 업그레이드하기</h2>
+
+<div class="admon">
+  <div class="t">참고</div>
+  <p>이제 0.86이 React Native의 최신 안정 버전이며, 0.83.x는 지원 종료(unsupported) 상태가 됩니다. 자세한 내용은 <a href="https://reactnative.dev/releases">React Native 지원 정책</a>을 참고하세요.</p>
+</div>
+
+<h4>업그레이드</h4>
+<p>기존 프로젝트에서는 <a href="https://react-native-community.github.io/upgrade-helper/">React Native Upgrade Helper</a>로 버전 간 코드 변경 사항을 확인하고, 함께 <a href="https://reactnative.dev/docs/upgrading">업그레이드 문서</a>도 참고하세요.</p>
+
+<h4>새 프로젝트 생성</h4>
+<div class="codeblock"><pre><code>npx @react-native-community/cli@latest init MyProject --version latest</code></pre></div>
+
+<h4>Expo</h4>
+<p>Expo 프로젝트에서는 React Native 0.86을 <code>expo@canary</code> 릴리스로 사용할 수 있습니다.</p>
+
+<section aria-labelledby="patches">
+<h2 id="patches">0.86.x 패치 릴리스</h2>
+<p class="meta">확인일: 2026-10-02 · 배포일: 한국 시간(UTC+9) · RC와 nightly는 제외</p>
+<p>공식 GitHub 릴리스와 CHANGELOG의 변경 항목을 한국어로 정리했습니다. 기록이 짧거나 비어 있는 버전은 공식 태그 비교로 보충하고 그 근거를 표시했습니다. 각 항목은 해당 패치의 변경 사항입니다.</p>
+<div class="tblwrap"><table><thead><tr><th scope="col">버전</th><th scope="col">배포일</th><th scope="col">주요 내용</th></tr></thead><tbody>
+<tr><td><a href="#patch-0-86-3">0.86.3</a></td><td>2026-08-25</td><td>메모리 경합, Modal 이벤트, Android 복귀 오류 수정</td></tr>
+<tr><td><a href="#patch-0-86-2">0.86.2</a></td><td>2026-07-28</td><td>레이아웃 상태, Android 동기화, Hermes V1 갱신</td></tr>
+<tr><td><a href="#patch-0-86-1">0.86.1</a></td><td>배포되지 않음</td><td>Maven 문제로 배포되지 않음</td></tr>
+</tbody></table></div>
+<h3 id="patch-0-86-3">0.86.3 · 메모리 경합, Modal 이벤트, Android 복귀 오류 수정</h3>
+<p class="meta">배포일: 2026-08-25</p>
+<ul>
+  <li>Hermes: Hermes V1을 <code>250829098.0.17</code>로 갱신했습니다.</li>
+  <li>EventEmitter: <code>EventEmitter.cpp</code>에서 해제된 메모리에 접근할 수 있던 데이터 경합을 수정했습니다.</li>
+  <li>Modal / 이벤트: <code>parentNode</code>와 <code>parentElement</code>가 실제 부모 요소를 반환하도록 수정했습니다. Modal 등 중첩된 루트 뷰 위의 상위 요소로 이벤트가 전파되지 않던 문제를 해결합니다.</li>
+  <li>iOS / CocoaPods: <code>Yoga.podspec</code>의 파일 목록을 정렬하고 <code>hermes-engine.podspec</code>의 상대 경로를 수정해 컴퓨터마다 <code>SPEC CHECKSUMS</code>가 달라지던 문제를 수정했습니다.</li>
+  <li>Android / 런타임: <code>onHostResume</code> 도중 <code>getInitialURL</code>이 다시 호출되면 발생하던 <code>ConcurrentModificationException</code>을 수정했습니다.</li>
+  <li>iOS / 글꼴: New Architecture에서 <code>fontWeight</code>를 지정한 사용자 글꼴이 가장 굵은 두께로 표시되던 문제를 수정했습니다.</li>
+</ul>
+<p class="source">출처: <a href="https://github.com/react/react-native/releases/tag/v0.86.3">공식 릴리스 0.86.3</a> · <a href="https://github.com/react/react-native/blob/main/CHANGELOG.md#v0863">공식 CHANGELOG</a></p>
+<h3 id="patch-0-86-2">0.86.2 · 레이아웃 상태, Android 동기화, Hermes V1 갱신</h3>
+<p class="meta">배포일: 2026-07-28</p>
+<ul>
+  <li>레이아웃: <code>display: contents</code> 노드의 <code>hasNewLayout</code> 값이 잘못 설정되는 문제를 수정했습니다.</li>
+  <li>Android / 런타임: <code>mHasStartedDestroying</code> 대신 전용 잠금 객체인 <code>mHasStartedDestroyingLock</code>을 사용합니다.</li>
+  <li>Android / 런타임: <code>java.lang.Boolean</code> 객체로 동기화하지 않도록 수정했습니다.</li>
+  <li>Hermes: Hermes V1을 <code>250829098.0.16</code>으로 갱신했습니다.</li>
+</ul>
+<p class="source">출처: <a href="https://github.com/react/react-native/releases/tag/v0.86.2">공식 릴리스 0.86.2</a> · <a href="https://github.com/react/react-native/blob/main/CHANGELOG.md#v0862">공식 CHANGELOG</a></p>
+<h3 id="patch-0-86-1">0.86.1 · Maven 문제로 배포되지 않음</h3>
+<p class="meta">배포일: 배포되지 않음</p>
+<ul>
+  <li>공식 변경 기록과 0.86.2 릴리스 안내에 따르면, Maven 문제로 이 버전은 배포되지 않았습니다.</li>
+  <li>정식 패치 내역은 이어지는 <code>0.86.2</code> 항목에서 확인할 수 있습니다.</li>
+</ul>
+<p class="source">출처: <a href="https://github.com/react/react-native/blob/main/CHANGELOG.md#v0861">공식 CHANGELOG</a> · <a href="https://github.com/react/react-native/releases/tag/v0.86.2">0.86.2의 배포 제외 안내</a></p>
+</section>
+
+<div class="tags">
+  <strong style="color:var(--text)">태그:</strong>
+  <span>announcement</span><span>release</span>
+</div>
+
+<footer class="note">
+  이 문서의 본문은 React Native 공식 블로그 글의 한국어 번역입니다. 패치 내역은 공식 릴리스와 변경 기록을 바탕으로 별도 정리했습니다.<br>
+  원문(영문): <a href="https://reactnative.dev/blog/2026/06/11/react-native-0.86">https://reactnative.dev/blog/2026/06/11/react-native-0.86</a>
+</footer>
+
+</div>

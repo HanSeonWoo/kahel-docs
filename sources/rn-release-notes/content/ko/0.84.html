@@ -1,0 +1,214 @@
+<div class="wrap">
+
+<header class="post">
+  <span class="kicker">React Native 릴리스</span>
+  <h1>React Native 0.84 — Hermes V1이 기본 엔진으로</h1>
+  <p class="orig-title">원문: React Native 0.84 - Hermes V1 by Default</p>
+  <p class="meta">2026년 2월 11일 · 약 6분 분량</p>
+  <p class="source">출처: <a href="https://reactnative.dev/blog/2026/02/11/react-native-0.84">reactnative.dev/blog/2026/02/11/react-native-0.84</a></p>
+  <div class="authors">
+    <div class="author"><img src="@@AV_huntie@@" alt="Alex Hunt"><div><div class="n">Alex Hunt</div><div class="a">Software Engineer @ Meta</div></div></div>
+    <div class="author"><img src="@@AV_alanleedev@@" alt="Alan Lee"><div><div class="n">Alan Lee</div><div class="a">Software Engineer @ Meta</div></div></div>
+    <div class="author"><img src="@@AV_chrfalch@@" alt="Christian Falch"><div><div class="n">Christian Falch</div><div class="a">Software Engineer @ Expo</div></div></div>
+    <div class="author"><img src="@@AV_gabrieldonadel@@" alt="Gabriel Donadel Dall'Agnol"><div><div class="n">Gabriel Donadel Dall'Agnol</div><div class="a">Software Engineer @ Expo</div></div></div>
+  </div>
+</header>
+
+<div class="admon rich">
+  <div class="t">문서 범위 · 2026-10-02 확인</div>
+  <p>블로그 번역은 최초 발표 당시의 설명을 보존합니다. 본문의 “최신 버전”, 지원 상태, 출시 예정 안내도 발표 당시 기준입니다.</p>
+  <p><a href="#patches">0.84.x 패치 내역</a>을 별도로 정리했습니다. 확인한 가장 최근 정식 패치는 <strong>0.84.1</strong>입니다.</p>
+</div>
+
+
+<p class="lead">오늘 React Native 0.84를 릴리스하게 되어 기쁩니다!</p>
+<p>이번 릴리스에서는 <strong>Hermes V1이 기본 JavaScript 엔진</strong>이 되어 모든 React Native 앱이 상당한 성능 향상을 얻게 됩니다. 또한 iOS와 Android 양쪽에서 레거시 아키텍처 제거를 계속 진행했고, iOS에서는 사전 컴파일(precompiled) 바이너리가 기본으로 제공됩니다.</p>
+
+<div class="toc">
+  <section>
+    <h3>주요 변경 사항 (Highlights)</h3>
+    <ul>
+      <li><a href="#hermes">Hermes V1이 기본으로</a></li>
+      <li><a href="#prebuilt">iOS 사전 컴파일 바이너리 기본 적용</a></li>
+      <li><a href="#legacy">레거시 아키텍처 컴포넌트 제거</a></li>
+      <li><a href="#node">Node.js 22 이상 필수</a></li>
+    </ul>
+  </section>
+  <section>
+    <h3>그 외</h3>
+    <ul>
+      <li><a href="#other">기타 변경 사항</a></li>
+      <li><a href="#other-breaking">호환성 깨지는 변경</a></li>
+      <li><a href="#deprecations">Deprecation</a></li>
+      <li><a href="#upgrade">업그레이드</a></li>
+    </ul>
+  </section>
+</div>
+
+<h2 id="hermes">Hermes V1이 기본으로</h2>
+<p>React Native 0.82에서 실험적 opt-in으로 처음 공개된 이후, <strong>이제 iOS와 Android 모두에서 Hermes V1이 React Native의 기본 JavaScript 엔진</strong>이 됩니다.</p>
+<p>Hermes V1은 Hermes 엔진의 다음 세대로, 컴파일러와 VM 양쪽의 큰 개선을 통해 측정 가능한 수준의 JavaScript 성능 향상을 제공합니다.</p>
+
+<h4>내 앱에는 어떤 의미인가</h4>
+<ul>
+  <li><strong>자동으로 얻는 성능 향상</strong>: 모든 앱이 기본적으로 Hermes V1을 사용하게 되어 실행 속도가 빨라지고 메모리 사용량이 줄어듭니다.</li>
+  <li><strong>마이그레이션 불필요</strong>: 이미 Hermes(0.70부터 기본)를 쓰고 있다면 자동으로 Hermes V1을 사용하게 됩니다. 설정 변경이 필요 없습니다.</li>
+</ul>
+
+<details class="fold">
+  <summary>Hermes V1에서 빠져나오는 방법 (opt-out)</summary>
+  <p><strong>패키지 매니저 오버라이드</strong><br><code>package.json</code>에서 기존 <code>hermes-compiler</code> 패키지 버전을 강제로 고정합니다.</p>
+  <div class="codeblock"><div class="fname">package.json — npm</div><pre><code><span class="str">"overrides"</span>: { <span class="str">"hermes-compiler"</span>: <span class="str">"0.15.0"</span> }</code></pre></div>
+  <div class="codeblock"><div class="fname">package.json — yarn</div><pre><code><span class="str">"resolutions"</span>: { <span class="str">"hermes-compiler"</span>: <span class="str">"0.15.0"</span> }</code></pre></div>
+  <div class="codeblock"><div class="fname">package.json — pnpm</div><pre><code><span class="str">"pnpm"</span>: { <span class="str">"overrides"</span>: { <span class="str">"hermes-compiler"</span>: <span class="str">"0.15.0"</span> } }</code></pre></div>
+  <p><strong>iOS</strong><br>CocoaPods 의존성을 설치할 때 <code>RCT_HERMES_V1_ENABLED=0</code>과 <code>RCT_USE_PREBUILT_RNCORE=0</code> 환경 변수를 함께 넘깁니다.</p>
+  <p><strong>Android</strong><br><code>android/gradle.properties</code>에 <code>hermesV1Enabled=false</code>를 추가하고, <a href="https://reactnative.dev/contributing/how-to-build-from-source#update-your-project-to-build-from-source">React Native를 소스에서 빌드하도록</a> 설정합니다.</p>
+</details>
+
+<h2 id="prebuilt">iOS 사전 컴파일 바이너리 기본 적용</h2>
+<p>React Native 0.84부터 iOS에서 사전 컴파일 바이너리가 기본으로 제공됩니다. 이전에는 opt-in이었지만 이제 기본으로 켜지며, iOS 앱의 빌드 시간이 크게 줄어듭니다.</p>
+<p>즉, 클린 빌드를 할 때마다 React Native 코어를 소스에서 컴파일할 필요가 없습니다. 사전 컴파일된 <code>.xcframework</code> 바이너리를 <code>pod install</code> 과정에서 자동으로 내려받아 사용합니다.</p>
+
+<div class="admon">
+  <div class="t">참고</div>
+  <p>React Native를 소스에서 빌드해야 한다면(예: Hermes V1에서 빠져나오려는 경우), pod 설치 시 <code>RCT_USE_PREBUILT_RNCORE=0</code>을 지정해 사전 컴파일 바이너리를 끌 수 있습니다.</p>
+</div>
+
+<h2 id="legacy">레거시 아키텍처 컴포넌트 제거</h2>
+<p>새 아키텍처를 유일한 런타임 옵션으로 만든 0.82의 작업에 이어, React Native 0.84에서도 iOS와 Android 양쪽에서 레거시 아키텍처 코드를 계속 제거하고 있습니다. <a href="https://github.com/react-native-community/discussions-and-proposals/pull/929">RFC</a>에 설명한 대로, 릴리스마다 레거시 아키텍처 클래스를 몇 개씩 제거해 나갑니다.</p>
+
+<h4>iOS</h4>
+<p>0.83에서 레거시 아키텍처 코드를 컴파일에서 빼는 실험적 <code>RCT_REMOVE_LEGACY_ARCH</code> 플래그를 도입했는데, 0.84에서는 이것이 <strong>기본 동작</strong>이 됩니다. 레거시 아키텍처 코드가 더 이상 iOS 빌드에 포함되지 않으므로 빌드 시간과 앱 크기가 모두 줄어듭니다.</p>
+<p>이미 새 아키텍처로 넘어온 앱이라면 깨질 일은 없습니다. 호환에 필요한 Interop Layer 코드는 그대로 남아 있습니다.</p>
+<p><strong>iOS에서 레거시 아키텍처 코드를 다시 켜려면</strong> 소스에서 빌드해야 합니다. 다음 플래그와 함께 CocoaPods 의존성을 설치하세요.</p>
+<div class="codeblock"><pre><code>RCT_USE_PREBUILT_RNCORE=0 RCT_REMOVE_LEGACY_ARCH=0 bundle exec pod install</code></pre></div>
+
+<h4>Android</h4>
+<p>이번 릴리스에서 제거된 레거시 아키텍처 클래스 목록입니다.</p>
+<div class="codeblock"><pre><code>com.facebook.react.LazyReactPackage
+com.facebook.react.bridge.CxxModuleWrapper
+com.facebook.react.bridge.CxxModuleWrapperBase
+com.facebook.react.bridge.CallbackImpl
+com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener
+com.facebook.react.bridge.OnBatchCompleteListener
+com.facebook.react.bridge.ReactCxxErrorHandler
+com.facebook.react.bridge.ReactInstanceManagerInspectorTarget
+com.facebook.react.modules.debug.DidJSUpdateUiDuringFrameDetector
+com.facebook.react.devsupport.BridgeDevSupportManager
+com.facebook.react.uimanager.NativeKind
+com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener
+com.facebook.react.uimanager.layoutanimation.LayoutAnimationController
+com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener</code></pre></div>
+
+<h2 id="node">Node.js 22 이상 필수</h2>
+<p>React Native 0.84는 <strong>Node.js v22.11 이상</strong>을 요구합니다. 이 버전업으로 React Native 툴링 생태계 전반에서 최신 JavaScript 기능을 쓸 수 있게 됩니다.</p>
+<p>업그레이드 전에 Node.js 버전을 먼저 올려두세요. <a href="https://github.com/nvm-sh/nvm">nvm</a>이나 <a href="https://github.com/Schniz/fnm">fnm</a> 같은 버전 매니저 사용을 권장합니다.</p>
+
+<h2 id="other">기타 변경 사항</h2>
+
+<h3>React 19.2.3</h3>
+<p>이번 릴리스는 React 19.2.3을 React Native에 반영해, React 팀의 최신 수정과 개선을 포함합니다.</p>
+
+<h3>ESLint v9 Flat Config</h3>
+<p>React Native의 ESLint 설정이 <a href="https://eslint.org/docs/latest/use/configure/configuration-files">ESLint v9 Flat Config</a>를 지원합니다. 프로젝트에서 최신 ESLint 툴링을 도입하기가 더 쉬워집니다.</p>
+
+<h3>플랫폼 지원</h3>
+<ul>
+  <li><strong>이미지 포맷</strong>: HEIC, HEIF 포맷 지원이 추가되어 최신 카메라 결과물이나 이미지 라이브러리를 다루기 쉬워집니다.</li>
+  <li><strong>PlatformColor</strong>: animated interpolation과 output range에서의 <code>PlatformColor</code> 지원 및 테스트가 강화되었습니다.</li>
+  <li><strong>Android 키보드 이벤트</strong>: Android에 <code>onKeyDown</code>/<code>onKeyUp</code> 지원이 추가되어, 하드웨어 키보드나 TV 리모컨의 키 이벤트를 처리할 수 있습니다.</li>
+</ul>
+
+<h3>접근성</h3>
+<p><code>onPress</code>나 <code>onLongPress</code> 핸들러가 있는 Text 컴포넌트는 이제 자동으로 <code>accessibilityRole="link"</code>를 갖게 되어, 스크린 리더가 상호작용 가능한 텍스트를 올바르게 읽어줍니다.</p>
+<p>Android에서는 재활용(recycle)되는 뷰의 접근성 상태 문제를 고치는 작업이 많이 이루어졌습니다. 뷰가 재활용될 때 <code>isClickable</code>과 <code>OnClickListener</code> 상태가 제대로 초기화되도록 해서, 스크린 리더가 잘못된 상태를 읽는 문제를 막았습니다.</p>
+
+<h3>URL API 개선</h3>
+<p><code>URL</code>에 빠져 있던 표준 속성들(<code>hash</code>, <code>host</code>, <code>pathname</code> 등)과 <code>URLSearchParams</code>의 메서드들(<code>get</code>, <code>set</code>, <code>delete</code> 등)이 추가되어, React Native의 URL 구현이 웹 표준에 더 가까워졌습니다. <code>URLSearchParams</code>의 중복 엔트리 문제도 수정되었습니다.</p>
+
+<h3 id="other-breaking">호환성이 깨지는 변경</h3>
+
+<h4>iOS</h4>
+<ul>
+  <li><code>ImageResponseObserverCoordinator</code>에서 드물게 발생하던 <code>EXC_BAD_ACCESS</code> 크래시를, 옵저버를 참조 카운팅 포인터로 감싸서 수정했습니다. 이 과정에서 <code>RCTImage</code> 옵저버 API의 객체 선언이 바뀌므로 <code>react-native-svg</code> 같은 의존 라이브러리가 영향을 받을 수 있습니다.</li>
+</ul>
+
+<h4>Android</h4>
+<ul>
+  <li><code>BridgeDevSupportManager</code>가 제거되었습니다.</li>
+</ul>
+
+<h4>C++</h4>
+<ul>
+  <li><code>JSBigString</code>이 <code>jsi::Buffer</code>를 직접 구현합니다. 중간 계층이던 <code>BigStringBuffer</code>는 제거되었습니다(현재는 deprecated). <code>BigStringBuffer</code>를 직접 상속하거나 의존하는 코드는 수정이 필요할 수 있습니다.</li>
+</ul>
+
+<h4>JS</h4>
+<ul>
+  <li>인앱 Element Inspector에서 레거시 Perf·Network 탭이 제거되었습니다. 해당 기능은 이제 <a href="https://reactnative.dev/docs/react-native-devtools">React Native DevTools</a>에서 제공됩니다.</li>
+</ul>
+
+<p>전체 호환성 깨짐 목록은 <a href="https://github.com/facebook/react-native/blob/main/CHANGELOG.md#v0840">0.84 CHANGELOG</a>에서 확인하세요.</p>
+
+<h2 id="deprecations">Deprecation</h2>
+<p>이번 릴리스에는 두 가지 deprecation이 있습니다.</p>
+<ul>
+  <li><strong>네트워킹</strong>: <code>XHRInterceptor</code>와 <code>WebSocketInterceptor</code> API가 deprecated 되었습니다. 개발 도구는 대신 Chrome DevTools Protocol(CDP)의 <code>Network</code> 도메인을 사용해야 합니다.</li>
+  <li><strong>TurboModules</strong>: <code>TurboModuleProviderFunctionType</code>이 deprecated 되었습니다.</li>
+</ul>
+
+<h2 id="thanks">감사의 말</h2>
+<p>React Native 0.84에는 95명의 컨트리뷰터가 만든 650개 이상의 커밋이 담겨 있습니다. 모든 분들의 노고에 감사드립니다!</p>
+<p>이번 릴리스에서 특히 큰 기여를 해주신 분들께 특별히 감사를 전합니다.</p>
+<ul>
+  <li>iOS 사전 컴파일 바이너리 기본 적용 및 iOS 레거시 아키텍처 제거: <a href="https://github.com/cipolleschi">Riccardo Cipolleschi</a></li>
+  <li>Node.js 22 버전업: <a href="https://github.com/robhogan">Rob Hogan</a></li>
+  <li>Android 접근성 개선: <a href="https://github.com/fabriziocucci">Fabrizio Cucci</a></li>
+  <li>ESLint v9 Flat Config 지원: <a href="https://github.com/pipopotamasu">@pipopotamasu</a></li>
+</ul>
+
+<h2 id="upgrade">0.84로 업그레이드하기</h2>
+
+<div class="admon">
+  <div class="t">참고</div>
+  <p>이제 0.84가 React Native의 최신 안정 버전이며, 0.81.x는 지원 종료(unsupported) 상태가 됩니다. 자세한 내용은 <a href="https://github.com/reactwg/react-native-releases/blob/main/docs/support.md">React Native 지원 정책</a>을 참고하세요.</p>
+</div>
+
+<h4>업그레이드</h4>
+<p>기존 프로젝트에서는 <a href="https://react-native-community.github.io/upgrade-helper/">React Native Upgrade Helper</a>로 버전 간 코드 변경 사항을 확인하고, 함께 <a href="https://reactnative.dev/docs/upgrading">업그레이드 문서</a>도 참고하세요.</p>
+<p><strong>💡 새로운 것</strong>: Community CLI 프로젝트를 위한 실험적 <a href="https://skills.sh/react-native-community/skills/upgrade-react-native"><code>upgrade-react-native</code> AI 스킬</a>도 사용해볼 수 있습니다.</p>
+
+<h4>새 프로젝트 생성</h4>
+<div class="codeblock"><pre><code>npx @react-native-community/cli@latest init MyProject --version latest</code></pre></div>
+
+<h4>Expo</h4>
+<p>Expo 프로젝트에서는 React Native 0.84를 <code>expo@canary</code> 릴리스로 사용할 수 있습니다. 다음 SDK인 SDK 56은 그다음 안정 릴리스인 React Native 0.85와 함께 제공됩니다.</p>
+
+<section aria-labelledby="patches">
+<h2 id="patches">0.84.x 패치 릴리스</h2>
+<p class="meta">확인일: 2026-10-02 · 배포일: 한국 시간(UTC+9) · RC와 nightly는 제외</p>
+<p>공식 GitHub 릴리스와 CHANGELOG의 변경 항목을 한국어로 정리했습니다. 기록이 짧거나 비어 있는 버전은 공식 태그 비교로 보충하고 그 근거를 표시했습니다. 각 항목은 해당 패치의 변경 사항입니다.</p>
+<div class="tblwrap"><table><thead><tr><th scope="col">버전</th><th scope="col">배포일</th><th scope="col">주요 내용</th></tr></thead><tbody>
+<tr><td><a href="#patch-0-84-1">0.84.1</a></td><td>2026-02-28</td><td>Android 모노레포와 Hermes V1 비활성화 설정 수정</td></tr>
+</tbody></table></div>
+<h3 id="patch-0-84-1">0.84.1 · Android 모노레포와 Hermes V1 비활성화 설정 수정</h3>
+<p class="meta">배포일: 2026-02-28</p>
+<ul>
+  <li>Android / Gradle: included build가 상위 Gradle 시작 매개변수에서 <code>gradle.properties</code>를 먼저 찾도록 수정했습니다. 모노레포에서 <code>hermesV1Enabled</code> 설정을 올바르게 상속합니다.</li>
+  <li>Android / Inspector: Hermes V1을 끈 경우 <code>inspector-modern/chrome/Registration.h</code>에 대체 심볼을 제공합니다.</li>
+  <li>Android / Gradle: <code>ReactPlugin.kt</code>가 <code>hermesV1Enabled</code>를 항상 <code>true</code>로 설정하던 문제를 수정했습니다.</li>
+</ul>
+<p class="source">출처: <a href="https://github.com/react/react-native/releases/tag/v0.84.1">공식 릴리스 0.84.1</a></p>
+</section>
+
+<div class="tags">
+  <strong style="color:var(--text)">태그:</strong>
+  <span>announcement</span><span>release</span>
+</div>
+
+<footer class="note">
+  이 문서의 본문은 React Native 공식 블로그 글의 한국어 번역입니다. 패치 내역은 공식 릴리스와 변경 기록을 바탕으로 별도 정리했습니다.<br>
+  원문(영문): <a href="https://reactnative.dev/blog/2026/02/11/react-native-0.84">https://reactnative.dev/blog/2026/02/11/react-native-0.84</a>
+</footer>
+
+</div>

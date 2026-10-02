@@ -1,0 +1,51 @@
+{
+ "title_ko": "React Native 0.83 한국어판",
+ "assets": {
+  "@@IMG_NOACT@@": {
+   "url": "https://reactnative.dev/assets/images/0.83-react-19.2-no-activity-61b910cc3d32753f1432f8d365963dab.gif",
+   "mime": "image/gif"
+  },
+  "@@IMG_ACT@@": {
+   "url": "https://reactnative.dev/assets/images/0.83-react-19.2-activity-c374acc50fc57945dd0ef92ab6d119fe.gif",
+   "mime": "image/gif"
+  },
+  "@@IMG_NETWORK@@": {
+   "url": "https://reactnative.dev/assets/images/debugging-rndt-network-462cd5e39a5525592501627bb0087747.jpg",
+   "mime": "image/jpeg"
+  },
+  "@@IMG_PERF@@": {
+   "url": "https://reactnative.dev/assets/images/debugging-rndt-performance-084166527768b90dbb936b240707bdcb.jpg",
+   "mime": "image/jpeg"
+  },
+  "@@IMG_DESKTOP@@": {
+   "url": "https://reactnative.dev/assets/images/0.83-rndt-desktop-app-99c6ef69aebde93fc5775942e660518c.jpg",
+   "mime": "image/jpeg"
+  },
+  "@@IMG_HERMES@@": {
+   "url": "https://reactnative.dev/assets/images/0.83-hermes-v1-15f50ba6bcc70a8b99e4c3e13bd17ac8.jpg",
+   "mime": "image/jpeg"
+  },
+  "@@VID_IO@@": {
+   "url": "https://reactnative.dev/blog/assets/0.83-intersection-observer.mp4",
+   "mime": "video/mp4"
+  }
+ },
+ "authors": [
+  {
+   "key": "huntie",
+   "img": "https://github.com/huntie.png?size=96"
+  },
+  {
+   "key": "cipolleschi",
+   "img": "https://github.com/cipolleschi.png?size=96"
+  },
+  {
+   "key": "gabrieldonadel",
+   "img": "https://github.com/gabrieldonadel.png?size=96"
+  },
+  {
+   "key": "alanjhughes",
+   "img": "https://github.com/alanjhughes.png?size=96"
+  }
+ ]
+}

@@ -1,0 +1,27 @@
+{
+ "title_ko": "React Native 0.86 한국어판",
+ "assets": {
+  "@@IMG_DEVTOOLS@@": {
+   "url": "https://reactnative.dev/assets/images/0.86-devtools-light-dark-emulation-ea42961a7796506c761efed1f05d365d.png",
+   "mime": "image/png"
+  }
+ },
+ "authors": [
+  {
+   "key": "fabriziocucci",
+   "img": "https://github.com/fabriziocucci.png?size=96"
+  },
+  {
+   "key": "robhogan",
+   "img": "https://github.com/robhogan.png?size=96"
+  },
+  {
+   "key": "zoontek",
+   "img": "https://github.com/zoontek.png?size=96"
+  },
+  {
+   "key": "gabrieldonadel",
+   "img": "https://github.com/gabrieldonadel.png?size=96"
+  }
+ ]
+}

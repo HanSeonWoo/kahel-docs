@@ -1,0 +1,51 @@
+{
+ "title_ko": "React Native 0.85 한국어판",
+ "assets": {
+  "@@IMG_IOS@@": {
+   "url": "https://reactnative.dev/blog/assets/0.85-animation-backend-ios.gif",
+   "mime": "image/gif"
+  },
+  "@@IMG_ANDROID@@": {
+   "url": "https://reactnative.dev/blog/assets/0.85-animation-backend-android.gif",
+   "mime": "image/gif"
+  },
+  "@@IMG_TABS@@": {
+   "url": "https://reactnative.dev/blog/assets/0.85-devtools-macos-tabs.png",
+   "mime": "image/png"
+  }
+ },
+ "authors": [
+  {
+   "key": "alanleedev",
+   "img": "https://github.com/alanleedev.png?size=96"
+  },
+  {
+   "key": "CalixTang",
+   "img": "https://github.com/CalixTang.png?size=96"
+  },
+  {
+   "key": "zoontek",
+   "img": "https://github.com/zoontek.png?size=96"
+  },
+  {
+   "key": "gabrieldonadel",
+   "img": "https://github.com/gabrieldonadel.png?size=96"
+  },
+  {
+   "key": "bartlomiejbloniarz",
+   "img": "https://github.com/bartlomiejbloniarz.png?size=96"
+  },
+  {
+   "key": "coado",
+   "img": "https://github.com/coado.png?size=96"
+  },
+  {
+   "key": "zeyap",
+   "img": "https://github.com/zeyap.png?size=96"
+  },
+  {
+   "key": "sammy-SC",
+   "img": "https://github.com/sammy-SC.png?size=96"
+  }
+ ]
+}
