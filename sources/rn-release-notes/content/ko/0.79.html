@@ -1,0 +1,301 @@
+<div class="wrap">
+<header class="post">
+  <span class="kicker">React Native 릴리스</span>
+  <h1>React Native 0.79 — 더 빠른 개발 도구와 앱 시작, 기타 변경 사항</h1>
+  <p class="orig-title">원문: React Native 0.79 - Faster tooling and much more</p>
+  <p class="meta">2025년 4월 8일 · 약 11분 분량</p>
+  <p class="source">출처: <a href="https://reactnative.dev/blog/2025/04/08/react-native-0.79">reactnative.dev/blog/2025/04/08/react-native-0.79</a></p>
+  <div class="authors"><div class="author"><img src="@@AV_alanjhughes@@" alt="Alan Hughes"><div><div class="n">Alan Hughes</div><div class="a">Expo 소프트웨어 엔지니어</div></div></div>
+<div class="author"><img src="@@AV_shubham@@" alt="Shubham Gupta"><div><div class="n">Shubham Gupta</div><div class="a">Dream11 소프트웨어 엔지니어</div></div></div>
+<div class="author"><img src="@@AV_fabriziocucci@@" alt="Fabrizio Cucci"><div><div class="n">Fabrizio Cucci</div><div class="a">Meta 소프트웨어 엔지니어</div></div></div>
+<div class="author"><img src="@@AV_cortinico@@" alt="Nicola Corti"><div><div class="n">Nicola Corti</div><div class="a">Meta 소프트웨어 엔지니어</div></div></div></div>
+</header>
+<div class="admon rich">
+  <div class="t">문서 범위 · 2026-10-06 확인</div>
+  <p>블로그 번역은 2025-04-08 최초 발표 당시의 설명을 보존합니다. 본문의 “최신 버전”, 지원 상태, 출시 예정 안내와 실험 기능 설정은 발표 당시 기준입니다.</p>
+  <p>현재 조사 결과는 <a href="#patches">0.79.x 패치 내역</a>과 <a href="#prereleases">사전 배포 기록</a>에 별도로 표시했습니다. 확인한 가장 최근 정식 패치는 <strong>0.79.7</strong>입니다.</p>
+</div>
+
+<p class="lead">오늘 React Native 0.79를 배포합니다.</p>
+<p>이번 버전은 여러 영역의 성능 개선과 버그 수정을 제공합니다. 먼저 Metro는 해시 계산을 늦추는 방식으로 시작 속도를 높였으며, package exports를 안정 기능으로 지원합니다. JavaScript 번들 압축 방식의 변경으로 Android 앱의 시작 시간도 줄어듭니다. 그 외 여러 변경도 포함됩니다.</p>
+<nav class="toc" aria-label="문서 목차">
+  <section><h3>주요 변경 사항</h3><ul>
+    <li><a href="#metro">Metro 시작 속도와 package exports</a></li>
+    <li><a href="#jsc">JSC를 커뮤니티 패키지로 이전</a></li>
+    <li><a href="#native-modules">iOS: Swift와 호환되는 네이티브 모듈 등록</a></li>
+    <li><a href="#android-startup">Android: 더 빠른 앱 시작</a></li>
+    <li><a href="#remote-debugging">원격 JavaScript 디버깅 제거</a></li>
+  </ul></section>
+  <section><h3>그 외</h3><ul>
+    <li><a href="#breaking">호환성이 깨지는 변경</a></li>
+    <li><a href="#thanks">감사의 말</a></li>
+    <li><a href="#upgrade">0.79로 업그레이드하기</a></li>
+    <li><a href="#patches">0.79.x 패치 릴리스</a></li>
+    <li><a href="#prereleases">사전 배포 기록</a></li>
+  </ul></section>
+</nav>
+
+<h2 id="highlights">주요 변경 사항</h2>
+<h3 id="metro">Metro: 더 빠른 시작과 package exports 지원</h3>
+<p>이번 버전에는 <a href="https://github.com/facebook/metro/releases/tag/v0.82.0">Metro 0.82</a>가 포함됩니다. 해시 계산을 필요한 시점까지 늦추어 첫 <code>yarn start</code>의 실행 속도를 보통 3배 이상 높입니다. 큰 프로젝트와 모노레포에서는 개선 폭이 더 큽니다. 따라서 일상적인 개발과 CI 빌드가 빨라집니다.</p>
+<figure class="shot"><img src="@@IMG_1@@" width="960" height="540" alt="Metro의 해시 계산 변경 전후 시작 시간을 비교하는 GIF"><figcaption>Metro 시작 시간 비교</figcaption></figure>
+<p>Metro 0.82에서는 <code>package.json</code>의 <code>"exports"</code>와 <code>"imports"</code> 필드 해석을 안정 기능으로 전환합니다. <code>"exports"</code> 해석은 <a href="https://reactnative.dev/blog/2023/06/21/package-exports-support">React Native 0.72에서 도입</a>했습니다. <code>"imports"</code> 지원은 커뮤니티 기여로 추가되었습니다. 이제 두 기능은 React Native 0.79의 모든 프로젝트에서 기본으로 켜집니다.</p>
+<p>현대적인 npm 의존성과의 호환성이 높아집니다. 표준에 맞는 새로운 방식으로 프로젝트를 구성할 수도 있습니다.</p>
+<div class="admon warn rich"><div class="t">주의 · 호환성이 깨지는 변경</div>
+  <p>커뮤니티에서 <code>package.json</code>의 <code>"exports"</code>를 한동안 시험했지만, 이번 전환은 일부 패키지와 프로젝트 설정에서 호환성을 깨뜨릴 수 있습니다.</p>
+  <p>특히 Firebase와 AWS Amplify를 포함한 널리 사용하는 일부 패키지의 호환성 문제를 보고받았습니다. 해당 패키지에서 문제를 수정하도록 작업하고 있습니다.</p>
+  <p>문제가 발생하면 다음 방법을 사용하세요.</p>
+  <ul>
+    <li>Metro <a href="https://github.com/facebook/metro/releases/tag/v0.81.5">0.81.5 긴급 수정 버전</a>으로 갱신하거나, <a href="https://metrobundler.dev/docs/configuration/#unstable_enablepackageexports-experimental"><code>resolver.unstable_enablePackageExports = false</code></a>로 설정하여 기능을 끄세요.</li>
+    <li>영향을 받는 패키지와 이후 변경은 <a href="https://github.com/expo/expo/discussions/36551">expo/expo#36551</a>을 확인하세요.</li>
+  </ul>
+</div>
+
+<h3 id="jsc">JSC를 커뮤니티 패키지로 이전</h3>
+<p>React Native의 API 범위를 줄이는 작업의 일부로 JavaScriptCore(JSC) 엔진을 커뮤니티가 유지하는 <code>@react-native-community/javascriptcore</code> 패키지로 옮기고 있습니다.</p>
+<p>이 변경은 Hermes 사용자에게 영향을 주지 않습니다.</p>
+<p>React Native 0.79부터 README의 <a href="https://github.com/react-native-community/javascriptcore#installation">설치 안내</a>에 따라 커뮤니티가 지원하는 JSC를 사용할 수 있습니다. React Native 코어에서 제공하는 JSC도 0.79에서 계속 사용할 수 있습니다. 다만 <a href="https://github.com/react-native-community/discussions-and-proposals/blob/main/proposals/0836-lean-core-jsc.md">가까운 시일 안에 제거할 계획</a>입니다.</p>
+<p>JSC를 커뮤니티 패키지로 옮기면 버전을 더 자주 갱신하고 최신 기능을 제공할 수 있습니다. 커뮤니티 JSC는 React Native와 별도의 배포 일정을 따릅니다.</p>
+
+<h3 id="native-modules">iOS: Swift와 호환되는 네이티브 모듈 등록</h3>
+<p>이번 버전에서는 네이티브 모듈을 React Native 런타임에 등록하는 방식을 바꿉니다. 새 방식은 <a href="https://reactnative.dev/docs/next/the-new-architecture/using-codegen#configuring-codegen">공식 문서</a>에 설명된 컴포넌트 등록 방식을 따릅니다.</p>
+<p>이번 버전부터 <code>package.json</code>을 수정하여 모듈을 등록할 수 있습니다. <code>ios</code> 속성에 새 필드 <code>modulesProvider</code>를 도입했습니다.</p>
+<div class="codeblock"><div class="fname">package.json — 추가한 줄은 +로 표시</div><pre><code>"codegenConfig": {
+     "ios": {
+<span class="add">+       "modulesProvider": {</span>
+<span class="add">+         "JS Name for the module": "ObjC Module provider for the pure C++ TM or a class conforming to RCTTurboModule"</span>
+<span class="add">+     }</span>
+    }
+}</code></pre></div>
+<p>예제의 키는 모듈의 JavaScript 이름입니다. 값은 순수 C++ TurboModule의 Objective-C 모듈 제공자 또는 <code>RCTTurboModule</code>을 따르는 클래스입니다.</p>
+<p>Codegen은 <code>package.json</code>을 바탕으로 필요한 모든 코드를 생성합니다.</p>
+<p>순수 C++ 네이티브 모듈을 사용한다면 다음 권장 설정을 적용해야 합니다.</p>
+<details class="fold"><summary>앱에서 순수 C++ 네이티브 모듈 설정</summary>
+  <p>순수 C++ 네이티브 모듈에는 모듈과 나머지 앱을 연결하는 새 Objective-C++ 클래스가 필요합니다.</p>
+  <div class="codeblock"><div class="fname">CppNativeModuleProvider.h</div><pre><code>#import &lt;Foundation/Foundation.h&gt;
+#import &lt;ReactCommon/RCTTurboModule.h&gt;
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface &lt;YourNativeModule&gt;Provider : NSObject &lt;RCTModuleProvider&gt;
+
+@end</code></pre></div>
+  <div class="codeblock"><div class="fname">CppNativeModuleProvider.mm</div><pre><code>NS_ASSUME_NONNULL_END
+
+#import "&lt;YourNativeModule&gt;Provider.h"
+#import &lt;ReactCommon/CallInvoker.h&gt;
+#import &lt;ReactCommon/TurboModule.h&gt;
+#import "&lt;YourNativeModule&gt;.h"
+
+@implementation NativeSampleModuleProvider
+
+- (std::shared_ptr&lt;facebook::react::TurboModule&gt;)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &amp;)params
+{
+  return std::make_shared&lt;facebook::react::NativeSampleModule&gt;(params.jsInvoker);
+}</code></pre></div>
+  <p class="meta">두 파일의 매크로 위치와 예제 클래스 이름은 공식 원문의 표기를 보존했습니다.</p>
+</details>
+<p>이 새 방식으로 앱 개발자와 라이브러리 관리자의 네이티브 모듈 등록 방법을 통일했습니다. 라이브러리도 <code>package.json</code>에 같은 속성을 지정하면 Codegen이 나머지 작업을 처리합니다.</p>
+<p>이 방식은 0.77에서 도입된 제한도 해결합니다. 당시에는 Swift <code>AppDelegate</code>에서 순수 C++ 네이티브 모듈을 등록할 수 없었습니다. 위 변경은 <code>AppDelegate</code>를 수정하지 않습니다. 생성된 코드는 Swift와 Objective-C로 구현한 <code>AppDelegate</code> 모두에서 작동합니다.</p>
+
+<h3 id="android-startup">Android: 더 빠른 앱 시작</h3>
+<p>Android의 시작 시간을 크게 줄이는 변경도 제공합니다.</p>
+<p>이번 버전부터 APK 안의 JavaScript 번들을 더 이상 압축하지 않습니다. 이전에는 앱을 시작하기 전에 Android 시스템이 JavaScript 번들의 압축을 풀어야 했습니다. 이 작업 때문에 앱 시작이 크게 느려졌습니다.</p>
+<p>이번 버전부터는 기본으로 압축하지 않은 JavaScript 번들을 제공합니다. 따라서 Android 앱이 전반적으로 더 빨리 시작합니다.</p>
+<p><a href="https://margelo.com">Margelo</a> 팀은 Discord 앱에서 이 기능을 시험하여 큰 성능 개선을 확인했습니다. 코드 한 줄을 바꾸어 Discord의 상호 작용 가능 시점까지의 시간(TTI)을 400ms 줄였습니다. 12%의 속도 개선이며 Samsung A14에서 시험한 결과입니다.</p>
+<p>반면 번들을 압축하지 않고 저장하면 사용자 기기에서 앱이 차지하는 저장 공간이 늘어납니다. 저장 공간이 중요하다면 <code>app/build.gradle</code>의 <code>enableBundleCompression</code> 속성으로 이 동작을 선택할 수 있습니다.</p>
+<div class="codeblock"><div class="fname">app/build.gradle</div><pre><code>react {
+  <span class="com">// ...</span>
+  <span class="com">// JS 번들을 압축하려면 true로 설정합니다.</span>
+  <span class="com">// 시작은 느리지만 저장 공간을 적게 사용합니다.</span>
+  enableBundleCompression = true
+  <span class="com">// JS 번들을 압축하지 않으려면 false로 설정합니다.</span>
+  <span class="com">// 시작은 빠르지만 저장 공간을 더 사용합니다.</span>
+  enableBundleCompression = false
+
+  <span class="com">// 기본값은 false입니다.</span>
+}</code></pre></div>
+<p>이번 버전에서는 APK 크기가 커집니다. 그러나 네트워크에서 APK를 내려받을 때는 압축하므로 사용자의 APK 다운로드 크기는 추가로 늘어나지 않습니다.</p>
+
+<h2 id="breaking">호환성이 깨지는 변경</h2>
+<h3 id="remote-debugging">원격 JavaScript 디버깅 제거</h3>
+<p>디버깅을 개선하는 작업의 일부로 Chrome을 통한 원격 JavaScript 디버깅을 제거합니다. 이 기존 방식은 사용 중단 상태였으며, <a href="https://reactnative.dev/blog/2023/12/06/0.73-debugging-improvements-stable-symlinks#remote-javascript-debugging">React Native 0.73에서 실행 중 선택하여 켜는 방식으로 바뀌었습니다</a>. 현대적이고 안정적인 디버깅을 위해 <a href="https://reactnative.dev/docs/react-native-devtools">React Native DevTools</a>를 사용하세요.</p>
+<p>이에 따라 React Native는 커뮤니티 프로젝트 <a href="https://github.com/jhen0409/react-native-debugger">react-native-debugger</a>와 더 이상 호환되지 않습니다. Redux DevTools 같은 외부 디버깅 확장을 사용하려면 <a href="https://github.com/expo/dev-plugins">Expo DevTools Plugins</a>를 사용하거나 해당 도구의 독립 실행 버전을 통합할 것을 권장합니다.</p>
+<p>자세한 설명은 <a href="https://github.com/react-native-community/discussions-and-proposals/discussions/872">별도 글</a>을 확인하세요.</p>
+
+<h3 id="export-syntax">내부 모듈을 <code>export</code> 문법으로 변경</h3>
+<p>JavaScript 코드를 현대화하는 작업의 일부로 <code>react-native</code>의 여러 구현 모듈을 수정했습니다. <code>module.exports</code> 대신 <code>export</code> 문법을 일관되게 사용하도록 바꿨습니다.</p>
+<p>총 <strong>약 46개 API</strong>를 갱신했습니다. 전체 목록은 <a href="https://github.com/facebook/react-native/blob/main/CHANGELOG.md#v0790">변경 기록</a>에서 확인할 수 있습니다.</p>
+<p>이 변경은 기존 가져오기 방식에 작은 영향을 줍니다.</p>
+<details class="fold"><summary>경우 1: 기본 내보내기</summary>
+  <div class="codeblock"><pre><code>  <span class="com">// 변경됨 — require() 문법</span>
+<span class="del">- const ImageBackground = require('react-native/Libraries/Image/ImageBackground');</span>
+<span class="add">+ const ImageBackground = require('react-native/Libraries/Image/ImageBackground').default;</span>
+
+<span class="com">// 변경 없음 — import 문법</span>
+import ImageBackground from 'react-native/Libraries/Image/ImageBackground';
+
+<span class="com">// 권장 — 루트 경로에서 가져오기</span>
+import {ImageBackground} from 'react-native';</code></pre></div>
+</details>
+<details class="fold"><summary>경우 2: 추가 내보내기</summary>
+  <p>이 패턴은 매우 적습니다. 이 경우도 루트 <code>'react-native'</code> 경로에서 가져오면 영향을 받지 않습니다.</p>
+  <div class="codeblock"><pre><code>  <span class="com">// 변경 없음 — require() 문법</span>
+  const BlobRegistry = require('react-native/Libraries/Blob/BlobRegistry');
+
+  <span class="com">// 변경 없음 — 구조 분해를 사용하는 require() 문법</span>
+  const {register, unregister} = require('react-native/Libraries/Blob/BlobRegistry');
+
+  <span class="com">// 변경됨 — 객체 하나로 가져오는 import 문법</span>
+<span class="del">- import BlobRegistry from 'react-native/Libraries/Blob/BlobRegistry';</span>
+<span class="add">+ import * as BlobRegistry from 'react-native/Libraries/Blob/BlobRegistry';</span>
+
+
+  <span class="com">// 변경 없음 — 구조 분해를 사용하는 import 문법</span>
+  import {register, unregister} from 'react-native/Libraries/Blob/BlobRegistry';
+
+  <span class="com">// 권장 — 루트 경로에서 가져오기</span>
+  import {BlobRegistry} from 'react-native';</code></pre></div>
+</details>
+<p>이 변경의 영향은 매우 작을 것으로 예상합니다. 특히 TypeScript와 <code>import</code> 문법을 사용하는 프로젝트는 영향이 적습니다. 타입 오류를 확인하고 필요한 코드를 수정하세요.</p>
+<div class="admon rich"><div class="t">권장 · 루트 react-native 경로에서 가져오기</div>
+  <p>이후 불필요한 호환성 변경을 피하려면 루트 <code>'react-native'</code> 경로에서 가져올 것을 적극 권장합니다. 다음 버전에서는 React Native의 공개 JavaScript API를 더 명확하게 정의하는 작업의 일부로 deep import를 사용 중단 상태로 지정할 예정입니다(<a href="https://github.com/react-native-community/discussions-and-proposals/pull/894">RFC 참고</a>).</p>
+</div>
+
+<h3 id="other-breaking">그 외 호환성이 깨지는 변경</h3>
+<p>다음은 제품 코드에 작은 영향을 줄 수 있다고 판단한 추가 변경 사항입니다.</p>
+<ul>
+  <li><strong>박스 그림자와 필터의 단위 없는 길이:</strong> CSS와 웹 명세에 더 잘 맞도록 <code>box-shadow</code>와 <code>filter</code>에서 단위 없는 길이를 더 이상 지원하지 않습니다. 예를 들어 <code>1 1 black</code>인 <code>box-shadow</code>는 렌더링하지 않습니다. 대신 <code>1px 1px black</code>처럼 단위를 지정해야 합니다.</li>
+  <li><strong>normalize-color에서 잘못된 hwb() 문법 지원 제거:</strong> CSS와 웹 명세에 맞도록 <code>hwb()</code>의 일부 잘못된 문법을 제한합니다. 이전에는 쉼표로 구분한 값인 <code>hwb(0, 0%, 100%)</code>도 지원했지만, 이제는 지원하지 않습니다. <code>hwb(0 0% 100%)</code>로 이전해야 합니다. 자세한 내용은 <a href="https://github.com/facebook/react-native/commit/676359efd9e478d69ad430cff213acc87b273580">관련 변경</a>을 확인하세요.</li>
+  <li><strong>Libraries/Core/ExceptionsManager의 내보내기 변경:</strong> React Native JavaScript API를 현대화하는 작업의 일부로 <a href="https://github.com/facebook/react-native/blob/0.79-stable/packages/react-native/Libraries/Core/ExceptionsManager.js"><code>ExceptionsManager</code></a>를 변경했습니다. 이제 <code>ExceptionsManager</code> 객체를 기본으로 내보내고, <code>SyntheticError</code>를 추가 항목으로 내보냅니다.</li>
+</ul>
+
+<h2 id="thanks">감사의 말</h2>
+<p>React Native 0.79에는 100명의 기여자가 만든 944개 이상의 커밋이 포함됩니다. 모든 분의 작업에 감사드립니다.</p>
+<p>이번 버전에 중요한 기여를 한 다음 커뮤니티 구성원에게 감사드립니다.</p>
+<ul>
+  <li><a href="https://github.com/mrousavy">Marc Rousavy</a>: Android 앱 시작 속도 개선 기능의 개발과 설명 작성.</li>
+  <li><a href="https://github.com/Kudo">Kudo Chien</a>, <a href="https://github.com/okwasniewski">Oskar Kwaśniewski</a>: <code>@react-native-community/javascriptcore</code> 패키지 작업과 JSC 커뮤니티 패키지 이전 설명 작성.</li>
+  <li><a href="https://github.com/facebook/metro/pull/1302">James Lawson</a>: <a href="https://github.com/facebook/metro/pull/1302">Metro</a>의 import 하위 경로 해석 지원 추가.</li>
+</ul>
+<p>이 배포 글에서 기능을 설명한 추가 작성자에게도 감사드립니다.</p>
+<ul>
+  <li><a href="https://github.com/robhogan">Rob Hogan</a>: 새 Metro 기능 설명.</li>
+  <li><a href="https://github.com/huntie">Alex Hunt</a>: 원격 JavaScript 디버깅 제거와 내부 모듈의 export 문법 변경 설명.</li>
+  <li><a href="https://github.com/cipolleschi">Riccardo Cipolleschi</a>: iOS 네이티브 모듈 등록 작업.</li>
+</ul>
+
+<h2 id="upgrade">0.79로 업그레이드하기</h2>
+<p>기존 프로젝트에서는 <a href="https://react-native-community.github.io/upgrade-helper/">React Native Upgrade Helper</a>로 버전 간 코드 변경을 확인하세요. 업그레이드 문서도 함께 확인하세요.</p>
+<p>새 프로젝트를 만들려면 다음 명령을 사용하세요.</p>
+<div class="codeblock"><pre><code>npx @react-native-community/cli@latest init MyProject --version latest</code></pre></div>
+<p>Expo를 사용한다면 출시 예정인 Expo SDK 53에서 React Native 0.79를 기본 React Native 버전으로 지원할 예정입니다.</p>
+<h3 id="support">발표 당시 지원 버전</h3>
+<div class="admon"><div class="t">참고 · 2025-04-08 발표 기준</div><p>이제 0.79가 React Native의 최신 안정 버전이며, 0.76.x는 지원 종료(unsupported) 상태가 됩니다. 자세한 내용은 <a href="https://github.com/reactwg/react-native-releases/blob/main/docs/support.md">React Native 지원 정책</a>을 확인하세요. 가까운 시일 안에 0.76의 마지막 지원 종료 업데이트를 배포할 예정입니다.</p></div>
+
+<section aria-labelledby="patches">
+<h2 id="patches">0.79.x 패치 릴리스</h2>
+<p class="meta">확인일: 2026-10-06 · 배포일: 한국 시간(UTC+9) · RC와 nightly는 정식 패치에서 제외</p>
+<p>공식 GitHub Releases, 전체 <code>v0.79.</code> 태그, CHANGELOG-0.7x.md와 npm 배포 기록을 함께 확인했습니다. 최초 정식 버전 0.79.0의 GitHub 공개일은 2025-04-08입니다. 정식 패치는 7개입니다. 조사 시점에 0.79.8 이상의 정식 태그나 배포 기록은 없습니다.</p>
+<p>표의 배포일은 기존 문서와 같이 GitHub Release의 <code>published_at</code>을 한국 시간으로 바꾼 날짜입니다. npm 패키지 게시 시각은 GitHub 공개 시각과 다를 수 있으므로 각 버전에 함께 표시합니다.</p>
+<p>main의 CHANGELOG.md는 0.79 상세 항목을 별도 CHANGELOG-0.7x.md로 연결합니다. 이 문서는 그 상세 파일을 확인했습니다.</p>
+<div class="tblwrap"><table><thead><tr><th scope="col">버전</th><th scope="col">배포일</th><th scope="col">주요 내용</th></tr></thead><tbody>
+<tr><td><a href="#patch-0-79-7">0.79.7</a></td><td>2025-10-22</td><td>마지막 0.79 패치 — Android 레이아웃 오류 처리 개선</td></tr>
+<tr><td><a href="#patch-0-79-6">0.79.6</a></td><td>2025-08-14</td><td>사내 저장소 지원과 Android 재로딩·Modal·TurboModule 수정</td></tr>
+<tr><td><a href="#patch-0-79-5">0.79.5</a></td><td>2025-07-02</td><td>최상위 Flow 타입 배포 수정</td></tr>
+<tr><td><a href="#patch-0-79-4">0.79.4</a></td><td>2025-06-18</td><td>Codegen·Flow 타입과 Android 입력·iOS 화면 크기 수정</td></tr>
+<tr><td><a href="#patch-0-79-3">0.79.3</a></td><td>2025-06-05</td><td>타이머·타입과 Android 레이아웃·iOS Codegen·Switch 수정</td></tr>
+<tr><td><a href="#patch-0-79-2">0.79.2</a></td><td>2025-05-02</td><td>ShadowNode 런타임 플래그와 Blob·ImageSource 수정</td></tr>
+<tr><td><a href="#patch-0-79-1">0.79.1</a></td><td>2025-04-15</td><td>개발 오류 처리·iOS 커서와 플랫폼별 Codegen 수정</td></tr>
+</tbody></table></div>
+<h3 id="patch-0-79-7">0.79.7 · 마지막 0.79 패치 — Android 레이아웃 오류 처리 개선</h3>
+<p class="meta">GitHub 배포: 2025-10-22 03:17:49 · npm 게시: 2025-10-22 02:02:08 (모두 UTC+9)</p>
+<p>공식 릴리스는 이 버전이 마지막 0.79 배포이며 지원이 종료되었다고 안내합니다. 릴리스와 CHANGELOG에는 같은 제목의 수정이 서로 다른 두 커밋으로 기록되어 있습니다. 아래에는 공통 동작을 한 항목으로 표시했습니다.</p>
+<ul>
+  <li>Android / 레이아웃: <code>updateLayout</code>에서 부모 뷰의 상태를 찾을 수 없을 때 치명적 오류 대신 앱을 종료하지 않는 오류(soft error)로 처리합니다.</li>
+</ul>
+<p class="source">출처: <a href="https://github.com/react/react-native/releases/tag/v0.79.7">공식 릴리스 0.79.7</a> · <a href="https://github.com/react/react-native/blob/main/CHANGELOG-0.7x.md#v0797">공식 CHANGELOG</a></p>
+<h3 id="patch-0-79-6">0.79.6 · 사내 저장소 지원과 Android 재로딩·Modal·TurboModule 수정</h3>
+<p class="meta">GitHub 배포: 2025-08-14 23:33:38 · npm 게시: 2025-08-14 21:49:19 (모두 UTC+9)</p>
+<ul>
+  <li>Android / React Native Gradle Plugin: <code>exclusiveEnterpriseRepository</code>를 지원합니다.</li>
+  <li>iOS / CocoaPods: <code>ENTERPRISE_REPOSITORY</code> 환경 변수로 개인 또는 사내 Maven 미러에서 산출물을 받을 수 있습니다.</li>
+  <li>Codegen: 빠진 Babel 의존성을 추가했습니다.</li>
+  <li>Android / 기존 아키텍처: 다시 로드할 때 앱이 종료되거나 멈추는 문제를 수정했습니다.</li>
+  <li>Android / Modal: 첫 프레임이 화면 왼쪽 위에 표시되던 문제를 수정했습니다.</li>
+  <li>Android / TurboModule: 32비트 Android에서 이벤트를 보낼 때 발생하던 앱 종료 문제를 수정했습니다.</li>
+</ul>
+<p class="source">출처: <a href="https://github.com/react/react-native/releases/tag/v0.79.6">공식 릴리스 0.79.6</a> · <a href="https://github.com/react/react-native/blob/main/CHANGELOG-0.7x.md#v0796">공식 CHANGELOG</a></p>
+<h3 id="patch-0-79-5">0.79.5 · 최상위 Flow 타입 배포 수정</h3>
+<p class="meta">GitHub 배포: 2025-07-02 18:30:15 · npm 게시: 2025-07-02 03:52:41 (모두 UTC+9)</p>
+<ul>
+  <li>Flow: <code>react-native</code>의 최상위 Flow 타입을 배포하도록 수정했습니다.</li>
+</ul>
+<p class="source">출처: <a href="https://github.com/react/react-native/releases/tag/v0.79.5">공식 릴리스 0.79.5</a> · <a href="https://github.com/react/react-native/blob/main/CHANGELOG-0.7x.md#v0795">공식 CHANGELOG</a></p>
+<h3 id="patch-0-79-4">0.79.4 · Codegen·Flow 타입과 Android 입력·iOS 화면 크기 수정</h3>
+<p class="meta">GitHub 배포: 2025-06-18 18:54:22 · npm 게시: 2025-06-18 03:20:42 (모두 UTC+9)</p>
+<ul>
+  <li>Codegen: 선택적으로 사용하지 않도록 설정한 라이브러리를 코드 생성에서 제외하는 수정을 가져왔습니다.</li>
+  <li>Flow: <code>react-native</code>의 최상위 Flow 타입 배포를 수정했습니다.</li>
+  <li>런타임: <code>updateRuntimeShadowNodeReferencesOnCommit</code> 기능을 기본으로 끕니다.</li>
+  <li>Android / TextInput: Android 9 미만에서 잘못된 포커스 동작을 수정했습니다.</li>
+  <li>iOS / Dimensions: 기기의 화면 방향이 바뀌어도 Dimensions 값이 바뀌지 않던 문제를 수정했습니다.</li>
+</ul>
+<p class="source">출처: <a href="https://github.com/react/react-native/releases/tag/v0.79.4">공식 릴리스 0.79.4</a> · <a href="https://github.com/react/react-native/blob/main/CHANGELOG-0.7x.md#v0794">공식 CHANGELOG</a></p>
+<h3 id="patch-0-79-3">0.79.3 · 타이머·타입과 Android 레이아웃·iOS Codegen·Switch 수정</h3>
+<p class="meta">GitHub 배포: 2025-06-05 02:49:21 · npm 게시: 2025-06-05 02:15:56 (모두 UTC+9)</p>
+<ul>
+  <li>런타임: 타이머 ID와 타이머 함수의 인수 오류 처리를 웹 표준과 맞췄습니다.</li>
+  <li>TypeScript: TSC가 찾을 수 있도록 <code>global.d.ts</code>를 타입 참조 대신 경로 참조로 지정했습니다.</li>
+  <li>Android / 런타임: <code>z-index</code>가 있는 형제 뷰를 제거할 때의 문제를 수정했습니다.</li>
+  <li>Android / 스타일: 오른쪽에서 왼쪽으로 쓰는 RTL 레이아웃의 <code>borderBottomEndRadius</code>를 수정했습니다.</li>
+  <li>iOS / CocoaPods: <code>React-jsc</code>에서 <code>DEFINES_MODULE</code>을 켭니다.</li>
+  <li>iOS / Codegen: 코드 생성 중 <code>.pnpm</code> 폴더를 찾을 수 있게 했습니다.</li>
+  <li>iOS / Codegen: 선택적으로 사용하지 않도록 설정한 라이브러리를 코드 생성에서 제외합니다.</li>
+  <li>iOS / 상호 운용 계층: 네이티브 뷰에 자식 뷰를 추가하는 문제를 수정했습니다.</li>
+  <li>iOS / RedBox: 잘못된 번들을 처음 로드할 때 RedBox가 사라지는 문제를 수정했습니다.</li>
+  <li>iOS / Switch: <code>value</code>를 <code>false</code>로 고정해도 켜진 상태로 표시되던 문제를 수정했습니다.</li>
+</ul>
+<p class="source">출처: <a href="https://github.com/react/react-native/releases/tag/v0.79.3">공식 릴리스 0.79.3</a> · <a href="https://github.com/react/react-native/blob/main/CHANGELOG-0.7x.md#v0793">공식 CHANGELOG</a></p>
+<h3 id="patch-0-79-2">0.79.2 · ShadowNode 런타임 플래그와 Blob·ImageSource 수정</h3>
+<p class="meta">GitHub 배포: 2025-05-02 02:54:59 · npm 게시: 2025-05-02 01:51:36 (모두 UTC+9)</p>
+<ul>
+  <li>런타임: <code>useShadowNodeStateOnClone</code>과 <code>updateRuntimeShadowNodeReferencesOnCommit</code>을 추가했습니다.</li>
+  <li>Blob: Node 명세에 따라 URL을 해석하도록 수정했습니다.</li>
+  <li>Codegen: <code>ImageSource</code>의 <code>require</code> 처리를 수정했습니다.</li>
+</ul>
+<p class="source">출처: <a href="https://github.com/react/react-native/releases/tag/v0.79.2">공식 릴리스 0.79.2</a> · <a href="https://github.com/react/react-native/blob/main/CHANGELOG-0.7x.md#v0792">공식 CHANGELOG</a></p>
+<h3 id="patch-0-79-1">0.79.1 · 개발 오류 처리·iOS 커서와 플랫폼별 Codegen 수정</h3>
+<p class="meta">GitHub 배포: 2025-04-15 22:58:51 · npm 게시: 2025-04-15 20:15:42 (모두 UTC+9)</p>
+<ul>
+  <li>Android / 개발 지원: <code>ReleaseDevSupportManager</code>의 <code>defaultJSExceptionHandler</code> 타입을 <code>JSExceptionHandler</code>로 바꿨습니다.</li>
+  <li>iOS / TextInput: 길이가 0인 선택 범위를 설정했을 때 입력하면 커서가 처음으로 이동하던 동작을 수정했습니다.</li>
+  <li>Android / Codegen: Apple 전용 파일을 생성하지 않도록 수정했습니다.</li>
+  <li>iOS / Codegen: 라이브러리에 <code>ReactCodegen.podspec</code>을 생성하지 않도록 수정했습니다.</li>
+</ul>
+<p class="source">출처: <a href="https://github.com/react/react-native/releases/tag/v0.79.1">공식 릴리스 0.79.1</a> · <a href="https://github.com/react/react-native/blob/main/CHANGELOG-0.7x.md#v0791">공식 CHANGELOG</a></p>
+<p class="source">전체 조사 근거: <a href="https://github.com/react/react-native/releases/tag/v0.79.0">최초 정식 릴리스</a> · <a href="https://api.github.com/repos/react/react-native/git/matching-refs/tags/v0.79.">전체 태그 목록</a> · <a href="https://registry.npmjs.org/react-native">npm 버전과 게시 시각</a></p>
+</section>
+
+<section aria-labelledby="prereleases">
+<h2 id="prereleases">사전 배포와 미배포 기록</h2>
+<p class="meta">확인일: 2026-10-06 · 날짜: 한국 시간(UTC+9)</p>
+<p>0.79.0의 RC(배포 후보)는 정식 패치와 구분합니다. GitHub 공개일은 릴리스가 게시된 날짜입니다. npm에 배포되지 않은 RC에는 공개일이 있더라도 배포 실패를 표시합니다. nightly와 canary는 정식 패치 목록에 포함하지 않습니다.</p>
+<div class="tblwrap"><table><thead><tr><th scope="col">버전</th><th scope="col">GitHub 공개일</th><th scope="col">npm 게시일</th><th scope="col">확인 결과</th></tr></thead><tbody>
+<tr><td><a href="https://github.com/react/react-native/releases/tag/v0.79.0-rc.4">0.79.0-rc.4</a></td><td>2025-04-01</td><td>2025-04-01</td><td>GitHub·npm 배포 확인. Golden RC로 표시.</td></tr>
+<tr><td><a href="https://github.com/react/react-native/releases/tag/v0.79.0-rc.3">0.79.0-rc.3</a></td><td>2025-03-25</td><td>2025-03-25</td><td>GitHub·npm 배포 확인.</td></tr>
+<tr><td><a href="https://github.com/react/react-native/releases/tag/v0.79.0-rc.2">0.79.0-rc.2</a></td><td>2025-03-18</td><td>2025-03-18</td><td>GitHub·npm 배포 확인.</td></tr>
+<tr><td><a href="https://github.com/react/react-native/releases/tag/v0.79.0-rc.1">0.79.0-rc.1</a></td><td>2025-03-11</td><td>2025-03-11</td><td>GitHub·npm 배포 확인.</td></tr>
+<tr><td><a href="https://github.com/react/react-native/releases/tag/v0.79.0-rc.0">0.79.0-rc.0</a></td><td>2025-03-04</td><td>2025-03-04</td><td>GitHub·npm 배포 확인.</td></tr>
+</tbody></table></div>
+<p>위 RC는 모두 npm 배포 기록이 있습니다. 조사한 태그 범위에서 배포가 누락된 RC나 번호를 건너뛴 정식 패치는 없습니다.</p>
+</section>
+
+<div class="tags"><strong style="color:var(--text)">태그:</strong> <span>engineering</span></div>
+<footer class="note">
+  이 문서의 본문은 React Native 공식 블로그의 한국어 번역입니다. 패치와 사전 배포 기록은 공식 릴리스, CHANGELOG, 태그와 npm 배포 기록을 바탕으로 별도 작성했습니다. 원문의 코드, 이미지와 설명을 보존했습니다. 이미지·GIF·폰트는 HTML 파일에 포함됩니다. 원문에는 첨부 동영상이 없습니다.<br>
+  원문 저작권: © Meta Platforms, Inc. 원문 문서의 <a href="https://github.com/react/react-native-website/blob/main/LICENSE-docs">CC BY 4.0 라이선스</a>에 따라 번역했습니다. <a href="https://creativecommons.org/licenses/by/4.0/">라이선스 안내</a>.<br>
+  원문(영문): <a href="https://reactnative.dev/blog/2025/04/08/react-native-0.79">React Native 0.79 - Faster tooling and much more</a> · <a href="https://github.com/react/react-native-website/blob/main/website/blog/2025-04-08-react-native-0.79.mdx">공식 발표 소스</a>
+</footer>
+</div>

@@ -1,0 +1,311 @@
+<div class="wrap">
+
+<header class="post">
+  <span class="kicker">React Native 릴리스</span>
+  <h1>React Native 0.82 — 새로운 시대</h1>
+  <p class="orig-title">원문: React Native 0.82 - A New Era</p>
+  <p class="meta">2025년 10월 8일 · 약 13분 분량</p>
+  <p class="source">출처: <a href="https://reactnative.dev/blog/2025/10/08/react-native-0.82">reactnative.dev/blog/2025/10/08/react-native-0.82</a></p>
+  <div class="authors">
+    <div class="author"><img src="@@AV_vzaidman@@" alt="Vitali Zaidman"><div><div class="n">Vitali Zaidman</div><div class="a">Meta 소프트웨어 엔지니어</div></div></div>
+    <div class="author"><img src="@@AV_cortinico@@" alt="Nicola Corti"><div><div class="n">Nicola Corti</div><div class="a">Meta 소프트웨어 엔지니어</div></div></div>
+    <div class="author"><img src="@@AV_gabrieldonadel@@" alt="Gabriel Donadel Dall'Agnol"><div><div class="n">Gabriel Donadel Dall'Agnol</div><div class="a">Expo 소프트웨어 엔지니어</div></div></div>
+    <div class="author"><img src="@@AV_alanjhughes@@" alt="Alan Hughes"><div><div class="n">Alan Hughes</div><div class="a">Expo 소프트웨어 엔지니어</div></div></div>
+  </div>
+</header>
+
+<div class="admon rich">
+  <div class="t">문서 범위 · 2026-10-06 확인</div>
+  <p>블로그 번역은 2025-10-08 최초 발표 당시의 설명을 보존합니다. 본문의 “최신 버전”, 지원 상태, 출시 예정 안내와 실험 기능 설정도 발표 당시 기준입니다.</p>
+  <p>현재 조사 결과는 <a href="#patches">0.82.x 패치 내역</a>과 <a href="#prereleases">사전 배포 기록</a>에 별도로 표시했습니다. 확인한 가장 최근 정식 패치는 <strong>0.82.1</strong>입니다.</p>
+</div>
+
+<p class="lead">오늘 React Native 0.82를 배포합니다. 새 아키텍처에서만 실행되는 첫 React Native 버전입니다.</p>
+<p>이번 배포는 React Native의 중요한 전환점입니다. 새로운 시대의 시작이라고 생각합니다. 이후 버전에서는 기존 아키텍처의 남은 코드를 제거하여 설치 크기를 줄이고 코드 구조를 단순하게 만들 예정입니다.</p>
+<p>0.82에는 새 Hermes 버전인 Hermes V1을 선택하여 사용할 수 있는 실험 기능도 포함됩니다. React 버전을 19.1.1로 올려 여러 React 기능을 사용할 수 있게 했습니다. DOM 노드 API도 지원합니다.</p>
+
+<nav class="toc" aria-label="문서 목차">
+  <section>
+    <h3>주요 변경 사항</h3>
+    <ul>
+      <li><a href="#newarch">새 아키텍처만 사용</a></li>
+      <li><a href="#hermes">실험 기능 — Hermes V1</a></li>
+      <li><a href="#react19">React 19.1.1</a></li>
+      <li><a href="#dom">DOM 노드 API</a></li>
+    </ul>
+  </section>
+  <section>
+    <h3>그 외</h3>
+    <ul>
+      <li><a href="#other">기타 변경 사항</a></li>
+      <li><a href="#breaking">호환성이 깨지는 변경</a></li>
+      <li><a href="#thanks">감사의 말</a></li>
+      <li><a href="#upgrade">0.82로 업그레이드하기</a></li>
+      <li><a href="#patches">0.82.x 패치 릴리스</a></li>
+      <li><a href="#prereleases">사전 배포와 미배포 기록</a></li>
+    </ul>
+  </section>
+</nav>
+
+<h2 id="newarch">새 아키텍처만 사용</h2>
+<p>React Native 0.76에서 <a href="https://reactnative.dev/blog/2024/10/23/the-new-architecture-is-here">새 아키텍처</a>가 React Native의 기본 아키텍처가 되었다고 발표했습니다.</p>
+<p>그 이후 새 아키텍처를 시험하고 개선했습니다. 이제 이번 버전과 이후 버전에서 새 아키텍처를 <strong>유일한</strong> 아키텍처로 사용할 수 있다고 판단했습니다.</p>
+<p>따라서 Android에서 <code>newArchEnabled=false</code>를 설정하거나, iOS에서 <code>RCT_NEW_ARCH_ENABLED=0</code>으로 CocoaPods를 설치해도 이 설정은 무시됩니다. 앱은 계속 새 아키텍처에서 실행됩니다.</p>
+
+<h3 id="migration">이전 방법</h3>
+<p>프로젝트를 아직 새 아키텍처로 이전하지 않았다면 먼저 React Native 0.81 또는 Expo SDK 54로 이전할 것을 권장합니다. 이 버전들은 기존 아키텍처를 사용할 수 있는 마지막 버전입니다. 새 아키텍처로 이전하는 데 도움이 되는 경고와 성능 개선이 포함됩니다.</p>
+<p>다음으로 0.81에서 새 아키텍처를 켜고 앱이 정상적으로 작동하는지 확인하세요. 0.81에서 새 아키텍처를 사용하게 되면 React Native 0.82로 안전하게 올릴 수 있습니다. 0.82에서는 기존 아키텍처를 켤 수 없습니다.</p>
+<p>호환되지 않는 외부 라이브러리 때문에 새 아키텍처로 이전할 수 없다면 해당 라이브러리 관리자에게 직접 문의할 것을 권장합니다.</p>
+<p>React Native 코어의 버그 때문에 이전할 수 없다면 <a href="https://github.com/facebook/react-native/issues/new/choose">이슈 추적 시스템</a>으로 알려 주세요.</p>
+
+<h3 id="interop">상호 운용 계층과 외부 라이브러리 호환성</h3>
+<p>상호 운용 계층은 당분간 코드에 유지합니다. 이 계층에 필요한 모든 클래스와 함수도 가까운 시일 안에 제거하지 않습니다. 상호 운용 계층의 제거에 관한 추가 소식은 이후에 공유하겠습니다.</p>
+<p>두 아키텍처 모두와 호환되는 외부 라이브러리가 새 아키텍처만 사용하는 0.82에서도 계속 작동하는 것을 확인했습니다.</p>
+
+<h3 id="legacy-removal">기존 아키텍처 클래스 제거</h3>
+<p>이전 버전과의 호환성을 유지하고 호환성이 깨지는 변경을 줄이기 위해, 이번 버전에서는 React Native 코어에서 기존 아키텍처의 API를 제거하지 않습니다. 기존 아키텍처를 제거하면 전체 번들 크기를 크게 줄일 수 있습니다. 따라서 제거 작업은 다음 React Native 버전부터 시작할 예정입니다.</p>
+<p>자세한 내용은 <a href="https://github.com/react-native-community/discussions-and-proposals/pull/929">RFC0929: React Native의 기존 아키텍처 제거</a>에서 확인할 수 있습니다.</p>
+
+<h2 id="hermes">실험 기능 — Hermes V1</h2>
+<p>React Native 0.82에서는 Hermes V1을 선택하여 사용할 수 있습니다.</p>
+<p>Hermes V1은 Hermes의 다음 발전 단계입니다. 내부 앱에서 시험해 왔으며, 이제 커뮤니티에서도 시험할 수 있습니다. 컴파일러와 가상 머신(VM)을 개선하여 Hermes의 성능을 높였습니다.</p>
+<p>초기 시험과 성능 측정에서 Hermes V1은 여러 상황에서 현재 Hermes보다 좋은 결과를 보였습니다. 번들 로딩 시간과 상호 작용이 가능해질 때까지의 시간(TTI)이 줄었습니다. 개선 정도는 앱의 세부 구현에 크게 좌우됩니다.</p>
+<p>실제로 사용되는 복잡한 앱인 <a href="https://github.com/Expensify/App">Expensify 앱</a>에서 다음 개선을 확인했습니다.</p>
+<div class="tblwrap"><table>
+  <caption>Hermes V1 성능 개선 — Expensify 앱 측정</caption>
+  <thead><tr><th scope="col">측정 항목</th><th scope="col">Android (저사양 기기)</th><th scope="col">iOS</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">번들 로딩 시간</th><td>3.2% 단축</td><td>9% 단축</td></tr>
+    <tr><th scope="row">전체 TTI (Total TTI)</th><td>7.6% 단축</td><td>2.5% 단축</td></tr>
+    <tr><th scope="row">콘텐츠 TTI (Content TTI)</th><td>7.2% 단축</td><td>7.5% 단축</td></tr>
+  </tbody>
+</table></div>
+<p>전체 TTI는 번들 로딩 시작부터 앱의 첫 화면이 렌더링되고 상호 작용이 가능해질 때까지의 시간을 측정했습니다.</p>
+<p>콘텐츠 TTI는 컴포넌트가 처음 렌더링된 시점부터 해당 컴포넌트와 상호 작용이 가능해질 때까지의 시간을 측정했습니다.</p>
+<p>Hermes V1에는 아직 JavaScript를 네이티브 코드로 컴파일하는 기능(이전 이름: Static Hermes)이나 <a href="https://www.youtube.com/watch?v=q-xKYA0EO-c">React Native EU 2023에서 발표한 JIT 컴파일 기능</a>이 포함되지 않습니다. 이 기능들은 계속 시험하고 있습니다. 진행 상황에 따라 추가 정보를 공유하겠습니다.</p>
+
+<h3 id="enable-hermes">Hermes V1을 켜는 방법</h3>
+<div class="admon">
+  <div class="t">참고</div>
+  <p>Hermes V1이 실험 단계인 동안에는 React Native를 소스에서 빌드해야 합니다. 이후 React Native 버전에서 Hermes V1이 기본으로 제공되면 이 제한이 없어집니다.</p>
+</div>
+<p>프로젝트에서 Hermes V1을 시험하려면 다음 절차를 따르세요.</p>
+<ol class="steps">
+  <li>
+    <p><code>package.json</code>의 해당 구역을 수정하여 패키지 관리자가 Hermes V1 컴파일러 패키지의 실험 버전을 사용하게 하세요. 아래 버전 번호 형식은 Hermes V1의 실험 단계에서만 사용합니다.</p>
+    <div class="codeblock"><div class="fname">package.json — Yarn</div><pre><code>"resolutions": {
+    "hermes-compiler": "250829098.0.1"
+}</code></pre></div>
+    <div class="codeblock"><div class="fname">package.json — npm</div><pre><code>"overrides": {
+    "hermes-compiler": "250829098.0.1"
+}</code></pre></div>
+  </li>
+  <li>
+    <p>Android에서는 <code>android/gradle.properties</code>에 <code>hermesV1Enabled=true</code>를 추가하여 Hermes V1을 켜세요.</p>
+    <div class="codeblock"><div class="fname">android/gradle.properties</div><pre><code>hermesV1Enabled=true</code></pre></div>
+    <p>또한 <code>android/settings.gradle</code>을 수정하여 React Native를 <a href="https://reactnative.dev/contributing/how-to-build-from-source#android">소스에서 빌드</a>하도록 설정하세요.</p>
+    <div class="codeblock"><div class="fname">android/settings.gradle</div><pre><code>  includeBuild('../node_modules/react-native') {
+      dependencySubstitution {
+          substitute(module("com.facebook.react:react-android")).using(project(":packages:react-native:ReactAndroid"))
+          substitute(module("com.facebook.react:react-native")).using(project(":packages:react-native:ReactAndroid"))
+          substitute(project(":packages:react-native:ReactAndroid:hermes-engine")).using(module("com.facebook.hermes:hermes-android:250829098.0.1"))
+      }
+  }</code></pre></div>
+  </li>
+  <li>
+    <p>iOS에서는 환경 변수 <code>RCT_HERMES_V1_ENABLED=1</code>을 설정한 상태로 pod를 설치하여 Hermes V1을 켜세요.</p>
+    <div class="codeblock"><pre><code>RCT_HERMES_V1_ENABLED=1 bundle exec pod install</code></pre></div>
+    <p>Hermes V1은 미리 컴파일한 React Native 빌드와 호환되지 않습니다. pod를 설치할 때 <code>RCT_USE_PREBUILT_RNCORE</code> 플래그를 사용하지 마세요.</p>
+  </li>
+  <li>
+    <p>앱이 Hermes V1에서 실행되는지 확인하려면 앱 또는 DevTools 콘솔에서 다음 코드를 실행하세요. 반환된 Hermes 버전은 1단계에서 지정한 버전(<code>250829098.0.1</code>)과 같아야 합니다.</p>
+    <div class="codeblock"><pre><code><span class="com">// Hermes V1에서는 "250829098.0.1"을 반환해야 합니다.</span>
+HermesInternal.getRuntimeProperties()['OSS Release Version'];</code></pre></div>
+  </li>
+</ol>
+
+<h2 id="react19">React 19.1.1</h2>
+<p>이번 React Native 버전에는 발표 당시 최신 React 안정 버전인 <a href="https://github.com/facebook/react/releases/tag/v19.1.1">React 19.1.1</a>이 포함됩니다.</p>
+<p>이 React 버전은 React Native의 소유자 스택(Owner Stack)을 완전히 지원합니다. React Native 0.80에 React 19.1.0 지원을 추가했을 때는 <a href="https://babeljs.io/docs/babel-plugin-transform-function-name"><code>@babel/plugin-transform-function-name</code></a> Babel 플러그인을 사용하면 소유자 스택을 완전히 지원하지 못한다고 <a href="https://reactnative.dev/blog/2025/06/12/react-native-0.80#react-1910">설명했습니다</a>. 이번 버전은 이 제한을 없애 모든 React Native 사용자가 소유자 스택을 사용할 수 있게 합니다.</p>
+<div class="demos">
+  <figure><figcaption>변경 전 — 소유자 스택 없음</figcaption><img src="@@IMG_OWNERS_BEFORE@@" width="251" height="512" alt="소유자 스택 없이 표시된 오류 예시"></figure>
+  <figure><figcaption>변경 후 — 소유자 스택 포함</figcaption><img src="@@IMG_OWNERS_AFTER@@" width="252" height="512" alt="소유자 스택을 포함하여 표시된 오류 예시"></figure>
+</div>
+<p>React 19.1.1은 React Native의 Suspense 경계에서 <a href="https://react.dev/reference/react/useDeferredValue"><code>useDeferredValue</code></a>와 <a href="https://react.dev/reference/react/startTransition"><code>startTransition</code></a>가 더 안정적으로 작동하게 합니다. 이 두 기능은 앱의 응답성을 높이는 핵심 React 기능입니다. 이전에는 React Native에서 Suspense 경계와 함께 사용하면 대체 화면(fallback) 컴포넌트가 잘못 표시되었습니다. React 19.1.1에서는 웹과 같은 방식으로 일관되게 작동합니다.</p>
+
+<h2 id="dom">DOM 노드 API</h2>
+<p>React Native 0.82부터 네이티브 컴포넌트는 ref를 통해 DOM과 유사한 노드를 제공합니다.</p>
+<p>이전에는 네이티브 컴포넌트가 <code>measure</code>, <code>setNativeProps</code>와 같은 소수의 메서드만 있는 React Native 전용 객체를 제공했습니다. 이번 버전부터는 <a href="https://reactnative.dev/docs/element-nodes">DOM API의 일부를 구현한 노드</a>를 제공합니다. 웹과 같이 UI 트리를 탐색하고 레이아웃을 측정하는 등의 작업을 할 수 있습니다. 다음은 예제입니다.</p>
+<div class="codeblock"><pre><code>function MyComponent(props) {
+  const ref = useRef();
+
+  useEffect(() =&gt; {
+    const element = ref.current;
+
+    <span class="com">// 새 메서드와 속성</span>
+    element.parentNode;
+    element.parentElement;
+    element.childNodes;
+    element.children;
+    const bounds = element.getBoundingClientRect();
+    const doc = element.ownerDocument;
+    const maybeElement = doc.getElementById('some-view');
+
+    <span class="com">// 기존 메서드도 계속 사용할 수 있습니다.</span>
+    element.measure((x, y, width, height, pageX, pageY) =&gt; {
+      /* ... */
+    });
+  }, []);
+
+  return &lt;View ref={ref} /&gt;;
+}</code></pre></div>
+<p>또한 <code>Text</code> 컴포넌트가 생성하는 말단 <a href="https://reactnative.dev/docs/text-nodes">텍스트 노드</a>와 React Native 루트 노드를 나타내는 <a href="https://reactnative.dev/docs/document-nodes">문서 노드</a>에도 접근할 수 있습니다.</p>
+<p>새 노드는 <code>measure</code>와 같은 기존 메서드도 계속 구현합니다. 따라서 이 변경은 이전 버전과 호환됩니다.</p>
+<p>자세한 내용은 <a href="https://reactnative.dev/docs/nodes">노드 문서</a>를 확인하세요.</p>
+
+<h2 id="other">기타 변경 사항</h2>
+<h3 id="webperf">Web Performance API (Canary)</h3>
+<p>React Native는 이제 웹 성능 API의 일부를 구현합니다.</p>
+<ul>
+  <li><a href="https://www.w3.org/TR/hr-time-3/">High Resolution Time</a>: <code>performance.now()</code>와 <code>performance.timeOrigin</code>을 정의합니다.</li>
+  <li><a href="https://w3c.github.io/performance-timeline/">Performance Timeline</a>: <code>PerformanceObserver</code>와 performance 객체에서 성능 항목에 접근하는 메서드(<code>getEntries()</code>, <code>getEntriesByType()</code>, <code>getEntriesByName()</code>)를 정의합니다.</li>
+  <li><a href="https://w3c.github.io/user-timing/">User Timing</a>: <code>performance.mark</code>와 <code>performance.measure</code>를 정의합니다.</li>
+  <li><a href="https://w3c.github.io/event-timing/">Event Timing API</a>: <code>PerformanceObserver</code>에 보고하는 <code>event</code> 항목 유형을 정의합니다.</li>
+  <li><a href="https://w3c.github.io/longtasks/">Long Tasks API</a>: <code>PerformanceObserver</code>에 보고하는 <code>longtask</code> 항목 유형을 정의합니다.</li>
+</ul>
+<p>이 API를 사용하면 앱 실행 중 여러 성능 지표를 추적하여 원격 측정에 사용할 수 있습니다. 이후 React Native 버전에서 제공할 React Native DevTools의 Performance 패널에도 표시할 예정입니다.</p>
+<p>발표 당시에는 <strong><a href="https://reactnative.dev/docs/releases/release-levels">Canary 배포 단계</a>에서만 사용할 수 있습니다</strong>. 이후 React Native 버전에서 안정 기능으로 제공할 예정입니다.</p>
+
+<h3 id="debug-optimized">Android의 최적화된 디버그 빌드 유형</h3>
+<p>React Native 0.82부터 <code>debugOptimized</code> 빌드 유형을 사용하여 개발 중 실행 성능을 높일 수 있습니다.</p>
+<p>기존 Android는 기본 빌드 변형 두 가지를 만듭니다.</p>
+<ul>
+  <li><code>debug</code>: 개발할 때 기본으로 사용합니다. React Native DevTools, Metro, Android JVM 디버거, C++ 디버거 등 여러 디버깅 도구에 연결할 수 있습니다.</li>
+  <li><code>release</code>: 앱을 사용자에게 배포할 때 사용합니다. 완전히 최적화되며, 난독화와 최적화 때문에 디버깅이 어려워집니다.</li>
+</ul>
+<p>대부분의 React Native 개발자는 개발 중 C++ 디버거가 필요하지 않습니다. 따라서 <code>debugOptimized</code> 빌드 유형을 도입했습니다.</p>
+<p><code>debugOptimized</code>는 여러 C++ 최적화를 켠 React Native 빌드를 실행하므로 애니메이션과 재렌더링이 더 빠릅니다. 동시에 React Native DevTools로 JavaScript 코드를 계속 디버깅할 수 있습니다.</p>
+<p><code>debugOptimized</code>에서는 C++ 네이티브 디버거를 사용할 수 없습니다. C++ 디버거가 필요하면 <code>debug</code> 빌드 유형을 사용하세요.</p>
+<p>앱을 <code>debugOptimized</code> 변형으로 실행하려면 다음 명령을 사용하세요.</p>
+<div class="codeblock"><div class="fname">Community CLI</div><pre><code>npx react-native run-android --mode debugOptimized</code></pre></div>
+<div class="codeblock"><div class="fname">Expo</div><pre><code>npx expo run:android --variant debugOptimized</code></pre></div>
+<div class="admon">
+  <div class="t">참고</div>
+  <p><code>debugOptimized</code> 빌드 유형은 React Native 0.81과 Expo SDK 54에도 적용되었습니다.</p>
+</div>
+<p>아래 예제는 화면에서 여러 애니메이션을 렌더링할 때 <code>debugOptimized</code>가 작동하는 모습을 보여 줍니다.</p>
+<p><code>debug</code> 빌드는 약 20FPS로 실행되고, <code>debugOptimized</code> 빌드는 약 60FPS로 실행됩니다.</p>
+<div class="demos">
+  <figure><figcaption><code>debug</code> — 약 20FPS</figcaption><img src="@@IMG_DEBUG@@" width="720" height="1280" alt="debug 빌드에서 여러 애니메이션이 약 20FPS로 실행되는 GIF"></figure>
+  <figure><figcaption><code>debugOptimized</code> — 약 60FPS</figcaption><img src="@@IMG_DEBUG_OPTIMIZED@@" width="720" height="1280" alt="debugOptimized 빌드에서 여러 애니메이션이 약 60FPS로 실행되는 GIF"></figure>
+</div>
+
+<h2 id="breaking">호환성이 깨지는 변경</h2>
+<h3 id="promise-rejections">처리하지 않은 Promise 거부를 <code>console.error</code>로 보고</h3>
+<p>이전 버전에서 <a href="https://reactnative.dev/blog/2025/08/12/react-native-0.81#improved-reporting-of-uncaught-javascript-errors">처리하지 않은 JavaScript 오류의 보고 방식을 개선</a>했습니다. 이제 처리하지 않은 Promise 거부도 같은 방식으로 보고합니다.</p>
+<figure class="shot">
+  <img src="@@IMG_PROMISE@@" width="512" height="156" alt="처리하지 않은 Promise 거부가 콘솔 오류로 보고된 예시">
+  <figcaption>처리하지 않은 Promise 거부의 콘솔 보고 예시</figcaption>
+</figure>
+<p>이전에는 버그 때문에 이 오류들이 모두 무시되었습니다. 따라서 React Native 0.81로 업그레이드한 뒤에는 기존 오류가 표시될 수 있습니다. 같은 이유로 백엔드에 보고하는 JavaScript 오류에도 기존 오류가 나타나 새 보고 건수가 급증할 수 있습니다.</p>
+<div class="admon">
+  <div class="t">번역 참고</div>
+  <p>위 문단의 “0.81”은 공식 0.82 발표 원문의 표기입니다. 이 문서는 원문 버전 번호를 보존합니다.</p>
+</div>
+
+<h3 id="other-breaking">그 외 호환성이 깨지는 변경</h3>
+<h4 id="breaking-general">공통</h4>
+<ul>
+  <li><code>ReactNativeFeatureFlags</code>를 <code>src/private</code>로 옮겼습니다. 비공개 API이므로 이 API에 의존하지 않아야 합니다.</li>
+  <li><code>Appearance.setColorScheme()</code>의 타입을 변경하여 null 값을 허용하지 않습니다. 색상 모드를 초기화해야 할 때는 <code>null</code> 또는 <code>undefined</code> 대신 <code>'unspecified'</code>를 사용하세요.</li>
+</ul>
+<h4 id="breaking-ios">iOS</h4>
+<ul>
+  <li><code>RCTDisplayLink</code>가 기존 API인 <code>RCTModuleData</code>를 사용하지 않도록 이전했습니다. <code>RCTModuleData</code>는 이후에 제거할 예정입니다.</li>
+</ul>
+<h4 id="breaking-android">Android</h4>
+<ul>
+  <li>실수로 <code>public</code>으로 공개했던 <code>com.facebook.react.bridge.JSONArguments</code> 클래스를 제거했습니다.</li>
+  <li><code>MessageQueueThreadPerfStats</code>를 사용 중단(deprecated) 상태로 지정하고 최소 구현(stub)으로 대체했습니다. 제공하던 통계가 신뢰할 수 없으므로 이 API의 통계에 더 이상 의존하지 마세요.</li>
+  <li>Gradle을 8.x에서 9.0.0으로 올렸습니다. Gradle 9.0.0의 전체 변경 목록은 <a href="https://gradle.org/whats-new/gradle-9/">Gradle 안내</a>에 있습니다. 사용자에게는 영향이 없을 것으로 예상합니다.</li>
+</ul>
+<h4 id="breaking-cpp">C++</h4>
+<ul>
+  <li><code>CallbackWrapper.h</code>와 <code>LongLivedObject.h</code>의 이전 버전 호환용 헤더를 제거했습니다. 올바른 포함 경로는 <code>#include &lt;react/bridging/LongLivedObject.h&gt;</code>와 <code>#include &lt;react/bridging/CallbackWrapper.h&gt;</code>입니다. 이전 경로인 <code>#import &lt;ReactCommon/….h&gt;</code>를 사용하지 마세요.</li>
+</ul>
+<p>호환성이 깨지는 변경의 전체 목록은 <a href="https://github.com/facebook/react-native/blob/main/CHANGELOG.md#v0820">0.82 CHANGELOG</a>에서 확인하세요.</p>
+
+<h2 id="thanks">감사의 말</h2>
+<p>React Native 0.82에는 93명의 기여자가 만든 868개 이상의 커밋이 포함됩니다. 모든 분의 작업에 감사드립니다.</p>
+<p>이번 버전에 중요한 기여를 한 다음 커뮤니티 구성원에게 특별히 감사드립니다.</p>
+<ul>
+  <li><a href="https://github.com/coado">Dawid Małecki</a>, <a href="https://github.com/j-piasecki">Jakub Piasecki</a>: Hermes V1 도입 지원.</li>
+  <li><a href="https://github.com/krystofwoldrich">Krystof Woldrich</a>: 처리하지 않은 Promise 거부가 무시되는 문제의 수정 지원.</li>
+  <li><a href="https://github.com/cipolleschi">Riccardo Cipolleschi</a>: 위 React 19.1.1과 Hermes V1 설명 작성 지원.</li>
+  <li><a href="https://github.com/rubennorte">Rubén Norte</a>: DOM API와 Performance API 설명 작성 지원.</li>
+  <li><a href="https://github.com/tomekzaw/">Tomasz Zawadzki</a>: <code>debugOptimized</code> 성능 측정 지원.</li>
+</ul>
+
+<h2 id="upgrade">0.82로 업그레이드하기</h2>
+<p>기존 프로젝트에서는 <a href="https://react-native-community.github.io/upgrade-helper/">React Native Upgrade Helper</a>로 React Native 버전 간 코드 변경을 확인하세요. <a href="https://reactnative.dev/docs/upgrading">새 버전으로 업그레이드하는 방법</a>도 함께 확인하세요.</p>
+<p>새 프로젝트를 만들려면 다음 명령을 사용하세요.</p>
+<div class="codeblock"><pre><code>npx @react-native-community/cli@latest init MyProject --version latest</code></pre></div>
+<p>Expo를 사용한다면 React Native 0.82는 <code>expo@canary</code> 배포에 포함될 예정입니다.</p>
+<p>다음 SDK인 SDK 55는 다음 React Native 안정 버전인 0.83과 함께 제공될 예정입니다.</p>
+<h3 id="support">발표 당시 지원 버전</h3>
+<div class="admon">
+  <div class="t">참고 · 2025-10-08 발표 기준</div>
+  <p>이제 0.82가 React Native의 최신 안정 버전이며, 0.79.x는 지원 종료(unsupported) 상태가 됩니다. 자세한 내용은 <a href="https://github.com/reactwg/react-native-releases/blob/main/docs/support.md">React Native 지원 정책</a>을 확인하세요.</p>
+</div>
+
+<section aria-labelledby="patches">
+<h2 id="patches">0.82.x 패치 릴리스</h2>
+<p class="meta">확인일: 2026-10-06 · 배포일: 한국 시간(UTC+9) · RC와 nightly는 정식 패치에서 제외</p>
+<p>공식 GitHub Releases, 전체 <code>v0.82.</code> 태그 목록, main의 CHANGELOG와 npm 배포 기록을 함께 확인했습니다. 정식 최초 버전은 <strong>0.82.0</strong>(2025-10-08)이며, 정식 패치는 <strong>0.82.1 하나</strong>입니다. 조사 시점에 0.82.2 이상의 정식 태그나 배포 기록은 없습니다.</p>
+<p>아래 날짜는 기존 문서와 같이 GitHub Release의 <code>published_at</code>을 한국 시간으로 바꾼 날짜입니다. npm 패키지 게시 시각은 GitHub Release 공개 시각과 다를 수 있습니다.</p>
+<div class="tblwrap"><table><thead><tr><th scope="col">버전</th><th scope="col">배포일</th><th scope="col">주요 내용</th></tr></thead><tbody>
+  <tr><td><a href="#patch-0-82-1">0.82.1</a></td><td>2025-10-21</td><td>크기가 0인 뷰의 변환 처리와 iOS 사전 컴파일 바이너리 설치 수정</td></tr>
+</tbody></table></div>
+<h3 id="patch-0-82-1">0.82.1 · 뷰 변환과 iOS 바이너리 설치 수정</h3>
+<p class="meta">GitHub 배포: 2025-10-21 18:49:58 · npm 게시: 2025-10-21 03:29:53 (모두 UTC+9)</p>
+<ul>
+  <li>Android: 뷰의 초기 크기가 0일 때 변환(transform)이 잘못 표현되는 문제를 수정했습니다.</li>
+  <li>iOS: 사전 컴파일 바이너리를 사용할 때 GNU coreutils의 <code>cp</code> 명령으로 인해 컴파일이 실패하는 문제를 수정했습니다.</li>
+</ul>
+<p>공식 릴리스와 CHANGELOG에는 위 두 항목이 동일하게 기록되어 있습니다. 다음 세부 사항은 <strong>0.82.0과 0.82.1의 공식 태그 비교에서 확인한 내용</strong>입니다.</p>
+<ul>
+  <li>변환 처리: <code>BaseViewProps::resolveTransform</code>에서 너비와 높이가 모두 0이면 단위 변환을 즉시 반환하던 처리를 제거했습니다. 관련 변환 테스트도 추가했습니다.</li>
+  <li>iOS 설치: <code>ReactNativeDependencies.podspec</code>의 헤더 복사 경로를 <code>cp -R "$HEADERS_PATH/" Headers</code>에서 <code>cp -R "$HEADERS_PATH/." Headers</code>로 바꿨습니다.</li>
+  <li>배포 준비: 내부 <code>Podfile.lock</code>과 패키지 버전 정보를 갱신했습니다. 태그 사이에는 총 4개 커밋이 있습니다.</li>
+</ul>
+<p class="source">출처: <a href="https://github.com/react/react-native/releases/tag/v0.82.1">공식 릴리스 0.82.1</a> · <a href="https://github.com/react/react-native/blob/main/CHANGELOG.md#v0821">공식 CHANGELOG</a> · <a href="https://github.com/react/react-native/compare/v0.82.0...v0.82.1">직전 정식 태그와 비교</a> · <a href="https://registry.npmjs.org/react-native">npm 배포 기록</a></p>
+<p class="source">정식 버전 조사 근거: <a href="https://github.com/react/react-native/releases/tag/v0.82.0">최초 릴리스 0.82.0</a> · <a href="https://api.github.com/repos/react/react-native/git/matching-refs/tags/v0.82.">0.82 전체 태그 목록</a> · <a href="https://github.com/react/react-native/releases?q=0.82&amp;expanded=true">GitHub Releases의 0.82 검색</a></p>
+</section>
+
+<section aria-labelledby="prereleases">
+<h2 id="prereleases">사전 배포와 미배포 기록</h2>
+<p class="meta">확인일: 2026-10-06 · 날짜: 한국 시간(UTC+9)</p>
+<p>0.82.0의 RC(배포 후보)는 정식 패치와 구분합니다. 아래 배포일은 GitHub Release 공개 날짜입니다. RC.2에는 공개 릴리스가 없으므로 태그 생성 날짜만 표시합니다. nightly와 canary는 정식 패치 버전 목록에 포함하지 않습니다.</p>
+<div class="tblwrap"><table><thead><tr><th scope="col">버전</th><th scope="col">배포일</th><th scope="col">확인 결과</th></tr></thead><tbody>
+  <tr><td><a href="https://github.com/react/react-native/releases/tag/v0.82.0-rc.5">0.82.0-rc.5</a></td><td>2025-09-30</td><td>GitHub·npm 배포 확인. 릴리스에 Golden RC로 표시.</td></tr>
+  <tr><td><a href="https://github.com/react/react-native/releases/tag/v0.82.0-rc.4">0.82.0-rc.4</a></td><td>2025-09-23</td><td>GitHub·npm 배포 확인.</td></tr>
+  <tr><td><a href="https://github.com/react/react-native/releases/tag/v0.82.0-rc.3">0.82.0-rc.3</a></td><td>2025-09-17</td><td>GitHub·npm 배포 확인.</td></tr>
+  <tr><td><a href="#unreleased-rc2">0.82.0-rc.2</a></td><td>미배포<br>태그 생성: 2025-09-16</td><td>태그만 있음. npm 패키지 빌드 실패. GitHub Release와 npm 배포 기록 없음.</td></tr>
+  <tr><td><a href="https://github.com/react/react-native/releases/tag/v0.82.0-rc.1">0.82.0-rc.1</a></td><td>2025-09-09</td><td>GitHub·npm 배포 확인.</td></tr>
+  <tr><td><a href="https://github.com/react/react-native/releases/tag/v0.82.0-rc.0">0.82.0-rc.0</a></td><td>2025-09-02</td><td>GitHub·npm 배포 확인.</td></tr>
+</tbody></table></div>
+<h3 id="unreleased-rc2">0.82.0-rc.2 · npm 패키지 빌드 실패</h3>
+<p><code>v0.82.0-rc.2</code> 태그는 2025-09-16 22:12:26(UTC+9)에 생성되었습니다. 대상 커밋은 <code>16bc2e45695c73ad8a16d4fe7cd40d8caf3df0c0</code>입니다.</p>
+<p>이 커밋의 공식 <code>Publish Release</code> 작업에서 <code>build_npm_package</code> 작업이 실패했습니다. 실패 주석에는 종료 코드 1만 남아 있습니다. 따라서 확인 가능한 미배포 사유는 <strong>npm 패키지 빌드 단계 실패</strong>입니다. 실패를 일으킨 상세 오류는 공개된 작업 기록에서 확인할 수 없습니다.</p>
+<p>조사 시점에 이 버전의 GitHub Release와 npm 버전·게시 시각 기록이 없습니다. 태그가 있다는 사실만으로 배포된 버전으로 판단하지 않았습니다.</p>
+<p class="source">출처: <a href="https://github.com/react/react-native/tree/v0.82.0-rc.2">RC.2 태그</a> · <a href="https://api.github.com/repos/react/react-native/git/tags/52d333b0aa8920aebe249aceb6f744b1929158ce">태그 생성 정보</a> · <a href="https://github.com/react/react-native/actions/runs/17766944563/job/50505852079">실패한 공식 배포 작업</a> · <a href="https://api.github.com/repos/react/react-native/check-runs/50505852079/annotations">실패 주석</a> · <a href="https://registry.npmjs.org/react-native">npm 버전과 게시 시각</a></p>
+</section>
+
+<div class="tags"><strong style="color:var(--text)">태그:</strong> <span>engineering</span></div>
+<footer class="note">
+  이 문서의 본문은 React Native 공식 블로그 글의 한국어 번역입니다. 패치 내역과 사전 배포 기록은 공식 릴리스, CHANGELOG, 태그 비교와 배포 작업을 바탕으로 별도 작성했습니다. 원문의 코드, 성능 수치, 이미지 비교와 설명을 보존했습니다. 이미지·GIF·폰트는 HTML 파일에 포함됩니다. React Native EU 2023 영상은 원문과 같은 외부 링크이며 인터넷 연결이 필요합니다.<br>
+  원문 저작권: © Meta Platforms, Inc. 원문 문서의 <a href="https://github.com/react/react-native-website/blob/main/LICENSE-docs">CC BY 4.0 라이선스</a>에 따라 번역했습니다. <a href="https://creativecommons.org/licenses/by/4.0/">라이선스 안내</a>.<br>
+  원문(영문): <a href="https://reactnative.dev/blog/2025/10/08/react-native-0.82">React Native 0.82 - A New Era</a> · <a href="https://github.com/react/react-native-website/blob/main/website/blog/2025-10-08-react-native-0.82.mdx">공식 발표 소스</a>
+</footer>
+
+</div>

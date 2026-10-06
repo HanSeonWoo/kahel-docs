@@ -1,0 +1,27 @@
+{
+ "title_ko": "React Native 0.81 한국어판",
+ "assets": {
+  "@@IMG_1@@": {
+   "url": "https://reactnative.dev/assets/images/0.81-improved-uncaught-error-fa95330ee5a41739cc7604a21e03be8b.png",
+   "mime": "image/png"
+  }
+ },
+ "authors": [
+  {
+   "key": "motiz88",
+   "img": "https://github.com/motiz88.png?size=96"
+  },
+  {
+   "key": "vzaidman",
+   "img": "https://github.com/vzaidman.png?size=96"
+  },
+  {
+   "key": "gabrieldonadel",
+   "img": "https://github.com/gabrieldonadel.png?size=96"
+  },
+  {
+   "key": "chrfalch",
+   "img": "https://github.com/chrfalch.png?size=96"
+  }
+ ]
+}

@@ -1,0 +1,27 @@
+{
+ "title_ko": "React Native 0.79 한국어판",
+ "assets": {
+  "@@IMG_1@@": {
+   "url": "https://reactnative.dev/assets/images/0.79-metro-startup-comparison-6dd153aeb4b43cb5dec1390b67bc4673.gif",
+   "mime": "image/gif"
+  }
+ },
+ "authors": [
+  {
+   "key": "alanjhughes",
+   "img": "https://github.com/alanjhughes.png?size=96"
+  },
+  {
+   "key": "shubham",
+   "img": "https://github.com/shubhamguptadream11.png?size=96"
+  },
+  {
+   "key": "fabriziocucci",
+   "img": "https://avatars.githubusercontent.com/u/8156463?v=4&size=96"
+  },
+  {
+   "key": "cortinico",
+   "img": "https://github.com/cortinico.png?size=96"
+  }
+ ]
+}

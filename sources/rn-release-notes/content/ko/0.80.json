@@ -1,0 +1,35 @@
+{
+ "title_ko": "React Native 0.80 한국어판",
+ "assets": {
+  "@@IMG_1@@": {
+   "url": "https://reactnative.dev/assets/images/0.80-legacy-arch-warnings-53105425d61d9e426f21af3e239df0f5.png",
+   "mime": "image/png"
+  },
+  "@@IMG_2@@": {
+   "url": "https://reactnative.dev/assets/images/0.80-android-apk-size-81b179f0dbf9546c8b0c9d443ba535ea.png",
+   "mime": "image/png"
+  },
+  "@@IMG_3@@": {
+   "url": "https://reactnative.dev/assets/images/0.80-new-community-template-landing-19d75fcc472b11d97b4715e7c7339ef5.jpg",
+   "mime": "image/jpeg"
+  }
+ },
+ "authors": [
+  {
+   "key": "hezi",
+   "img": "https://github.com/hezi.png?size=96"
+  },
+  {
+   "key": "fabriziocucci",
+   "img": "https://avatars.githubusercontent.com/u/8156463?v=4&size=96"
+  },
+  {
+   "key": "gabrieldonadel",
+   "img": "https://github.com/gabrieldonadel.png?size=96"
+  },
+  {
+   "key": "chrfalch",
+   "img": "https://github.com/chrfalch.png?size=96"
+  }
+ ]
+}

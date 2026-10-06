@@ -1,0 +1,245 @@
+<div class="wrap">
+<header class="post">
+  <span class="kicker">React Native 릴리스</span>
+  <h1>React Native 0.80 — React 19.1, JavaScript API 변경, 기존 아키텍처 개발 동결</h1>
+  <p class="orig-title">원문: React Native 0.80 - React 19.1, JS API Changes, Freezing Legacy Arch and much more</p>
+  <p class="meta">2025년 6월 12일 · 약 12분 분량</p>
+  <p class="source">출처: <a href="https://reactnative.dev/blog/2025/06/12/react-native-0.80">reactnative.dev/blog/2025/06/12/react-native-0.80</a></p>
+  <div class="authors"><div class="author"><img src="@@AV_hezi@@" alt="Jorge Cohen"><div><div class="n">Jorge Cohen</div><div class="a">Meta 엔지니어링 관리자</div></div></div>
+<div class="author"><img src="@@AV_fabriziocucci@@" alt="Fabrizio Cucci"><div><div class="n">Fabrizio Cucci</div><div class="a">Meta 소프트웨어 엔지니어</div></div></div>
+<div class="author"><img src="@@AV_gabrieldonadel@@" alt="Gabriel Donadel Dall&#x27;Agnol"><div><div class="n">Gabriel Donadel Dall&#x27;Agnol</div><div class="a">Expo 소프트웨어 엔지니어</div></div></div>
+<div class="author"><img src="@@AV_chrfalch@@" alt="Christian Falch"><div><div class="n">Christian Falch</div><div class="a">Expo 소프트웨어 엔지니어</div></div></div></div>
+</header>
+<div class="admon rich">
+  <div class="t">문서 범위 · 2026-10-06 확인</div>
+  <p>블로그 번역은 2025-06-12 최초 발표 당시의 설명을 보존합니다. 본문의 “최신 버전”, 지원 상태, 출시 예정 안내와 실험 기능 설정은 발표 당시 기준입니다.</p>
+  <p>현재 조사 결과는 <a href="#patches">0.80.x 패치 내역</a>과 <a href="#prereleases">사전 배포 기록</a>에 별도로 표시했습니다. 확인한 가장 최근 정식 패치는 <strong>0.80.3</strong>입니다.</p>
+</div>
+
+<p class="lead">오늘 React Native 0.80을 배포합니다.</p>
+<p>이번 버전은 React Native에 포함되는 React를 발표 당시 최신 안정 버전인 19.1.0으로 올립니다.</p>
+<p>JavaScript API의 안정성을 높이는 변경도 제공합니다. 내부 경로에서 가져오는 deep import는 이제 경고를 표시합니다. 또한 더 정확하고 안전한 타입을 제공하는 새 Strict TypeScript API를 선택하여 사용할 수 있습니다.</p>
+<p>React Native의 기존 아키텍처는 이제 공식적으로 개발을 동결합니다. 기존 아키텍처의 지원을 완전히 종료하면 작동하지 않을 API에 대한 경고도 표시됩니다.</p>
+<nav class="toc" aria-label="문서 목차">
+  <section><h3>주요 변경 사항</h3><ul>
+    <li><a href="#deep-imports">JavaScript deep import 사용 중단</a></li>
+    <li><a href="#strict-types">선택 기능 — Strict TypeScript API</a></li>
+    <li><a href="#legacy">기존 아키텍처 개발 동결과 경고</a></li>
+    <li><a href="#react19">React 19.1.0</a></li>
+    <li><a href="#prebuild">실험 기능 — iOS 의존성 사전 빌드</a></li>
+  </ul></section>
+  <section><h3>그 외</h3><ul>
+    <li><a href="#other">기타 변경 사항</a></li>
+    <li><a href="#breaking">호환성이 깨지는 변경</a></li>
+    <li><a href="#thanks">감사의 말</a></li>
+    <li><a href="#upgrade">0.80으로 업그레이드하기</a></li>
+    <li><a href="#patches">0.80.x 패치 릴리스</a></li>
+    <li><a href="#prereleases">사전 배포 기록</a></li>
+  </ul></section>
+</nav>
+
+<h2 id="highlights">주요 변경 사항</h2>
+<h3 id="deep-imports">JavaScript deep import 사용 중단</h3>
+<p>이번 버전에서는 React Native의 공개 JavaScript API를 개선하고 안정화하는 작업을 시작합니다. 첫 단계는 앱과 프레임워크에서 가져올 수 있는 API의 범위를 더 명확하게 정하는 것입니다. 이에 따라 React Native의 deep import를 공식적으로 사용 중단(deprecated) 상태로 지정하고(<a href="https://github.com/react-native-community/discussions-and-proposals/pull/894">RFC 참고</a>), ESLint와 JavaScript 콘솔에 경고를 추가합니다.</p>
+<p>이 경고는 프로젝트 소스 코드에서 가져오는 항목에만 적용합니다. <a href="https://reactnative.dev/docs/strict-typescript-api">경고를 끌 수도 있습니다</a>. 다만 이후 버전에서 React Native API의 deep import를 제거할 예정입니다. 따라서 패키지의 루트 경로에서 가져오도록 수정해야 합니다.</p>
+<div class="codeblock"><pre><code><span class="com">// 변경 전 — 내부 경로에서 가져오기</span>
+import {Alert} from 'react-native/Libraries/Alert/Alert';
+
+<span class="com">// 변경 후 — react-native에서 가져오기</span>
+import {Alert} from 'react-native';</code></pre></div>
+<p>일부 API는 루트 경로에서 내보내지 않습니다. deep import가 없어지면 이런 API는 사용할 수 없게 됩니다. 이는 React Native API의 전체 범위를 줄이기 위한 의도적인 변경입니다. 사용자 문제를 받는 <a href="https://github.com/react-native-community/discussions-and-proposals/discussions/893">의견 수집 토론</a>을 열었습니다. 최소한 다음 두 번의 React Native 배포에 걸쳐 커뮤니티와 함께 내보낼 API를 확정할 예정입니다. 의견을 공유해 주세요.</p>
+<p>자세한 설명은 <a href="https://reactnative.dev/blog/2025/06/12/moving-towards-a-stable-javascript-api">Moving Towards a Stable JavaScript API</a> 글을 확인하세요.</p>
+
+<h4 id="strict-types">선택 기능 — Strict TypeScript API</h4>
+<p>위와 같이 공개 API의 내보내기 범위를 다시 정의하면서, 0.80의 <code>react-native</code> 패키지에 새 TypeScript 타입도 제공합니다. 이 타입을 Strict TypeScript API라고 부릅니다.</p>
+<p>Strict TypeScript API를 선택하면 앞으로 제공할 React Native의 안정 JavaScript API를 미리 사용할 수 있습니다. 새 타입에는 다음 특징이 있습니다.</p>
+<ol>
+  <li><strong>소스 코드에서 직접 생성합니다.</strong> 타입이 적용되는 범위와 정확성을 높이므로 더 강한 호환성 보장을 기대할 수 있습니다.</li>
+  <li><strong>React Native의 index 파일로 범위를 제한합니다.</strong> 공개 API를 더 명확하게 정의하므로 내부 파일을 변경해도 API가 깨지지 않습니다.</li>
+</ol>
+<p>기존 타입과 함께 제공하므로 준비가 되었을 때 이전할 수 있습니다. 표준 React Native API를 사용하는 많은 앱은 <strong>코드를 바꾸지 않고</strong> 검사를 통과할 수 있습니다. 먼저 새 기능을 적용하려는 사용자와 새 앱에는 <code>tsconfig.json</code>에서 이 기능을 선택할 것을 적극 권장합니다.</p>
+<p>커뮤니티가 준비되면 이후 버전에서 Strict TypeScript API를 기본 API로 전환합니다. 이 전환은 deep import 제거와 같은 시점에 진행할 예정입니다.</p>
+<p>자세한 설명은 <a href="https://reactnative.dev/blog/2025/06/12/moving-towards-a-stable-javascript-api">Moving Towards a Stable JavaScript API</a> 글을 확인하세요.</p>
+
+<h3 id="legacy">기존 아키텍처 개발 동결과 경고</h3>
+<p>React Native의 새 아키텍처는 <a href="https://reactnative.dev/blog/2024/10/23/the-new-architecture-is-here">0.76부터 기본 선택</a>입니다. 여러 프로젝트와 도구가 새 아키텍처에서 큰 이점을 얻었다는 <a href="https://blog.kraken.com/product/engineering/how-kraken-fixed-performance-issues-via-incremental-adoption-of-the-react-native-new-architecture">성공 사례</a>도 확인했습니다.</p>
+<p><a href="https://github.com/reactwg/react-native-new-architecture/discussions/290">최근 공유한 것처럼</a> 기존 아키텍처는 이제 개발을 동결한 상태로 봅니다. 기존 아키텍처의 새 버그 수정이나 기능을 더 이상 개발하지 않습니다. 배포를 준비할 때 기존 아키텍처를 시험하는 작업도 중단합니다.</p>
+<p>원활하게 이전할 수 있도록 버그나 이전보다 나빠진 동작이 발생하면 새 아키텍처를 끄는 선택을 계속 허용합니다.</p>
+<p>그러나 React Native에 두 아키텍처를 함께 제공하는 일은 매우 어렵습니다. 실행 성능, 앱 크기, 코드 유지 관리에 영향을 줍니다.</p>
+<p>따라서 이후 어느 시점에는 기존 아키텍처의 지원을 종료해야 합니다.</p>
+<p>0.80에는 새 아키텍처에서 작동하지 않을 API를 사용하면 React Native DevTools에 표시되는 경고를 추가했습니다.</p>
+<p>이 경고를 무시하지 말고, 이후 변경에 대비하여 앱과 라이브러리를 새 아키텍처로 이전할 것을 권장합니다.</p>
+<figure class="shot"><img src="@@IMG_1@@" width="4320" height="2422" alt="React Native DevTools에 표시된 기존 아키텍처 API 경고"><figcaption>기존 아키텍처 API 경고</figcaption></figure>
+<p>자세한 설명은 최근 App.js에서 발표한 <a href="https://www.youtube.com/live/K2JTTKpptGs?si=tRkT535f0GzguVGt&amp;t=9011">Life After Legacy: The New Architecture Future</a> 영상을 확인하세요.</p>
+
+<h3 id="react19">React 19.1.0</h3>
+<p>이번 React Native 버전에는 발표 당시 최신 React 안정 버전인 19.1.0이 포함됩니다.</p>
+<p>React 19.1.0의 모든 새 기능과 버그 수정은 <a href="https://github.com/facebook/react/releases/tag/v19.1.0">배포 설명</a>에서 확인할 수 있습니다.</p>
+<div class="admon warn rich"><div class="t">주의</div>
+  <p>React 19.1.0의 주요 기능 중 하나는 소유자 스택(Owner Stack)의 구현과 개선입니다. 개발할 때만 사용하는 기능이며, 특정 오류를 일으킨 컴포넌트를 확인하는 데 도움이 됩니다.</p>
+  <p>그러나 React Native Babel Preset에서 기본으로 켜는 <code>@babel/plugin-transform-function-name</code> 플러그인을 사용하면 React Native의 소유자 스택이 예상대로 작동하지 않는 것을 알고 있습니다. 이후 React Native 버전에서 이 문제를 수정할 예정입니다.</p>
+</div>
+
+<h3 id="prebuild">실험 기능 — React Native iOS 의존성 사전 빌드</h3>
+<p>React Native iOS 앱을 빌드한다면 첫 네이티브 빌드에 시간이 걸리는 것을 보았을 것입니다. 보통 몇 분이 걸리며, 오래된 컴퓨터에서는 더 오래 걸릴 수 있습니다. React Native의 전체 iOS 코드와 모든 의존성을 컴파일해야 하기 때문입니다.</p>
+<p>최근 몇 주 동안 Android와 유사하게 iOS용 React Native 코어의 일부를 미리 빌드하는 방법을 시험했습니다. React Native 앱을 처음 실행할 때의 빌드 시간을 줄이는 것이 목적입니다.</p>
+<p>React Native 0.80은 iOS용 React Native의 일부를 사전 빌드 형태로 제공할 수 있는 첫 버전입니다.</p>
+<p>React Native 배포 과정에서 <code>ReactNativeDependencies.xcframework</code>라는 XCFramework를 만듭니다. React Native가 의존하는 외부 라이브러리만 미리 빌드한 파일입니다.</p>
+<p>이 초기 iOS 사전 빌드가 절약하는 시간을 시험하고 측정했습니다. M4 컴퓨터에서 수행한 측정에서는 소스에서 빌드할 때보다 iOS 빌드가 약 12% 더 빨랐습니다.</p>
+<p>사용자 버그 보고 중 일부는 React Native의 외부 의존성 빌드 문제에서 발생하는 것도 확인했습니다. 예를 들어 <a href="https://github.com/facebook/react-native/issues/39568">#39568</a>이 있습니다. 외부 의존성을 대신 빌드하여 제공하면 사용자가 이런 빌드 문제를 겪지 않게 할 수 있습니다.</p>
+<p>React Native 전체를 미리 빌드하는 것은 아닙니다. Folly와 GLog처럼 Meta가 직접 관리하지 않는 라이브러리만 미리 빌드합니다.</p>
+<p>이후 버전에서는 나머지 React Native 코어도 사전 빌드로 제공할 예정입니다.</p>
+<h4 id="use-prebuild">사용 방법</h4>
+<p>이 기능은 아직 실험 단계이므로 기본으로 켜지지 않습니다.</p>
+<p>사용하려면 환경 변수 <code>RCT_USE_RN_DEP</code>를 추가하여 pod를 설치하세요.</p>
+<div class="codeblock"><pre><code>RCT_USE_RN_DEP=1 bundle exec pod install</code></pre></div>
+<p>프로젝트에서 작업하는 모든 개발자에게 적용하려면 Podfile을 다음과 같이 수정할 수도 있습니다.</p>
+<div class="codeblock"><div class="fname">Podfile — 추가한 줄은 +로 표시</div><pre><code>if linkage != nil
+  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+  use_frameworks! :linkage =&gt; linkage.to_sym
+end
+
+<span class="add">+ENV['RCT_USE_RN_DEP'] = '1'</span>
+
+target 'HelloWorld' do
+  config = use_native_modules!</code></pre></div>
+<p>사전 빌드로 인해 사용자나 앱에 문제가 발생하면 <a href="https://github.com/react-native-community/discussions-and-proposals/discussions/912">이 토론</a>에 알려 주세요. 문제를 조사하고 앱이 사전 빌드 여부와 관계없이 같은 방식으로 작동하도록 하겠습니다.</p>
+
+<h2 id="other">기타 변경 사항</h2>
+<h3 id="ipo">Android: IPO로 APK 크기 감소</h3>
+<p>이번 버전은 React Native로 빌드한 모든 Android 앱의 크기를 크게 줄입니다. 0.80부터 React Native와 Hermes 빌드 모두에서 <a href="https://en.wikipedia.org/wiki/Interprocedural_optimization">프로시저 간 최적화(IPO)</a>를 켰습니다.</p>
+<p>그 결과 모든 Android 앱에서 약 1MB를 절약했습니다.</p>
+<figure class="shot"><img src="@@IMG_2@@" width="1600" height="587" alt="최적화 전후 Android APK 크기 비교"><figcaption>Android APK 크기 비교</figcaption></figure>
+<p>React Native 버전을 0.80으로 올리면 이 크기 감소 효과를 얻습니다. 프로젝트에서 추가로 변경할 내용은 없습니다.</p>
+<h3 id="new-screen">새 앱 시작 화면 디자인 변경</h3>
+<p>Expo 대신 Community CLI와 Template을 사용한다면 이번 버전에서 새 앱 시작 화면이 <a href="https://www.npmjs.com/package/@react-native/new-app-screen">별도 패키지</a>로 옮겨지고 디자인도 바뀐 것을 볼 수 있습니다. Community Template으로 새 앱을 만들 때 초기 반복 코드를 줄입니다. 큰 화면에서도 더 나은 사용 환경을 제공합니다.</p>
+<figure class="shot"><img src="@@IMG_3@@" width="1600" height="1080" alt="디자인을 변경한 Community Template의 새 앱 시작 화면"><figcaption>새 앱 시작 화면</figcaption></figure>
+<h3 id="jsc">JSC 커뮤니티 지원 안내</h3>
+<p>React Native 0.80은 React Native가 직접 JSC를 지원하는 마지막 버전입니다. 이후 JSC 지원은 커뮤니티가 유지하는 <code>@react-native-community/javascriptcore</code> 패키지로 제공합니다.</p>
+<p>이 발표를 보지 못했다면 <a href="https://reactnative.dev/blog/2025/04/08/react-native-0.79#jsc-moving-to-community-package">관련 설명</a>을 확인하세요.</p>
+
+<h2 id="breaking">호환성이 깨지는 변경</h2>
+<h3 id="exports">주 패키지에 <code>"exports"</code> 필드 추가</h3>
+<p>안정 JavaScript API 작업의 일부로 <code>react-native</code>의 <code>package.json</code>에 <a href="https://nodejs.org/api/packages.html#package-entry-points"><code>"exports"</code> 필드</a>를 추가했습니다.</p>
+<p>0.80에서는 이 매핑이 기본으로 <strong>모든 JavaScript 하위 경로</strong>를 계속 공개합니다. 따라서 큰 호환성 문제를 일으키지는 않을 것으로 예상합니다. 다만 <code>react-native</code> 패키지 내부 모듈을 찾는 방식이 일부 달라질 수 있습니다.</p>
+<ul>
+  <li>Metro에서는 <code>"exports"</code>에 일치하는 경로에 <a href="https://metrobundler.dev/docs/package-exports#replacing-platform-specific-extensions">플랫폼별 확장자</a>를 자동으로 적용하지 않습니다. 이 동작에 대응하는 여러 호환 모듈을 제공했습니다(<a href="https://github.com/facebook/react-native/pull/50426">#50426</a>).</li>
+  <li>Jest에서는 deep import를 모의 객체로 대체하는 방식이 달라질 수 있습니다. 이에 따라 테스트를 수정해야 할 수 있습니다.</li>
+</ul>
+<h3 id="other-breaking">그 외 호환성이 깨지는 변경</h3>
+<p>다음은 제품 코드에 작은 영향을 줄 수 있다고 판단한 추가 변경 사항입니다.</p>
+<h4 id="breaking-js">JavaScript</h4>
+<ul><li><code>eslint-plugin-react-hooks</code>를 4.6.0에서 5.2.0으로 올렸습니다. 전체 내용은 <a href="https://github.com/facebook/react/blob/main/packages/eslint-plugin-react-hooks/CHANGELOG.md">변경 기록</a>을 확인하세요. <code>react-hooks</code> 검사 규칙이 새로운 오류를 표시할 수 있으므로 수정하거나 해당 오류 표시를 꺼야 합니다.</li></ul>
+<h4 id="breaking-android">Android</h4>
+<ul>
+  <li>React Native에 포함되는 Kotlin을 2.1.20으로 올렸습니다. Kotlin 2.1에는 모듈이나 컴포넌트에서 시험할 수 있는 새 언어 기능이 포함됩니다. 자세한 내용은 <a href="https://kotlinlang.org/docs/whatsnew21.html">공식 배포 안내</a>를 확인하세요.</li>
+  <li>0.73부터 사용 중단 상태였던 <code>StandardCharsets</code> 클래스를 삭제했습니다. 대신 <code>java.nio.charset.StandardCharsets</code>를 사용하세요.</li>
+  <li>아래 클래스를 내부 전용으로 변경했습니다. 공개 API가 아니므로 사용하지 않아야 합니다. 영향을 받는 라이브러리에는 이미 알리거나 수정안을 제출했습니다.
+    <ul><li><code>com.facebook.react.fabric.StateWrapperImpl</code></li><li><code>com.facebook.react.modules.core.ChoreographerCompat</code></li><li><code>com.facebook.react.modules.common.ModuleDataCleaner</code></li></ul>
+  </li>
+  <li>아래 클래스를 Java에서 Kotlin으로 옮겼습니다. 사용 중이라면 일부 매개변수의 null 허용 여부와 타입이 달라졌으므로 코드를 수정해야 할 수 있습니다.
+    <ul><li><code>com.facebook.react.devsupport</code>의 모든 클래스</li><li><code>com.facebook.react.bridge.ColorPropConverter</code></li><li><code>com.facebook.react.views.textinput.ReactEditText</code></li><li><code>com.facebook.react.views.textinput.ReactTextInputManager</code></li></ul>
+  </li>
+</ul>
+<h4 id="breaking-ios">iOS</h4>
+<ul><li><code>RCTUtils.h</code>의 <code>RCTFloorPixelValue</code>를 삭제했습니다. React Native에서 사용하지 않던 메서드이므로 완전히 제거했습니다.</li></ul>
+<p>추가로 작은 호환성 변경은 <a href="https://github.com/facebook/react-native/blob/main/CHANGELOG.md#v0800">0.80 CHANGELOG</a>에 있습니다.</p>
+
+<h2 id="thanks">감사의 말</h2>
+<p>React Native 0.80에는 127명의 기여자가 만든 1,167개 이상의 커밋이 포함됩니다. 모든 분의 작업에 감사드립니다.</p>
+<p>이번 버전에 중요한 기여를 한 다음 커뮤니티 구성원에게 특별히 감사드립니다.</p>
+<ul>
+  <li><a href="https://github.com/chrfalch">Christian Falch</a>: React Native 의존성의 iOS 사전 빌드 작업.</li>
+  <li><a href="https://x.com/iwoplaza">Iwo Plaza</a>, <a href="https://x.com/breskin67">Jakub Piasecki</a>, <a href="https://github.com/coado">Dawid Małecki</a>: Strict TypeScript API 작업.</li>
+</ul>
+<p>이 배포 글에서 기능을 설명한 추가 작성자에게도 감사드립니다.</p>
+<ul>
+  <li><a href="https://github.com/cipolleschi">Riccardo Cipolleschi</a>: React Native 의존성의 iOS 사전 빌드 설명.</li>
+  <li><a href="https://x.com/huntie">Alex Hunt</a>: deep import 사용 중단, Strict TypeScript API 선택 기능, 새 앱 시작 화면 디자인 설명.</li>
+  <li><a href="https://x.com/cortinico">Nicola Corti</a>: 기존 아키텍처 개발 동결과 경고 설명.</li>
+</ul>
+
+<h2 id="upgrade">0.80으로 업그레이드하기</h2>
+<p>기존 프로젝트에서는 <a href="https://react-native-community.github.io/upgrade-helper/">React Native Upgrade Helper</a>로 버전 간 코드 변경을 확인하세요. 업그레이드 문서도 함께 확인하세요.</p>
+<p>새 프로젝트를 만들려면:</p>
+<div class="admon"><div class="t">번역 참고</div><p>공식 원문에는 위 안내 다음에 새 프로젝트 생성 명령이 없습니다. 이 문서에도 임의의 명령을 추가하지 않았습니다.</p></div>
+<p>Expo를 사용한다면 Expo SDK의 Canary 배포에서 React Native 0.80을 지원할 예정입니다. Expo에서 React Native 0.80을 사용하는 방법은 <a href="https://expo.dev/changelog/react-native-80">별도 블로그 글</a>에도 있습니다.</p>
+<h3 id="support">발표 당시 지원 버전</h3>
+<div class="admon"><div class="t">참고 · 2025-06-12 발표 기준</div><p>이제 0.80이 React Native의 최신 안정 버전이며, 0.77.x는 지원 종료(unsupported) 상태가 됩니다. 자세한 내용은 React Native 지원 정책을 확인하세요. 가까운 시일 안에 0.77의 마지막 지원 종료 업데이트를 배포할 예정입니다.</p></div>
+
+<section aria-labelledby="patches">
+<h2 id="patches">0.80.x 패치 릴리스</h2>
+<p class="meta">확인일: 2026-10-06 · 배포일: 한국 시간(UTC+9) · RC와 nightly는 정식 패치에서 제외</p>
+<p>공식 GitHub Releases, 전체 <code>v0.80.</code> 태그, CHANGELOG.md와 npm 배포 기록을 함께 확인했습니다. 최초 정식 버전 0.80.0의 GitHub 공개일은 2025-06-13입니다. 정식 패치는 3개입니다. 조사 시점에 0.80.4 이상의 정식 태그나 배포 기록은 없습니다.</p>
+<p>표의 배포일은 기존 문서와 같이 GitHub Release의 <code>published_at</code>을 한국 시간으로 바꾼 날짜입니다. npm 패키지 게시 시각은 GitHub 공개 시각과 다를 수 있으므로 각 버전에 함께 표시합니다.</p>
+<div class="tblwrap"><table><thead><tr><th scope="col">버전</th><th scope="col">배포일</th><th scope="col">주요 내용</th></tr></thead><tbody>
+<tr><td><a href="#patch-0-80-3">0.80.3</a></td><td>2026-01-28</td><td>마지막 0.80 패치 — Android 안정성·접근성과 iOS 입력·새로 고침 수정</td></tr>
+<tr><td><a href="#patch-0-80-2">0.80.2</a></td><td>2025-07-25</td><td>Hermes 시간대 캐시와 사내 Maven 저장소 지원</td></tr>
+<tr><td><a href="#patch-0-80-1">0.80.1</a></td><td>2025-07-03</td><td>Flow 타입 배포와 Jest·Android 런타임 오류 수정</td></tr>
+</tbody></table></div>
+<h3 id="patch-0-80-3">0.80.3 · 마지막 0.80 패치 — Android 안정성·접근성과 iOS 입력·새로 고침 수정</h3>
+<p class="meta">GitHub 배포: 2026-01-28 18:49:16 · npm 게시: 2026-01-27 05:24:05 (모두 UTC+9)</p>
+<p>공식 릴리스는 이 버전이 마지막 0.80 배포이며 0.80의 지원이 종료되었다고 안내합니다. 아래 항목은 공식 릴리스와 CHANGELOG에서 확인했습니다. 직전 정식 태그와도 비교했습니다.</p>
+<ul>
+  <li>Codegen: 빠진 의존성을 수정했습니다.</li>
+  <li>Android / 접근성: TalkBack의 사용자 지정 접근성 작업 ID를 안정적으로 유지하도록 수정했습니다.</li>
+  <li>Android / 빌드: Codegen 라이브러리의 소스가 누락되는 실행 순서 문제를 수정했습니다.</li>
+  <li>Android / HeadlessJsTaskService: 접근자 메서드를 다시 <code>open</code>으로 지정했습니다.</li>
+  <li>Android / 기존 아키텍처: Metro에서 새로 고침할 때 앱이 멈추는 문제를 수정했습니다.</li>
+  <li>Android / 권한: Android 16에서 권한 요청이 항상 완료되지 않던 문제를 수정했습니다.</li>
+  <li>Android / View: RootView를 다시 만들 때 글꼴 배율을 갱신합니다.</li>
+  <li>iOS / 사전 빌드: GNU coreutils의 <code>cp</code> 명령과 호환되도록 수정했습니다.</li>
+  <li>iOS / RefreshControl: 컴포넌트 재사용 처리를 수정했습니다.</li>
+  <li>iOS / RefreshControl: 처음 마운트할 때 새로 고침 상태가 표시되지 않던 문제를 수정했습니다.</li>
+  <li>iOS / RCTDeviceInfo: <code>application.delegate.window</code>가 <code>nil</code>이면 발생하던 앱 종료 문제를 수정했습니다.</li>
+  <li>iOS / TextInput: <code>maxLength</code>가 0인데도 입력할 수 있던 문제를 수정했습니다.</li>
+</ul>
+<p>다음 내용은 <strong>직전 정식 태그와의 공식 비교에서 확인한 내용</strong>입니다.</p>
+<ul>
+  <li>직전 태그와의 비교에서 위 수정 항목과 내부 <code>Podfile.lock</code>·배포 버전 갱신을 확인했습니다. 태그 사이에는 총 15개 커밋이 있습니다.</li>
+</ul>
+<p class="source">출처: <a href="https://github.com/react/react-native/releases/tag/v0.80.3">공식 릴리스 0.80.3</a> · <a href="https://github.com/react/react-native/blob/main/CHANGELOG.md#v0803">공식 CHANGELOG</a> · <a href="https://github.com/react/react-native/compare/v0.80.2...v0.80.3">직전 정식 태그와 비교</a></p>
+<h3 id="patch-0-80-2">0.80.2 · Hermes 시간대 캐시와 사내 Maven 저장소 지원</h3>
+<p class="meta">GitHub 배포: 2025-07-25 01:09:39 · npm 게시: 2025-07-25 00:16:32 (모두 UTC+9)</p>
+<ul>
+  <li>Hermes: 시간대 캐시를 초기화하는 메서드를 추가했습니다.</li>
+  <li>Android / React Native Gradle Plugin: <code>exclusiveEnterpriseRepository</code>를 지원합니다.</li>
+  <li>iOS / CocoaPods: 환경 변수 <code>ENTERPRISE_REPOSITORY</code>를 추가했습니다. 개인 또는 사내 Maven 미러에서 산출물을 받을 수 있습니다.</li>
+  <li>Android / 상호 운용 계층: <code>InteropUIBlockListener</code>의 <code>ConcurrentModificationException</code>을 수정했습니다.</li>
+</ul>
+<p class="source">출처: <a href="https://github.com/react/react-native/releases/tag/v0.80.2">공식 릴리스 0.80.2</a> · <a href="https://github.com/react/react-native/blob/main/CHANGELOG.md#v0802">공식 CHANGELOG</a></p>
+<h3 id="patch-0-80-1">0.80.1 · Flow 타입 배포와 Jest·Android 런타임 오류 수정</h3>
+<p class="meta">GitHub 배포: 2025-07-03 02:12:26 · npm 게시: 2025-07-01 02:17:17 (모두 UTC+9)</p>
+<ul>
+  <li>Flow: <code>react-native</code>의 최상위 Flow 타입을 배포합니다.</li>
+  <li>Flow: <code>react-native</code> Flow 타입 배포 과정의 오타를 수정했습니다.</li>
+  <li>Jest: Jest preset에 빠져 있던 <code>RefreshControlMock</code> 소스를 추가했습니다.</li>
+  <li>Android / 런타임: <code>getViewManagerNames</code>가 <code>null</code>을 반환하면 <code>ReactInstance</code>에서 발생하던 앱 종료 문제를 수정했습니다.</li>
+  <li>Android / TurboModule: 32비트 Android에서 TurboModule이 이벤트를 보낼 때 발생하던 앱 종료 문제를 수정했습니다.</li>
+</ul>
+<p class="source">출처: <a href="https://github.com/react/react-native/releases/tag/v0.80.1">공식 릴리스 0.80.1</a> · <a href="https://github.com/react/react-native/blob/main/CHANGELOG.md#v0801">공식 CHANGELOG</a></p>
+<p class="source">전체 조사 근거: <a href="https://github.com/react/react-native/releases/tag/v0.80.0">최초 정식 릴리스</a> · <a href="https://api.github.com/repos/react/react-native/git/matching-refs/tags/v0.80.">전체 태그 목록</a> · <a href="https://registry.npmjs.org/react-native">npm 버전과 게시 시각</a></p>
+</section>
+
+<section aria-labelledby="prereleases">
+<h2 id="prereleases">사전 배포와 미배포 기록</h2>
+<p class="meta">확인일: 2026-10-06 · 날짜: 한국 시간(UTC+9)</p>
+<p>0.80.0의 RC(배포 후보)는 정식 패치와 구분합니다. GitHub 공개일은 릴리스가 게시된 날짜입니다. npm에 배포되지 않은 RC에는 공개일이 있더라도 배포 실패를 표시합니다. nightly와 canary는 정식 패치 목록에 포함하지 않습니다.</p>
+<div class="tblwrap"><table><thead><tr><th scope="col">버전</th><th scope="col">GitHub 공개일</th><th scope="col">npm 게시일</th><th scope="col">확인 결과</th></tr></thead><tbody>
+<tr><td><a href="https://github.com/react/react-native/releases/tag/v0.80.0-rc.5">0.80.0-rc.5</a></td><td>2025-06-13</td><td>2025-06-10</td><td>GitHub·npm 배포 확인.</td></tr>
+<tr><td><a href="https://github.com/react/react-native/releases/tag/v0.80.0-rc.4">0.80.0-rc.4</a></td><td>2025-06-03</td><td>2025-06-03</td><td>GitHub·npm 배포 확인.</td></tr>
+<tr><td><a href="https://github.com/react/react-native/releases/tag/v0.80.0-rc.3">0.80.0-rc.3</a></td><td>2025-05-27</td><td>2025-05-27</td><td>GitHub·npm 배포 확인.</td></tr>
+<tr><td><a href="https://github.com/react/react-native/releases/tag/v0.80.0-rc.2">0.80.0-rc.2</a></td><td>2025-05-20</td><td>2025-05-20</td><td>GitHub·npm 배포 확인.</td></tr>
+<tr><td><a href="https://github.com/react/react-native/releases/tag/v0.80.0-rc.1">0.80.0-rc.1</a></td><td>2025-05-13</td><td>2025-05-13</td><td>GitHub·npm 배포 확인.</td></tr>
+<tr><td><a href="https://github.com/react/react-native/releases/tag/v0.80.0-rc.0">0.80.0-rc.0</a></td><td>2025-05-08</td><td>2025-05-07</td><td>GitHub·npm 배포 확인.</td></tr>
+</tbody></table></div>
+<p>위 RC는 모두 npm 배포 기록이 있습니다. 조사한 태그 범위에서 배포가 누락된 RC나 번호를 건너뛴 정식 패치는 없습니다.</p>
+</section>
+
+<div class="tags"><strong style="color:var(--text)">태그:</strong> <span>engineering</span></div>
+<footer class="note">
+  이 문서의 본문은 React Native 공식 블로그의 한국어 번역입니다. 패치와 사전 배포 기록은 공식 릴리스, CHANGELOG, 태그와 npm 배포 기록을 바탕으로 별도 작성했습니다. 원문의 코드, 이미지와 설명을 보존했습니다. 이미지·GIF·폰트는 HTML 파일에 포함됩니다. App.js 발표 영상은 원문과 같은 외부 링크이며 인터넷 연결이 필요합니다.<br>
+  원문 저작권: © Meta Platforms, Inc. 원문 문서의 <a href="https://github.com/react/react-native-website/blob/main/LICENSE-docs">CC BY 4.0 라이선스</a>에 따라 번역했습니다. <a href="https://creativecommons.org/licenses/by/4.0/">라이선스 안내</a>.<br>
+  원문(영문): <a href="https://reactnative.dev/blog/2025/06/12/react-native-0.80">React Native 0.80 - React 19.1, JS API Changes, Freezing Legacy Arch and much more</a> · <a href="https://github.com/react/react-native-website/blob/main/website/blog/2025-06-12-react-native-0.80.mdx">공식 발표 소스</a>
+</footer>
+</div>

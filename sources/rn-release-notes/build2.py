@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""RN 릴리스 노트 한글판 빌더 (0.83~0.87 공용).
+"""RN 릴리스 노트 한글판 빌더 (0.79~0.87 공용).
 
 content/ko/<ver>.html  : 본문 프래그먼트 (<div class="wrap">…</div>), @@IMG_*@@ 토큰 사용
 content/ko/<ver>.json  : 메타데이터 + 토큰→원본 URL 매핑

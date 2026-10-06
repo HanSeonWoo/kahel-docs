@@ -1,0 +1,31 @@
+{
+ "title_ko": "React Native 0.82 한국어판",
+ "assets": {
+  "@@IMG_OWNERS_BEFORE@@": {
+   "url": "https://reactnative.dev/assets/images/0.82-owners-stack-before-bf24fa9bc9dd697b9200eb010ff02695.png",
+   "mime": "image/png"
+  },
+  "@@IMG_OWNERS_AFTER@@": {
+   "url": "https://reactnative.dev/assets/images/0.82-owners-stack-after-ed600840df30d9908efafb13dd595829.png",
+   "mime": "image/png"
+  },
+  "@@IMG_DEBUG@@": {
+   "url": "https://reactnative.dev/assets/images/0.82-debug-b85b9cfcbd8b7c2f86f8bea40be8edd1.gif",
+   "mime": "image/gif"
+  },
+  "@@IMG_DEBUG_OPTIMIZED@@": {
+   "url": "https://reactnative.dev/assets/images/0.82-debug-optimized-42824de1774ee3794888eb24203f56e2.gif",
+   "mime": "image/gif"
+  },
+  "@@IMG_PROMISE@@": {
+   "url": "https://reactnative.dev/assets/images/0.82-uncaught-promise-rejection-report-9b6e4e11cc1db946a1ebd377a54a21cc.png",
+   "mime": "image/png"
+  }
+ },
+ "authors": [
+  { "key": "vzaidman", "img": "https://github.com/vzaidman.png?size=96" },
+  { "key": "cortinico", "img": "https://github.com/cortinico.png?size=96" },
+  { "key": "gabrieldonadel", "img": "https://github.com/gabrieldonadel.png?size=96" },
+  { "key": "alanjhughes", "img": "https://github.com/alanjhughes.png?size=96" }
+ ]
+}

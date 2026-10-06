@@ -32,7 +32,7 @@ npm run dev
 
 ## RN 릴리스 노트 생성
 
-현재 로컬 원본의 RN 0.83~0.87 완성 HTML과 패치 내역을 `public/docs/react-native/`에 보존했습니다. 수정용 본문, 메타데이터, 공통 스타일, 생성 스크립트, 원본 폰트는 `sources/rn-release-notes/`에 있습니다. 사이트 빌드는 이 문서를 다시 생성하지 않습니다.
+현재 로컬 원본의 RN 0.79~0.87 완성 HTML과 패치 내역을 `public/docs/react-native/`에 보존했습니다. 수정용 본문, 메타데이터, 공통 스타일, 생성 스크립트, 원본 폰트는 `sources/rn-release-notes/`에 있습니다. 사이트 빌드는 이 문서를 다시 생성하지 않습니다.
 
 ```sh
 cd sources/rn-release-notes
